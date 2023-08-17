@@ -1,0 +1,9 @@
+-r base.txt
+
+black==23.7.*
+pytest==7.4.*
+ruff==0.0.284
+mypy==1.5.*
+import-linter==1.10.*
+Faker==19.3.*
+factory-boy==3.3.*
