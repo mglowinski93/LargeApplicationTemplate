@@ -7,7 +7,7 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
     def __init__(self, session):
         self.session = session
 
-    def add(self, template: Template):
+    def save(self, template: Template):
         self.session.add(template)
 
     def get(self, template_id: TEMPLATE_ID_TYPE):

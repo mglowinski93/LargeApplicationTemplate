@@ -1,4 +1,4 @@
-from .database import mapper
-from .repository import TemplateRepository
+from .database import start_mappers
+from .repository import SqlAlchemyTemplateRepository
 
-__all__ = ["TemplateRepository", "mapper"]
+__all__ = ["SqlAlchemyTemplateRepository", "start_mappers"]
