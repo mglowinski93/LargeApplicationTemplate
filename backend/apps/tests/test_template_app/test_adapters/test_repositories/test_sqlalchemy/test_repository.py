@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 
-from apps.template_app.adapters.repositories.sqlalchemy import SqlAlchemyTemplateRepository
+from apps.template_app.adapters.repositories.sqlalchemy import (
+    SqlAlchemyTemplateRepository,
+)
 from apps.template_app.adapters.repositories.sqlalchemy.database import (
     Template as TemplateSqlAlchemyModel,
 )

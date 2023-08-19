@@ -8,11 +8,13 @@ from sqlalchemy import (
 from sqlalchemy.orm import sessionmaker, registry
 
 
-DATABASE_URL = (f"postgresql://"
-                f"{os.environ['POSTGRES_DB_USER']}:{os.environ['POSTGRES_DB_PASSWORD']}"
-                f"@"
-                f"{os.environ['POSTGRES_DB_HOST']}:{os.environ['POSTGRES_DB_PORT']}"
-                f"/{os.environ['POSTGRES_DB_NAME']}")
+DATABASE_URL = (
+    f"postgresql://"
+    f"{os.environ['POSTGRES_DB_USER']}:{os.environ['POSTGRES_DB_PASSWORD']}"
+    f"@"
+    f"{os.environ['POSTGRES_DB_HOST']}:{os.environ['POSTGRES_DB_PORT']}"
+    f"/{os.environ['POSTGRES_DB_NAME']}"
+)
 
 engine = create_engine(
     url=DATABASE_URL,

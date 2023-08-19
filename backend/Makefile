@@ -3,7 +3,7 @@ all: tests black_check ruff_check mypy_check
 
 tests:
 	echo "Running automated tests..."
-	pytest
+	pytest apps/tests
 	echo "Automated tests passed."
 
 black_check:

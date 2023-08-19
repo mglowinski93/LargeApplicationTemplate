@@ -1,9 +1,8 @@
 from sqlalchemy import Table, Column, DateTime, String, UUID, event
-from sqlalchemy.orm import registry, validates
+from sqlalchemy.orm import validates
 
 from apps.common.database import metadata, mapper_registry
 from ....domain.entities import Template, TemplateValue
-
 
 
 templates = Table(
@@ -35,7 +34,8 @@ class TemplateMapping:
     @staticmethod
     def configure_listener():
         """
-        Register an event to transform the string back to ValueDTO when an entity is loaded.
+        Register an event to transform the string back to ValueDTO
+        when an entity is loaded.
         """
 
         @event.listens_for(Template, "load")

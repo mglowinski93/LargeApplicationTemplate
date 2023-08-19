@@ -4,7 +4,7 @@ import factory
 from faker import Faker
 
 from apps.common.time import get_current_utc_timestamp
-from ..domain.entities import Template as TemplateEntity, TemplateValue
+from apps.template_app.domain.entities import Template as TemplateEntity, TemplateValue
 
 
 fake = Faker()

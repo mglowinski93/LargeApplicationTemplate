@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from apps.template_app.domain.entities import Template
-from apps.template_app.domain.value_objects import TEMPLATE_ID_TYPE
+from ..entities import Template
+from ..value_objects import TEMPLATE_ID_TYPE
 
 
 class TemplateRepository(ABC):
