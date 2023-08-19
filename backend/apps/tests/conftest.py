@@ -29,7 +29,7 @@ def prepared_database(db_engine):
         host=os.environ["POSTGRES_DB_HOST"],
         port=os.environ["POSTGRES_DB_PORT"],
         dbname=TEST_DATABASE_URL.rsplit(sep="/", maxsplit=1)[1],
-        version="15",
+        version=0,
     ):
         metadata.create_all(db_engine)  # Create the schema in the test database.
 
