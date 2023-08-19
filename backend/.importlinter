@@ -1,9 +1,0 @@
-[importlinter]
-root_package = infrastructures
-
-[importlinter:contract:1]
-name = No imports between infrastructures subpackages
-type = independence
-modules=
-    infrastructures.template_app
-    # Currently import-linter doesn't support wildcard: https://github.com/seddonym/import-linter/issues/56.
