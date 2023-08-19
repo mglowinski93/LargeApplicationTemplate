@@ -4,15 +4,15 @@ import factory
 from faker import Faker
 
 from apps.common.time import get_current_utc_timestamp
-from apps.template_app.domain.models import Template, TemplateValue
+from ..domain.entities import Template as TemplateEntity, TemplateValue
 
 
 fake = Faker()
 
 
-class TemplateFactory(factory.Factory):
+class TemplateEntityFactory(factory.Factory):
     class Meta:
-        model = Template
+        model = TemplateEntity
 
     id = factory.LazyFunction(uuid4)
     timestamp = factory.LazyFunction(get_current_utc_timestamp)

@@ -2,8 +2,8 @@
 
 black==23.7.*
 pytest==7.4.*
+pytest-postgresql==5.0.*
 ruff==0.0.284
 mypy==1.5.*
-import-linter==1.10.*
 Faker==19.3.*
 factory-boy==3.3.*

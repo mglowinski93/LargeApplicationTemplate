@@ -1,6 +1,6 @@
-from apps.template_app.ports import TemplateRepository
-from apps.template_app.domain.models import Template
-from apps.template_app.domain.value_objects import TEMPLATE_ID_TYPE
+from ....domain.ports import TemplateRepository
+from ....domain.entities import Template
+from ....domain.value_objects import TEMPLATE_ID_TYPE
 
 
 class SqlAlchemyTemplateRepository(TemplateRepository):

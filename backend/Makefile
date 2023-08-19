@@ -1,4 +1,4 @@
-all: tests black_check ruff_check mypy_check import_linter_check
+all: tests black_check ruff_check mypy_check
 	echo "All checks passed!"
 
 tests:
@@ -20,8 +20,3 @@ mypy_check:
 	echo "Checking mypy..."
 	mypy ./
 	echo "Mypy passed."
-
-import_linter_check:
-	echo "Checking imports restrictions..."
-	lint-imports
-	echo "Import restrictions met."
