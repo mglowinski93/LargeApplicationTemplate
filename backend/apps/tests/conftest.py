@@ -3,9 +3,9 @@ import os
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import sessionmaker
 
-from apps.common.database.session import DATABASE_URL
+from apps.common.database.session import DATABASE_URL, metadata
 
 
 TEST_DATABASE_URL = f"{DATABASE_URL}_test"
@@ -29,8 +29,10 @@ def prepared_database(db_engine):
         host=os.environ["POSTGRES_DB_HOST"],
         port=os.environ["POSTGRES_DB_PORT"],
         dbname=TEST_DATABASE_URL.rsplit(sep="/", maxsplit=1)[1],
-        version="",
+        version="15",
     ):
+        metadata.create_all(db_engine)  # Create the schema in the test database.
+
         yield db_engine
 
 
@@ -40,10 +42,9 @@ def raw_db_session(  # <- This is the fixture to be used in tests.
 ):
     with prepared_database.connect() as db_connection:
         transaction = db_connection.begin()
-        session = scoped_session(sessionmaker(autocommit=False, autoflush=False))
-        session.configure(bind=db_connection)
+        session = sessionmaker(autocommit=False, autoflush=False, bind=db_connection)()
 
-        yield session()
+        yield session
 
-        session.remove()
+        session.close()
         transaction.rollback()

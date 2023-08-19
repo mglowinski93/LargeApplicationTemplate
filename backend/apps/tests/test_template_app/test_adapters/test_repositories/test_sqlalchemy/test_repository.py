@@ -1,54 +1,54 @@
+from typing import Callable
+
 from sqlalchemy.orm import Session
 
 from apps.template_app.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateRepository,
 )
-from apps.template_app.adapters.repositories.sqlalchemy.database import (
-    Template as TemplateSqlAlchemyModel,
-)
+from apps.template_app.domain.entities import Template as TemplateEntity
 
 
 def test_repository_can_save_template(
-    db_session: Session, template_sqlalchemy_model: TemplateSqlAlchemyModel
+    db_session: Session, template_entity: TemplateEntity
 ):
     # Given
     repository = SqlAlchemyTemplateRepository(db_session)
 
     # When
-    repository.save(template_sqlalchemy_model)
+    repository.save(template_entity)
     db_session.commit()
 
     # Then
-    rows = db_session.query(
-        TemplateSqlAlchemyModel.id,
-        TemplateSqlAlchemyModel.value,
-        TemplateSqlAlchemyModel.timestamp,
-    ).all()
-    assert len(rows) == 1
-    assert list(rows) == template_sqlalchemy_model
+    result = db_session.query(TemplateEntity).filter_by(id=template_entity.id).one()
+    assert isinstance(result, TemplateEntity)
+    assert result.id == template_entity.id
 
 
 def test_repository_can_retrieve_template(
-    db_session: Session, template_sqlalchemy_model: TemplateSqlAlchemyModel
+    db_session: Session, template_sqlalchemy_factory: Callable
 ):
     # Given
+    template_entity = template_sqlalchemy_factory()
     repository = SqlAlchemyTemplateRepository(db_session)
 
     # When
-    retrieved_template = repository.get(template_sqlalchemy_model.id)
+    result = repository.get(template_entity.id)
 
     # Then
-    assert retrieved_template == template_sqlalchemy_model
+    assert isinstance(result, TemplateEntity)
+    assert result == template_entity
 
 
 def test_repository_can_list_templates(
-    db_session: Session, template_sqlalchemy_model: TemplateSqlAlchemyModel
+    db_session: Session, template_sqlalchemy_factory: Callable
 ):
     # Given
+    template_entity = template_sqlalchemy_factory()
     repository = SqlAlchemyTemplateRepository(db_session)
 
     # When
-    retrieved_template = repository.list(template_sqlalchemy_model.id)[0]
+    result = repository.list()[0]
 
     # Then
-    assert retrieved_template == template_sqlalchemy_model
+    assert isinstance(result, TemplateEntity)
+    assert result == template_entity

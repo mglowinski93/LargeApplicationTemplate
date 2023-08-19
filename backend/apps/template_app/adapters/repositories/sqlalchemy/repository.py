@@ -1,5 +1,5 @@
 from ....domain.ports import TemplateRepository
-from ....domain.entities import Template
+from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE
 
 
@@ -7,11 +7,11 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
     def __init__(self, session):
         self.session = session
 
-    def save(self, template: Template):
+    def save(self, template: TemplateEntity):
         self.session.add(template)
 
-    def get(self, template_id: TEMPLATE_ID_TYPE):
-        return self.session.query(Template).filter_by(id=template_id).one()
+    def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
+        return self.session.query(TemplateEntity).filter_by(id=template_id).one()
 
-    def list(self):
-        return self.session.query(Template).all()
+    def list(self) -> list[TemplateEntity]:
+        return self.session.query(TemplateEntity).all()
