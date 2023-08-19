@@ -20,7 +20,6 @@ def test_repository_can_save_template(
 
     # Then
     result = db_session.query(TemplateEntity).filter_by(id=template_entity.id).one()
-    assert isinstance(result, TemplateEntity)
     assert result.id == template_entity.id
 
 

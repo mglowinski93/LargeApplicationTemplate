@@ -40,7 +40,7 @@ class TemplateMapping:
 
         @event.listens_for(Template, "load")
         def receive_load(template, _):
-            template.value = parse_string_to_value_dto(template.value)
+            template.value = parse_string_to_value_dto(template)
 
 
 def start_mappers():
