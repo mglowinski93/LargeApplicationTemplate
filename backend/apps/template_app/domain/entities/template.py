@@ -1,5 +1,6 @@
 from __future__ import annotations
 from datetime import datetime
+from typing import Optional
 
 from apps.common.time import get_current_utc_timestamp
 from ..exceptions import InvalidTemplateValue
@@ -25,11 +26,11 @@ class Template:
 
     def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime):
         self.id = id
-        self._value: TemplateValue | None = None
+        self._value: Optional[TemplateValue] = None
         self.timestamp = timestamp
 
     @property
-    def value(self) -> TemplateValue | None:
+    def value(self) -> Optional[TemplateValue]:
         return self._value
 
     def set_value(self, value: TemplateValue):

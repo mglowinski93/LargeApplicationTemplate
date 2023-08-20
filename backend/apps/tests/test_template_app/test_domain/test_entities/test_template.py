@@ -22,7 +22,7 @@ def test_set_template_value_sets_value_when_valid_value(
     assert template_entity.value == value
 
 
-def test_set_template_raises_exception_when_invalid_value(
+def test_set_template_value_raises_exception_when_invalid_value(
     template_entity: TemplateEntity,
 ):
     timestamp_before_setting_value = template_entity.timestamp
@@ -33,7 +33,7 @@ def test_set_template_raises_exception_when_invalid_value(
     assert timestamp_before_setting_value == template_entity.timestamp
 
 
-def test_set_template_method_value_sets_value_when_valid_value(
+def test_set_template_value_method_value_sets_value_when_valid_value(
     template_entity: TemplateEntity,
 ):
     # Given

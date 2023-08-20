@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Optional
 
 import pytest
 from sqlalchemy.orm import clear_mappers, Session
@@ -20,7 +20,9 @@ def db_session(raw_db_session):
 
 @pytest.fixture
 def template_sqlalchemy_factory(db_session: Session) -> Callable:
-    def template_sqlalchemy_model(value: TemplateValue | None = None) -> TemplateEntity:
+    def template_sqlalchemy_model(
+        value: Optional[TemplateValue] = None,
+    ) -> TemplateEntity:
         TemplateSqlAlchemyModelFactory._meta.sqlalchemy_session = db_session
         model = TemplateSqlAlchemyModelFactory()
 
