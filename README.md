@@ -21,9 +21,26 @@ To run development environment
 ## API description
 
 API description can be accessed on development environment via `swagger` on 
-http://localhost:9000/api/swagger/.
+http://localhost:8000/api/swagger/.
 
 ## Running tests
 
 1. Build development environment as described above.
 2. Execute `docker exec -it  large-application-template-backend-development make`.
+
+## Database migrations
+
+It's obligatory to navigate to proper folder,
+due to that all
+[alembic](https://alembic.sqlalchemy.org/en/latest/) commands
+has to be called in place where `alembic.ini` is located.
+
+#### Generating database migrations
+
+1. go to `migrations/` folder
+2. execute `alembic revision --autogenerate -m "<migration_message>"` command
+
+#### Migrating database
+
+1. Go to `migrations/` folder
+2. Execute `alembic upgrade head` command
