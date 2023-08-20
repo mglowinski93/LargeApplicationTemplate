@@ -8,9 +8,9 @@ from config import config, swagger_template, swagger_config
 
 
 app = Flask(__name__)
-config_name = os.environ["FLASK_CONFIG"]
-app.config.from_object(config[config_name])
-config[config_name].init_app(app)
+environment_name = os.environ["ENVIRONMENT"]
+app.config.from_object(config[environment_name])
+config[environment_name].init_app(app)
 
 swagger = Swagger(template=swagger_template, config=swagger_config)
 swagger.init_app(app)

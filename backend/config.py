@@ -10,10 +10,7 @@ class DevelopmentConfig(Config):
         pass
 
 
-class TestingConfig(Config):
-    TESTING = True
-    WTF_CSRF_ENABLED = False
-
+class CiCdConfig(Config):
     @staticmethod
     def init_app(app):
         pass
@@ -25,7 +22,7 @@ class ProductionConfig(Config):
 
 config = {
     "development": DevelopmentConfig,
-    "testing": TestingConfig,
+    "cd_cd": CiCdConfig,
     "production": ProductionConfig,
 }
 

@@ -13,7 +13,7 @@ RUN apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-ENV FLASK_CONFIG="development"
+ENV ENVIRONMENT="development"
 # Define, which configuration to use for flask application.
 # See config.py file in scheduler service for more details.
 ENV FLASK_DEBUG=1
