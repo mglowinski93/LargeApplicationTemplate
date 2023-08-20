@@ -9,6 +9,11 @@ jobs:
 
     env:
       ENVIRONMENT: "testing"
+      POSTGRES_DB_HOST: "large-application-template-db"
+      POSTGRES_DB_PORT: 5432
+      POSTGRES_DB_NAME: "large_application_template"
+      POSTGRES_DB_USER: "large_application_template_user"
+      POSTGRES_DB_PASSWORD: "large_application_template_password"
 
     services:
       db:
