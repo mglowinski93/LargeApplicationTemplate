@@ -3,9 +3,9 @@ import pytest
 from apps.template_app.domain.exceptions import InvalidTemplateValue
 from apps.template_app.domain.entities import (
     Template as TemplateEntity,
-    TemplateValue,
     set_template_value,
 )
+from apps.template_app.domain.value_objects import TemplateValue
 from ...factories import fake_template_value
 
 

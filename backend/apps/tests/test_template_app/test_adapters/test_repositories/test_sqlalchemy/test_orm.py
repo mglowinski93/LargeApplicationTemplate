@@ -3,6 +3,7 @@ from typing import Callable
 from sqlalchemy.orm import Session
 
 from apps.template_app.domain.entities import Template as TemplateEntity
+from apps.template_app.domain.value_objects import TemplateValue
 from ....factories import fake_template_value
 
 
@@ -17,6 +18,7 @@ def test_template_mapper_can_load_templates(
 
     # Then
     assert isinstance(result, TemplateEntity)
+    assert isinstance(result.value, TemplateValue)
     assert result == template_entity
 
 
@@ -34,5 +36,6 @@ def test_template_mapper_can_save_templates(
     rows = db_session.query(TemplateEntity).all()
     assert len(rows) == 1
     record = rows[0]
-    assert record == template_entity
     assert isinstance(record, TemplateEntity)
+    assert isinstance(record.value, TemplateValue)
+    assert record == template_entity

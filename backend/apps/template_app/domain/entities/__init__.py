@@ -1,3 +1,3 @@
-from .template import Template, TemplateValue, set_template_value
+from .template import Template, set_template_value
 
-__all__ = ["Template", "TemplateValue", "set_template_value"]
+__all__ = ["Template", "set_template_value"]
