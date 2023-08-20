@@ -31,7 +31,7 @@ app.register_blueprint(main_api_blueprint, url_prefix="/api")
 @app.route("/health-check", strict_slashes=False)
 def health_check():
     """
-    file: ./app/api/swagger_files/health_check_endpoint.yml
+    file: ./swagger_files/health_check_endpoint.yml
     """
 
     return jsonify(

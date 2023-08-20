@@ -56,5 +56,5 @@ swagger_config = {
     ],
     "specs_route": "/swagger/",
     "url_prefix": "/api",
-    "title": "Diagrams API",
+    "title": "LargeApplicationTemplate API",
 }
