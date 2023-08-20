@@ -18,7 +18,12 @@ To run development environment
 2. Execute `docker-compose up`.
 3. Open `http://localhost:8000` in browser.
 
-#### Running tests
+## API description
+
+API description can be accessed on development environment via `swagger` on 
+http://localhost:9000/api/swagger/.
+
+## Running tests
 
 1. Build development environment as described above.
 2. Execute `docker exec -it  large-application-template-backend-development make`.

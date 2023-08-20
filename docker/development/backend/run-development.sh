@@ -5,6 +5,5 @@ set -e
 python -m pip install --upgrade --user --disable-pip-version-check pip
 pip install -r /app/requirements/development.txt
 
-
 # Run the development server.
-exec make
+exec flask run --host 0.0.0.0 --port 8000

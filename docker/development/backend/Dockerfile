@@ -13,4 +13,13 @@ RUN apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
+ENV FLASK_CONFIG="development"
+# Define, which configuration to use for flask application.
+# See config.py file in scheduler service for more details.
+ENV FLASK_DEBUG=1
+# Enable Flask debugger for hot-reloading.
+# More details at https://flask.palletsprojects.com/en/2.0.x/config/.
+ENV FLASK_APP="main.py"
+# Defines file with Flask application.
+
 CMD ["/tools/run-development.sh"]
