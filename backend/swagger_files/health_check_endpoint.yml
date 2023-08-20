@@ -1,0 +1,15 @@
+
+Endpoint to check backups service status.
+---
+definitions:
+  SystemStatus:
+    type: object
+    properties:
+      health:
+        type: string
+        example: "Running"
+responses:
+  200:
+    description: "System status."
+    schema:
+      $ref: '#/definitions/SystemStatus'

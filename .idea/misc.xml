@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Black">
+    <option name="enabledOnReformat" value="true" />
+    <option name="pathToExecutable" value="$USER_HOME$/anaconda3/bin/black" />
+    <option name="sdkUUID" value="0aa94856-5dab-479c-871b-50e8e4e9a854" />
+  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9 (LargeApplicationTemplate)" project-jdk-type="Python SDK" />
+</project>

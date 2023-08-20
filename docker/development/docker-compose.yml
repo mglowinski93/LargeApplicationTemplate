@@ -1,0 +1,55 @@
+version: "3.9"
+
+networks:
+  large-application-template:
+
+volumes:
+  large-application-template-backend-cache:
+  large-application-template-db-volume:
+
+services:
+  large-application-template-db:
+    restart: "no"
+    image: "postgres:15-alpine"
+    container_name: large-application-template-db-development
+    networks:
+      large-application-template:
+    volumes:
+      - "large-application-template-db-volume:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_PASSWORD: "large_application_template_password"
+      POSTGRES_USER: "large_application_template_user"
+      POSTGRES_DB: "large_application_template"
+    env_file:
+      - ".env"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  large-application-template-backend:
+    restart: "no"
+    build:
+      context: ../../backend/
+      dockerfile: ../docker/development/backend/Dockerfile
+    container_name: large-application-template-backend-development
+    depends_on:
+      large-application-template-db:
+        condition: service_healthy
+    networks:
+      large-application-template:
+    ports:
+        - "8000:8000"
+    volumes:
+      - "../../backend/:/app/"
+      - "./backend/run-development.sh:/tools/run-development.sh"
+      - "large-application-template-backend-cache:/root/.cache/pip"
+    environment:
+      POSTGRES_DB_HOST: "large-application-template-db"
+      POSTGRES_DB_PORT: 5432
+      POSTGRES_DB_NAME: "large_application_template"
+      POSTGRES_DB_USER: "large_application_template_user"
+      POSTGRES_DB_PASSWORD: "large_application_template_password"
+    env_file:
+      - ".env"
