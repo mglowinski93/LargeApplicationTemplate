@@ -12,7 +12,9 @@ from apps.common.database.session import DATABASE_URL, metadata  # noqa: E402
 
 # IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
 
-from apps.template_app.adapters.repositories.sqlalchemy.orm import templates
+from apps.template_app.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, F401
+    templates,
+)
 
 # END OF IMPORTS
 
