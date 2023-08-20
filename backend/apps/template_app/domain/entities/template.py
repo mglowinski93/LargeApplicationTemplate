@@ -25,12 +25,16 @@ class Template:
 
     def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime):
         self.id = id
-        self.value: TemplateValue | None = None
+        self._value: TemplateValue | None = None
         self.timestamp = timestamp
+
+    @property
+    def value(self) -> TemplateValue | None:
+        return self._value
 
     def set_value(self, value: TemplateValue):
         if isinstance(value.value, str) and len(value.value):
-            self.value = value
+            self._value = value
             return
 
         raise InvalidTemplateValue(f"Invalid value: '{value.value}'")
