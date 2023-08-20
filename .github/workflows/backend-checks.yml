@@ -35,10 +35,10 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Use Python 3.10
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: "3.11"
 
       - name: Install python dependencies
         run: pip install -r backend/requirements/development.txt
