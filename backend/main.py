@@ -18,7 +18,10 @@ swagger.init_app(app)
 # START OF BLUEPRINT REGISTRATION
 main_api_blueprint = Blueprint("api", __name__)
 
-from apps.template_app.entrypoints.web import api_blueprint as template_api_blueprint
+from apps.template_app.entrypoints.web import (  # noqa: E402
+    api_blueprint as template_api_blueprint,
+)
+
 main_api_blueprint.register_blueprint(template_api_blueprint, url_prefix="/template")
 
 app.register_blueprint(main_api_blueprint, url_prefix="/api")
