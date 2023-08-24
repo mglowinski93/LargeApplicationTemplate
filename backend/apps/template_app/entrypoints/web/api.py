@@ -3,12 +3,10 @@ from http import HTTPStatus
 
 from flask import abort, request
 
-from apps.common.database import session_scope
 from . import api_blueprint
-from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplateRepository
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions
-from ...services import template_service
+from ...services import template_service, unit_of_work
 
 
 @api_blueprint.route("/<template_id>", methods=["POST"])
@@ -22,20 +20,17 @@ def set_template_id(template_id: str):
     except ValueError:
         abort(HTTPStatus.BAD_REQUEST, {"message": "Invalid template id format."})
 
-    with session_scope() as session:
-        repository = SqlAlchemyTemplateRepository(session)
-
-        try:
-            template_service.set_template_value(
-                repository=repository,
-                template_id=template_id,  # type: ignore
-                value=value_objects.TemplateValue(value=request.get_json()["value"]),
-            )
-        except domain_exceptions.InvalidTemplateValue:
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, {"message": "Invalid value."})
-        except ports_exceptions.TemplateDoesNotExist:
-            abort(HTTPStatus.NOT_FOUND)
-        except KeyError:
-            abort(HTTPStatus.BAD_REQUEST, {"message": "Missing value field."})
+    try:
+        template_service.set_template_value(
+            unit_of_work=unit_of_work.SqlAlchemyTemplateUnitOfWork(),
+            template_id=template_id,  # type: ignore
+            value=value_objects.TemplateValue(value=request.get_json()["value"]),
+        )
+    except domain_exceptions.InvalidTemplateValue:
+        abort(HTTPStatus.UNPROCESSABLE_ENTITY, {"message": "Invalid value."})
+    except ports_exceptions.TemplateDoesNotExist:
+        abort(HTTPStatus.NOT_FOUND)
+    except KeyError:
+        abort(HTTPStatus.BAD_REQUEST, {"message": "Missing value field."})
 
     return {"message": "Template value set."}, HTTPStatus.OK

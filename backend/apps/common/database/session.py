@@ -1,5 +1,4 @@
 import os
-from contextlib import contextmanager
 
 from sqlalchemy import (
     create_engine,
@@ -28,18 +27,3 @@ mapper_registry = registry()
 
 def get_session():
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)()
-
-
-@contextmanager
-def session_scope():
-    session = get_session()
-
-    try:
-        yield session
-        session.commit()
-        session.flush()
-    except Exception as err:
-        session.rollback()
-        raise err from err
-    finally:
-        session.close()

@@ -7,6 +7,7 @@ from apps.common.time import get_current_utc_timestamp
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.value_objects import TemplateValue, TEMPLATE_ID_TYPE
 from apps.template_app.domain.ports import TemplateRepository, exceptions
+from apps.template_app.domain.ports.unit_of_work import UnitOfWork
 
 
 fake = Faker()
@@ -21,7 +22,7 @@ class TemplateEntityFactory(factory.Factory):
 
 
 class FakeRepository(TemplateRepository):
-    def __init__(self, templates=list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 
     def save(self, template: TemplateEntity):
@@ -41,11 +42,16 @@ class FakeRepository(TemplateRepository):
         return list(self._templates)
 
 
-class FakeSession:
-    committed = False
+class FakeUnitOfWork(UnitOfWork):
+    def __init__(self, templates: list[TemplateEntity]):
+        self.templates = FakeRepository(templates=templates)
+        self.committed = False
 
     def commit(self):
         self.committed = True
+
+    def rollback(self):
+        pass
 
 
 def fake_template_id() -> UUID:

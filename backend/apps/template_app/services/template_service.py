@@ -1,9 +1,9 @@
 from ..domain import entities, value_objects
-from ..domain.ports.repository import TemplateRepository
+from ..domain.ports.unit_of_work import UnitOfWork
 
 
 def set_template_value(
-    repository: TemplateRepository,
+    unit_of_work: UnitOfWork,
     template_id: value_objects.TEMPLATE_ID_TYPE,
     value: value_objects.TemplateValue,
 ):
@@ -17,6 +17,7 @@ def set_template_value(
     that doesn't belong neither to the domain layer nor to the infrastructure layer.
     """
 
-    template = repository.get(template_id)
-    entities.set_template_value(template=template, value=value)
-    repository.save(template=template)
+    with unit_of_work:
+        template = unit_of_work.templates.get(template_id)
+        entities.set_template_value(template=template, value=value)
+        unit_of_work.templates.save(template)

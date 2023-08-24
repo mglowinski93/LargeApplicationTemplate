@@ -1,3 +1,3 @@
-from .session import session_scope, metadata, mapper_registry
+from .session import get_session, metadata, mapper_registry
 
-__all__ = ["session_scope", "metadata", "mapper_registry"]
+__all__ = ["get_session", "metadata", "mapper_registry"]

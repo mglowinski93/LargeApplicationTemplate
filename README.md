@@ -16,7 +16,6 @@ present on the host system:
 To run development environment
 1. Go into `docker/development` folder.
 2. Execute `docker-compose up`.
-3. Open `http://localhost:8000` in browser.
 
 ## API description
 
@@ -37,10 +36,10 @@ has to be called in place where `alembic.ini` is located.
 
 #### Generating database migrations
 
-1. go to `migrations/` folder
-2. execute `alembic revision --autogenerate -m "<migration_message>"` command
+1. Go into `migrations/` folder
+2. Execute `alembic revision --autogenerate -m "<migration_message>"` command
 
 #### Migrating database
 
-1. Go to `migrations/` folder
+1. Go into `migrations/` folder
 2. Execute `alembic upgrade head` command
