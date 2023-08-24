@@ -1,10 +1,14 @@
 class Config:
+    SWAGGER_ENABLED = False
+
     @staticmethod
     def init_app(app):
         pass
 
 
 class DevelopmentConfig(Config):
+    SWAGGER_ENABLED = True
+
     @staticmethod
     def init_app(app):
         pass

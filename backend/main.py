@@ -12,8 +12,9 @@ environment_name = os.environ["ENVIRONMENT"]
 app.config.from_object(config[environment_name])
 config[environment_name].init_app(app)
 
-swagger = Swagger(template=swagger_template, config=swagger_config)
-swagger.init_app(app)
+if app.config["SWAGGER_ENABLED"]:
+    swagger = Swagger(template=swagger_template, config=swagger_config)
+    swagger.init_app(app)
 
 # START OF BLUEPRINT REGISTRATION
 main_api_blueprint = Blueprint("api", __name__)
