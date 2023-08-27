@@ -43,7 +43,7 @@ services:
         - "8000:8000"
     volumes:
       - "../../backend/:/app/"
-      - "./backend/run-development.sh:/tools/run-development.sh"
+      - "./backend/scripts/:/scripts/"
       - "large-application-template-backend-cache:/root/.cache/pip"
     environment:
       POSTGRES_DB_HOST: "large-application-template-db"
