@@ -14,18 +14,35 @@ present on the host system:
 ## Development environment
 
 To run development environment
-1. Go into `docker/development` folder.
-2. Execute `docker-compose up`.
+1. Go into `docker/development` folder
+2. Execute `docker-compose up`
 
-## API description
+### API description
 
 API description can be accessed on development environment via `swagger` on 
 http://localhost:8000/api/swagger/.
 
-## Running tests
+### Running tests
 
 1. Build development environment as described above.
 2. Execute `docker exec -it  large-application-template-backend-development make`.
+
+## Production environment
+
+To build production
+[docker image](https://docs.docker.com/engine/reference/commandline/images/)
+:
+
+1. Navigate to root directory of the project.
+2. Execute `docker build -t large-application-template-backend-production --build-arg {REQUIRED ARGUMENTS} .`
+
+#### Required build arguments are:
+`POSTGRES_DB_HOST` - Host of the postgres database  
+`POSTGRES_DB_PORT` - Port of the postgres database  
+`POSTGRES_DB_NAME` - Name of the postgres database  
+`POSTGRES_DB_USER` - User of the postgres database  
+`POSTGRES_DB_PASSWORD` - Password of the postgres database  
+`TZ` - TimeZone identifier (e.g. Europe/Warsaw)  
 
 ## Database migrations
 
