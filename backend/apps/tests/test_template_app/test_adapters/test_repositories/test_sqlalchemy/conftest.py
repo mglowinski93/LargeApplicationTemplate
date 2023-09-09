@@ -1,11 +1,12 @@
 from typing import Callable, Optional
 
 import pytest
-from sqlalchemy.orm import clear_mappers, Session
+from sqlalchemy.orm import Session
 
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.value_objects import TemplateValue
 from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+    clear_mappers,
     start_mappers,
 )
 from .factories import TemplateSqlAlchemyModelFactory

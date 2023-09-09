@@ -6,6 +6,10 @@ from ....domain.value_objects import TEMPLATE_ID_TYPE
 
 
 class SqlAlchemyTemplateRepository(TemplateRepository):
+    """
+    See description of parent class to get more details.
+    """
+
     def __init__(self, session):
         self.session = session
 

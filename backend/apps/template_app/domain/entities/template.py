@@ -1,10 +1,11 @@
 from __future__ import annotations
 from datetime import datetime
 from typing import Optional
+from uuid import uuid4
 
-from apps.common.time import get_current_utc_timestamp
 from ..exceptions import InvalidTemplateValue
 from ...domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
+from ....common.time import get_current_utc_timestamp
 
 
 def set_template_value(template: Template, value: TemplateValue):
@@ -32,6 +33,10 @@ class Template:
     @property
     def value(self) -> Optional[TemplateValue]:
         return self._value
+
+    @staticmethod
+    def generate_id() -> TEMPLATE_ID_TYPE:
+        return uuid4()
 
     def set_value(self, value: TemplateValue):
         if isinstance(value.value, str) and len(value.value):

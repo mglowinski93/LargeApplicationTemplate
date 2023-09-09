@@ -1,5 +1,24 @@
+from .dto import OutputTemplate
+from .mappers import map_template_entity_to_output_dto
 from ..domain import entities, value_objects
 from ..domain.ports.unit_of_work import UnitOfWork
+from ...common.time import get_current_utc_timestamp
+
+
+def create_template(
+    unit_of_work: UnitOfWork,
+) -> (
+    OutputTemplate
+):  # It's correct to return data from command when no data are queried.
+    template = entities.Template(
+        id=entities.Template.generate_id(), timestamp=get_current_utc_timestamp()
+    )
+    output = map_template_entity_to_output_dto(template)
+
+    with unit_of_work:
+        unit_of_work.templates.save(template)
+
+    return output
 
 
 def set_template_value(

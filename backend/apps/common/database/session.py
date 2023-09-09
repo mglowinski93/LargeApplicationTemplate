@@ -4,7 +4,7 @@ from sqlalchemy import (
     create_engine,
     MetaData,
 )
-from sqlalchemy.orm import sessionmaker, registry
+from sqlalchemy.orm import sessionmaker, registry, Session
 
 
 DATABASE_URL = (
@@ -25,5 +25,5 @@ metadata = MetaData()
 mapper_registry = registry()
 
 
-def get_session():
+def get_session() -> Session:
     return sessionmaker(autocommit=False, autoflush=False, bind=engine)()

@@ -5,7 +5,7 @@ from apps.template_app.domain.entities import (
     Template as TemplateEntity,
     set_template_value,
 )
-from apps.template_app.domain.value_objects import TemplateValue
+from apps.template_app.domain.value_objects import TemplateValue, TEMPLATE_ID_TYPE
 from ...factories import fake_template_value
 
 
@@ -57,3 +57,11 @@ def test_set_template_method_raises_exception_when_invalid_value(
         set_template_value(template=template_entity, value=TemplateValue(value=""))
 
     assert timestamp_before_setting_value == template_entity.timestamp
+
+
+def test_generate_id_returns_id_of_type_template_id_type():
+    # When
+    template_id = TemplateEntity.generate_id()
+
+    # Then
+    assert isinstance(template_id, TEMPLATE_ID_TYPE)

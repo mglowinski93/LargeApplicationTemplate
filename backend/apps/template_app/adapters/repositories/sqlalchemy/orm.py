@@ -1,5 +1,5 @@
 from sqlalchemy import Table, Column, DateTime, String, UUID
-from sqlalchemy.orm import composite
+from sqlalchemy.orm import composite, clear_mappers as clear_sqlalchemy_mappers
 
 from apps.common.database import metadata, mapper_registry
 from ....domain.entities import Template
@@ -25,3 +25,7 @@ def start_mappers():
         local_table=templates,
         properties={"_value": composite(TemplateValue, templates.c.value_data)},
     )
+
+
+def clear_mappers():
+    clear_sqlalchemy_mappers()

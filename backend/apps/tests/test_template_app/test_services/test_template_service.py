@@ -6,7 +6,7 @@ from apps.template_app.domain.exceptions import InvalidTemplateValue
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.value_objects import TemplateValue
 from apps.template_app.domain.ports.exceptions import TemplateDoesNotExist
-from apps.template_app.services.template_service import set_template_value
+from apps.template_app.services.template_services import set_template_value
 from ..factories import fake_template_id, fake_template_value
 
 
