@@ -1,5 +1,6 @@
 class Config:
     SWAGGER_ENABLED = False
+    LOG_LEVEL = "INFO"
 
     @staticmethod
     def init_app(app):
@@ -8,6 +9,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     SWAGGER_ENABLED = True
+    LOG_LEVEL = "DEBUG"
 
     @staticmethod
     def init_app(app):

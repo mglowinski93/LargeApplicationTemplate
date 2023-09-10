@@ -1,3 +1,4 @@
+import logging
 import os
 import signal
 import sys
@@ -18,6 +19,12 @@ environment_name = os.environ["ENVIRONMENT"]
 app.config.from_object(config[environment_name])
 config[environment_name].init_app(app)
 start_template_mappers()
+
+logging.basicConfig(
+    level=logging.getLevelName(app.config["LOG_LEVEL"]),
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 
 if app.config["SWAGGER_ENABLED"]:
     swagger = Swagger(template=swagger_template, config=swagger_config)
