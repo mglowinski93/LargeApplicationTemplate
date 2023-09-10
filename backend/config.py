@@ -16,7 +16,7 @@ class DevelopmentConfig(Config):
         pass
 
 
-class CiCdConfig(Config):
+class TestConfig(Config):
     @staticmethod
     def init_app(app):
         pass
@@ -28,7 +28,7 @@ class ProductionConfig(Config):
 
 config = {
     "development": DevelopmentConfig,
-    "cd_cd": CiCdConfig,
+    "test": TestConfig,
     "production": ProductionConfig,
 }
 

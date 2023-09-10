@@ -2,4 +2,5 @@ psycopg2-binary==2.9.*
 SQLAlchemy==2.0.*
 flask==2.3.*
 flasgger==0.9.*
+wtforms==3.0.*
 alembic==1.11.*
