@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ENVIRONMENT: "testing"
+      ENVIRONMENT: "development"
       POSTGRES_DB_HOST: "localhost"
       POSTGRES_DB_PORT: 5432
       POSTGRES_DB_NAME: "large_application_template"
