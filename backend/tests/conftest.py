@@ -1,22 +1,21 @@
-import os
-
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from apps.common.database.session import DATABASE_URL, metadata
+from apps.common.database.session import metadata
 from apps.template_app.domain.entities import Template as TemplateEntity
+from config import TestConfig
 from .factories import TemplateEntityFactory
 
 
-TEST_DATABASE_URL = f"{DATABASE_URL}_test"
+configuration = TestConfig()
 
 
 @pytest.fixture(scope="session")
 def db_engine():
     engine = create_engine(
-        url=TEST_DATABASE_URL,
+        url=configuration.database_url,
         pool_pre_ping=True,
     )
     yield engine
@@ -26,11 +25,11 @@ def db_engine():
 @pytest.fixture(scope="session")
 def prepared_database(db_engine):
     with DatabaseJanitor(
-        user=os.environ["POSTGRES_DB_USER"],
-        password=os.environ["POSTGRES_DB_PASSWORD"],
-        host=os.environ["POSTGRES_DB_HOST"],
-        port=os.environ["POSTGRES_DB_PORT"],
-        dbname=TEST_DATABASE_URL.rsplit(sep="/", maxsplit=1)[1],
+        user=configuration.DATABASE_USER,
+        password=configuration.DATABASE_PASSWORD,
+        host=configuration.DATABASE_HOST,
+        port=configuration.DATABASE_PORT,
+        dbname=configuration.DATABASE_NAME,
         version=0,
     ):
         metadata.create_all(db_engine)  # Create the schema in the test database.

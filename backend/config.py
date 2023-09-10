@@ -1,10 +1,29 @@
+import os
+
+
 class Config:
     SWAGGER_ENABLED = False
     LOG_LEVEL = "INFO"
 
+    DATABASE_USER = os.environ["POSTGRES_DB_USER"]
+    DATABASE_PASSWORD = os.environ["POSTGRES_DB_PASSWORD"]
+    DATABASE_HOST = os.environ["POSTGRES_DB_HOST"]
+    DATABASE_PORT = os.environ["POSTGRES_DB_PORT"]
+    DATABASE_NAME = os.environ["POSTGRES_DB_NAME"]
+
     @staticmethod
     def init_app(app):
         pass
+
+    @property
+    def database_url(self) -> str:
+        return (
+            f"postgresql://"
+            f"{self.DATABASE_USER}:{self.DATABASE_PASSWORD}"
+            f"@"
+            f"{self.DATABASE_HOST}:{self.DATABASE_PORT}"
+            f"/{self.DATABASE_NAME}"
+        )
 
 
 class DevelopmentConfig(Config):
@@ -17,6 +36,8 @@ class DevelopmentConfig(Config):
 
 
 class TestConfig(Config):
+    DATABASE_NAME = f"{Config.DATABASE_NAME}_test"
+
     @staticmethod
     def init_app(app):
         pass

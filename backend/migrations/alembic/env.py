@@ -8,7 +8,9 @@ from sqlalchemy import pool
 from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from apps.common.database.session import DATABASE_URL, metadata  # noqa: E402
+from apps.common.database.session import metadata  # noqa: E402
+from apps.common.database import initialize_database  # noqa: E402
+from bootstrap import get_configuration  # noqa: E402
 
 # IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
 
@@ -17,6 +19,10 @@ from apps.template_app.adapters.repositories.sqlalchemy.orm import (  # noqa: E4
 )
 
 # END OF IMPORTS
+
+configuration = get_configuration()
+
+initialize_database(configuration.database_url)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -72,7 +78,7 @@ def run_migrations_online() -> None:
 
     """
     config_values = config.get_section(config.config_ini_section)
-    config_values["sqlalchemy.url"] = DATABASE_URL  # type: ignore
+    config_values["sqlalchemy.url"] = configuration.database_url  # type: ignore
     connectable = engine_from_config(
         config_values,  # type: ignore
         prefix="sqlalchemy.",

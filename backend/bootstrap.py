@@ -12,7 +12,14 @@ from apps.template_app.adapters.repositories.sqlalchemy.orm import (
     clear_mappers as clear_template_mappers,
     start_mappers as start_template_mappers,
 )
-from config import config, swagger_template, swagger_config
+from apps.common.database import initialize_database
+from config import config, swagger_template, swagger_config, Config
+
+
+def get_configuration(environment_name: Optional[str] = None) -> Config:
+    if environment_name is None:
+        environment_name = os.environ["ENVIRONMENT"]
+    return config[environment_name]()
 
 
 def create_app(environment_name: Optional[str] = None) -> Flask:
@@ -20,12 +27,13 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     Set up here the initial state, configurations, and dependencies of an application.
     """
 
-    if environment_name is None:
-        environment_name = os.environ["ENVIRONMENT"]
+    configuration = get_configuration(environment_name)
 
     app = Flask(__name__)
-    app.config.from_object(config[environment_name])
-    config[environment_name].init_app(app)
+    app.config.from_object(configuration)
+    configuration.init_app(app)
+
+    initialize_database(configuration.database_url)
     start_template_mappers()
 
     logging.basicConfig(
