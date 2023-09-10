@@ -5,11 +5,11 @@ from sqlalchemy.orm import sessionmaker
 
 from apps.common.database.session import metadata
 from apps.template_app.domain.entities import Template as TemplateEntity
-from config import TestConfig
+from config import config
 from .factories import TemplateEntityFactory
 
 
-configuration = TestConfig()
+configuration = config["test"]()
 
 
 @pytest.fixture(scope="session")

@@ -55,3 +55,8 @@ services:
       POSTGRES_DB_PASSWORD: "large_application_template_password"
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health-check || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
