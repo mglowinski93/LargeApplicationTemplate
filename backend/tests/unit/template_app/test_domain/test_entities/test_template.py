@@ -6,7 +6,7 @@ from apps.template_app.domain.entities import (
     set_template_value,
 )
 from apps.template_app.domain.value_objects import TemplateValue, TEMPLATE_ID_TYPE
-from ...factories import fake_template_value
+from .....factories import fake_template_value
 
 
 def test_set_template_value_sets_value_when_valid_value(

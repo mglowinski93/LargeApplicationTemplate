@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.value_objects import TemplateValue
-from ....factories import fake_template_value
+from ......factories import fake_template_value
 
 
 def test_template_mapper_can_load_templates(

@@ -6,6 +6,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from apps.common.database.session import DATABASE_URL, metadata
+from apps.template_app.domain.entities import Template as TemplateEntity
+from .factories import TemplateEntityFactory
 
 
 TEST_DATABASE_URL = f"{DATABASE_URL}_test"
@@ -50,3 +52,8 @@ def raw_db_session(  # <- This is the fixture to be used in tests.
 
         session.close()
         transaction.rollback()
+
+
+@pytest.fixture
+def template_entity() -> TemplateEntity:
+    return TemplateEntityFactory()

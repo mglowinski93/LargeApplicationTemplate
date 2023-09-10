@@ -10,11 +10,13 @@ from ..factories import fake_template_id
 
 
 def test_get_template_returns_output_dto_when_template_exists(
-    fake_unit_of_work_factory: Callable,
+    fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
     # Given
-    unit_of_work = fake_unit_of_work_factory(initial_templates=[template_entity])
+    unit_of_work = fake_template_unit_of_work_factory(
+        initial_templates=[template_entity]
+    )
 
     # When
     output_template_dto = get_template(
@@ -27,22 +29,22 @@ def test_get_template_returns_output_dto_when_template_exists(
 
 
 def test_get_template_raises_exception_when_requested_template_doesnt_exist(
-    fake_unit_of_work_factory: Callable,
+    fake_template_unit_of_work_factory: Callable,
 ):
     with pytest.raises(TemplateDoesNotExist):
         get_template(
-            unit_of_work=fake_unit_of_work_factory(initial_templates=[]),
+            unit_of_work=fake_template_unit_of_work_factory(initial_templates=[]),
             template_id=fake_template_id(),
         )
 
 
 def test_list_templates_lists_all_templates(
-    fake_unit_of_work_factory: Callable,
+    fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
     # Given
     templates = [template_entity]
-    unit_of_work = fake_unit_of_work_factory(initial_templates=templates)
+    unit_of_work = fake_template_unit_of_work_factory(initial_templates=templates)
 
     # When
     results = list_templates(
@@ -56,11 +58,11 @@ def test_list_templates_lists_all_templates(
 
 
 def test_list_templates_returns_empty_list_when_no_templates_exist(
-    fake_unit_of_work_factory: Callable,
+    fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
     # Given
-    unit_of_work = fake_unit_of_work_factory(initial_templates=[])
+    unit_of_work = fake_template_unit_of_work_factory(initial_templates=[])
 
     # When
     results = list_templates(
