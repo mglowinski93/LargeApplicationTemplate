@@ -1,12 +1,14 @@
 import pytest
 
+
 from apps.common.database.session import metadata
-from bootstrap import create_app
+from bootstrap import create_app, close_application_cleanup
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def app():
     yield create_app(environment_name="test")
+    close_application_cleanup()
 
 
 @pytest.fixture

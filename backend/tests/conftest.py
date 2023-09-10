@@ -22,7 +22,7 @@ def db_engine():
     engine.dispose()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def prepared_database(db_engine):
     with DatabaseJanitor(
         user=configuration.DATABASE_USER,

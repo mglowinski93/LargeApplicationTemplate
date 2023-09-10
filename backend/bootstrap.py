@@ -22,6 +22,10 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
     return config[environment_name]()
 
 
+def close_application_cleanup():
+    clear_template_mappers()
+
+
 def create_app(environment_name: Optional[str] = None) -> Flask:
     """
     Set up here the initial state, configurations, and dependencies of an application.
@@ -61,7 +65,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     # END OF BLUEPRINT REGISTRATION
 
     def closing_application_handler(signum, frame):
-        clear_template_mappers()
+        close_application_cleanup()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, closing_application_handler)

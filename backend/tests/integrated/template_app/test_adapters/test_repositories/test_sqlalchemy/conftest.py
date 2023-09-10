@@ -14,7 +14,7 @@ from .factories import TemplateSqlAlchemyModelFactory
 
 @pytest.fixture
 def db_session(raw_db_session):
-    start_mappers(pre_check_mapper=True)
+    start_mappers()
     yield raw_db_session
     clear_mappers()
 
