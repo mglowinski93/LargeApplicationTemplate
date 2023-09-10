@@ -12,7 +12,7 @@ from ...domain.ports import exceptions as ports_exceptions
 @api_blueprint.route("/<template_id>", methods=["GET"])
 def get_template_endpoint(template_id: str):
     """
-    file: ./swagger_files/delete_stored_backup_endpoint.yml
+    file: ../../../../swagger_files/template_endpoints/get_template.yml
     """
 
     try:
@@ -32,9 +32,9 @@ def get_template_endpoint(template_id: str):
 
 
 @api_blueprint.route("/", methods=["GET"])
-def get_templates_endpoint():
+def list_templates_endpoint():
     """
-    file: ./swagger_files/delete_stored_backup_endpoint.yml
+    file: ../../../../swagger_files/template_endpoints/list_templates.yml
     """
 
     templates = services.list_templates(
@@ -49,7 +49,7 @@ def get_templates_endpoint():
 @api_blueprint.route("/", methods=["POST"])
 def create_templates_endpoint():
     """
-    file: ./swagger_files/delete_stored_backup_endpoint.yml
+    file: ../../../../swagger_files/template_endpoints/create_template.yml
     """
 
     template = services.create_template(
@@ -62,7 +62,7 @@ def create_templates_endpoint():
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 def set_template_value_endpoint(template_id: str):
     """
-    file: ./swagger_files/delete_stored_backup_endpoint.yml
+    file: ../../../../swagger_files/template_endpoints/set_template_value.yml
     """
 
     try:

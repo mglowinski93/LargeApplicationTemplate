@@ -53,3 +53,20 @@ def test_list_templates_lists_all_templates(
     assert results == [
         map_template_entity_to_output_dto(template) for template in templates
     ]
+
+
+def test_list_templates_returns_empty_list_when_no_templates_exist(
+    fake_unit_of_work_factory: Callable,
+    template_entity: TemplateEntity,
+):
+    # Given
+    unit_of_work = fake_unit_of_work_factory(initial_templates=[])
+
+    # When
+    results = list_templates(
+        unit_of_work=unit_of_work,
+    )
+
+    # Then
+    assert isinstance(results, list)
+    assert not results

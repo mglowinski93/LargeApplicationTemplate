@@ -1,0 +1,27 @@
+
+Endpoint to get templates.
+---
+definitions:
+  FinalResult:
+    type: array
+    items:
+      $ref: '#/definitions/GetTemplates'
+  GetTemplates:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "bf4803fc-16f2-4ddc-a53d-df0ec6deef39"
+      value:
+        type: string
+        example: "Template value"
+      timestamp:
+        type: string
+        format: date
+        example: "Wed, 23 Feb 2023 21:27:14 GMT"
+responses:
+  200:
+    description: "Stored templates data."
+    schema:
+      $ref: '#/definitions/FinalResult'
