@@ -4,7 +4,7 @@ from bootstrap import create_app
 from apps.common.database.session import metadata
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="class")
 def app():
     yield create_app(environment_name="test")
 
