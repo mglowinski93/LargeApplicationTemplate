@@ -15,11 +15,14 @@ templates = Table(
 )
 
 
-def start_mappers():
+def start_mappers(pre_check_mapper: bool = False):
     # Details can be found here
     # https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#imperative-mapping
     # and
     # https://docs.sqlalchemy.org/en/20/orm/composites.html#sqlalchemy.orm.composite.
+    if pre_check_mapper and mapper_registry.mappers:
+        return
+
     mapper_registry.map_imperatively(
         class_=Template,
         local_table=templates,

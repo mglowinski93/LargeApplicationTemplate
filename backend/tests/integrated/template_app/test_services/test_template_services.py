@@ -7,8 +7,7 @@ from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.value_objects import TemplateValue
 from apps.template_app.domain.ports.exceptions import TemplateDoesNotExist
 from apps.template_app.services import create_template, set_template_value
-from ..factories import fake_template_id
-from ....factories import fake_template_value
+from ....factories import fake_template_id, fake_template_value
 
 
 def test_set_template_value_sets_value_when_valid_value(

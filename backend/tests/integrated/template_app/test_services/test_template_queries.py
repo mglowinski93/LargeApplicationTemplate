@@ -6,7 +6,7 @@ from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.ports.exceptions import TemplateDoesNotExist
 from apps.template_app.services import get_template, list_templates
 from apps.template_app.services.mappers import map_template_entity_to_output_dto
-from ..factories import fake_template_id
+from ....factories import fake_template_id
 
 
 def test_get_template_returns_output_dto_when_template_exists(

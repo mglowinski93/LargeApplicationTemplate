@@ -1,4 +1,4 @@
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import factory
 from faker import Faker
@@ -16,6 +16,10 @@ class TemplateEntityFactory(factory.Factory):
 
     id = factory.LazyFunction(uuid4)
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
+
+
+def fake_template_id() -> UUID:
+    return uuid4()
 
 
 def fake_template_value() -> TemplateValue:

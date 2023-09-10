@@ -1,5 +1,3 @@
-from uuid import uuid4, UUID
-
 from faker import Faker
 
 from apps.template_app.domain.entities import Template as TemplateEntity
@@ -42,7 +40,3 @@ class FakeTemplateUnitOfWork(UnitOfWork):
 
     def rollback(self):
         pass
-
-
-def fake_template_id() -> UUID:
-    return uuid4()
