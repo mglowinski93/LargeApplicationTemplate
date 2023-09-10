@@ -35,6 +35,8 @@ def prepared_database(db_engine):
 
         yield db_engine
 
+        metadata.drop_all(db_engine)  # Drop the schema from the test database.
+
 
 @pytest.fixture
 def raw_db_session(  # <- This is the fixture to be used in tests.
