@@ -99,10 +99,10 @@ def _filter_timestamp(
     query: Query, timestamp_from: Optional[datetime], timestamp_to: Optional[datetime]
 ):
     if timestamp_from is not None:
-        query = query.filter(TemplateEntity.timestamp >= timestamp_from)
+        query = query.where(TemplateEntity.timestamp >= timestamp_from)  # type: ignore
 
-    if timestamp_from is not None:
-        query = query.filter(TemplateEntity.timestamp <= timestamp_to)
+    if timestamp_to is not None:
+        query = query.where(TemplateEntity.timestamp <= timestamp_to)  # type: ignore
 
     return query
 
@@ -116,18 +116,18 @@ def _order(query: Query, order: Ordering):
 
 def _asc_order(query, field: str):
     if field == "timestamp":
-        return query.order_by(TemplateEntity.timestamp.asc())
+        return query.order_by(TemplateEntity.timestamp.asc())  # type: ignore
 
     if field == "value":
-        return query.order_by(TemplateEntity.value.asc())
+        return query.order_by(TemplateEntity.value.asc())  # type: ignore
 
 
 def _desc_order(query: Query, field: str):
     if field == "timestamp":
-        return query.order_by(TemplateEntity.timestamp.desc())
+        return query.order_by(TemplateEntity.timestamp.desc())  # type: ignore
 
     if field == "value":
-        return query.order_by(TemplateEntity.value.desc())
+        return query.order_by(TemplateEntity.value.desc())  # type: ignore
 
 
 def _paginate(query: Query, pagination: Pagination):

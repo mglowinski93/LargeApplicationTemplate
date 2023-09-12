@@ -2,7 +2,7 @@ import logging
 from uuid import UUID
 from http import HTTPStatus
 
-from flask import abort, jsonify, make_response, request
+from flask import jsonify, make_response, request
 from werkzeug.datastructures import MultiDict
 
 from . import api_blueprint
@@ -29,9 +29,11 @@ def get_template_endpoint(template_id: str):
         template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
     except ValueError:
         logger.warning("Invalid template ID format: '%s'.", template_id)
-        abort(
+        return make_response(
+            jsonify(
+                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
+            ),
             HTTPStatus.BAD_REQUEST,
-            {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."},
         )
 
     try:
@@ -41,7 +43,10 @@ def get_template_endpoint(template_id: str):
         )
         logger.debug("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
-        abort(HTTPStatus.NOT_FOUND)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
+            HTTPStatus.NOT_FOUND,
+        )
 
     return make_response(jsonify(template.serialize()), HTTPStatus.OK)
 
@@ -66,8 +71,9 @@ def list_templates_endpoint():
         )
     except ValueError as err:
         logger.warning("Invalid pagination parameters: '%s'.", err)
-        abort(
-            HTTPStatus.BAD_REQUEST, {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: str(err)}
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: str(err)}),
+            HTTPStatus.BAD_REQUEST,
         )
 
     form = templates_forms.TemplatesFiltersForm(
@@ -75,7 +81,11 @@ def list_templates_endpoint():
         meta={"csrf": False},
     )
     if not form.validate():
-        abort(HTTPStatus.BAD_REQUEST, form.errors)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: form.errors}),
+            HTTPStatus.BAD_REQUEST,
+        )
+
     filters = ports_dtos.TemplatesFilters(
         value=form.value.data,
         query=form.query.data,
@@ -151,9 +161,11 @@ def set_template_value_endpoint(template_id: str):
         template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
     except ValueError:
         logger.warning("Invalid template ID format: '%s'.", template_id)
-        abort(
+        return make_response(
+            jsonify(
+                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
+            ),
             HTTPStatus.BAD_REQUEST,
-            {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."},
         )
 
     form = templates_forms.SetTemplateValueForm(
@@ -162,7 +174,10 @@ def set_template_value_endpoint(template_id: str):
     )
     if not form.validate():
         logger.warning("Request can't be handled, due to invalid input data.")
-        abort(HTTPStatus.BAD_REQUEST, form.errors)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: form.errors}),
+            HTTPStatus.BAD_REQUEST,
+        )
 
     template_value = form.value.data
 
@@ -178,12 +193,15 @@ def set_template_value_endpoint(template_id: str):
         logger.warning(
             "Invalid value '%s' for template '%s'.", template_value, template_id
         )
-        abort(
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid value."}),
             HTTPStatus.UNPROCESSABLE_ENTITY,
-            {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid value."},
         )
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
-        abort(HTTPStatus.NOT_FOUND)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
+            HTTPStatus.NOT_FOUND,
+        )
 
     return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)

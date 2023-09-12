@@ -1,3 +1,4 @@
+from typing import Any
 from http import HTTPStatus
 
 from flask.testing import FlaskClient
@@ -27,10 +28,11 @@ def test_list_templates_returns_empty_list_when_no_template_exists(
 
     # Then
     assert response.status_code == HTTPStatus.OK
-    results = response.json[consts.PAGINATION_RESULTS_NAME]
+    json_response: dict[str, Any] = response.json  # type: ignore
+    results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert isinstance(results, list)
     assert not results
-    assert response.json[consts.PAGINATION_TOTAL_COUNT_NAME] == 0
+    assert json_response[consts.PAGINATION_TOTAL_COUNT_NAME] == 0
 
 
 def test_list_templates_returns_templates_data_when_templates_exist(
@@ -56,9 +58,10 @@ def test_list_templates_returns_templates_data_when_templates_exist(
 
     # Then
     assert response.status_code == HTTPStatus.OK
-    results = response.json[consts.PAGINATION_RESULTS_NAME]
+    json_response: dict[str, Any] = response.json  # type: ignore
+    results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert isinstance(results, list)
-    assert response.json[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
+    assert json_response[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
 
 
 def test_get_template_returns_template_data_when_specified_template_exist(
@@ -104,6 +107,7 @@ def test_get_template_returns_404_when_specified_template_doesnt_exist(
 
     # Then
     assert response.status_code == HTTPStatus.NOT_FOUND
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore
 
 
 def test_get_template_returns_400_when_template_id_has_invalid_format(
@@ -124,6 +128,7 @@ def test_get_template_returns_400_when_template_id_has_invalid_format(
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore
 
 
 def test_create_template_creates_template_and_returns_data(
@@ -137,10 +142,11 @@ def test_create_template_creates_template_and_returns_data(
     )
 
     # Then
+    json_response: dict[str, Any] = response.json  # type: ignore
     assert response.status_code == HTTPStatus.CREATED
-    assert "id" in response.json  # type: ignore
-    assert "value" in response.json  # type: ignore
-    assert response.json["value"] is None  # type: ignore
+    assert "id" in json_response
+    assert "value" in json_response
+    assert json_response["value"] is None
 
 
 def test_set_template_value_sets_template_value_and_returns_no_data_when_specified_template_exists(  # noqa: E501
@@ -200,6 +206,7 @@ def test_set_template_value_returns_404_when_specified_template_doesnt_exists(
 
     # Then
     assert response.status_code == HTTPStatus.NOT_FOUND
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore
 
 
 def test_set_template_value_returns_400_when_template_id_has_invalid_format(
@@ -222,6 +229,7 @@ def test_set_template_value_returns_400_when_template_id_has_invalid_format(
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore
 
 
 def test_set_template_value_returns_400_when_missing_parameters(
@@ -238,7 +246,9 @@ def test_set_template_value_returns_400_when_missing_parameters(
             url_type="set_template_value",
             path_parameters={"template_id": template_id},
         ),
+        json={},
     )
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore

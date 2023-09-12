@@ -34,9 +34,10 @@ class TemplateRepository(ABC):
         filters: TemplatesFilters,
         ordering: list[Ordering],
         pagination: Optional[Pagination] = None,
-    ) -> list[Template]:
+    ) -> tuple[list[Template], int]:
         """
-        :return: List of all templates.
+        :return: List of all templates and
+                 total count of templates matching given filters.
         """
 
         pass

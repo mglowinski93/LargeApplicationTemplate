@@ -51,20 +51,28 @@ class FakeTemplateRepository(TemplateRepository):
         filters: TemplatesFilters,
     ) -> set[TemplateEntity]:
         if filters.value is not None:
-            templates = [t for t in templates if t.value == filters.value]
+            templates = {t for t in templates if t.value == filters.value}
 
         if filters.query is not None:
-            templates = [
-                t
-                for t in templates
-                if str(t.id).lower().find(filters.query.lower()) != -1
-            ]
+            templates = {
+                template
+                for template in templates
+                if str(template.id).lower().find(filters.query.lower()) != -1
+            }
 
         if filters.timestamp_from is not None:
-            templates = {t for t in templates if t.timestamp >= filters.timestamp_from}
+            templates = {
+                template
+                for template in templates
+                if template.timestamp >= filters.timestamp_from
+            }
 
         if filters.timestamp_to is not None:
-            templates = {t for t in templates if t.timestamp <= filters.timestamp_to}
+            templates = {
+                template
+                for template in templates
+                if template.timestamp <= filters.timestamp_to
+            }
 
         return templates
 
@@ -76,13 +84,13 @@ class FakeTemplateRepository(TemplateRepository):
             if order.field == "timestamp":
                 sorted(
                     templates,
-                    key=lambda t: t.timestamp,
+                    key=lambda template: (template.value is None, template.value),
                     reverse=(order.order == OrderingEnum.DESCENDING),
                 )
             elif order.field == "value":
                 sorted(
                     templates,
-                    key=lambda t: t.value,
+                    key=lambda template: (template.value is None, template.value),
                     reverse=(order.order == OrderingEnum.DESCENDING),
                 )
 
@@ -93,8 +101,7 @@ class FakeTemplateRepository(TemplateRepository):
         templates: set[TemplateEntity], pagination: Pagination
     ) -> set[TemplateEntity]:
         start = pagination.offset
-        end = start + pagination.records_per_page
-        return templates[start:end]
+        return set(list(templates)[start : start + pagination.records_per_page])
 
 
 class FakeTemplateUnitOfWork(UnitOfWork):
