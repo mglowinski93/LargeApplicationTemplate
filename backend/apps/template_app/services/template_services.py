@@ -1,4 +1,4 @@
-from .dto import OutputTemplate
+from .dtos import OutputTemplate
 from .mappers import map_template_entity_to_output_dto
 from ..domain import entities, value_objects
 from ..domain.ports.unit_of_work import UnitOfWork

@@ -5,7 +5,6 @@ from flask.testing import FlaskClient
 from ....utils import get_site_url
 from .....factories import fake_template_id, fake_template_value
 
-
 TEMPLATES_ROUTES = {
     "retrieve_template": "api.template-api.get_template_endpoint",
     "list_templates": "api.template-api.list_templates_endpoint",
@@ -98,6 +97,26 @@ def test_get_template_returns_404_when_specified_template_doesnt_exist(
     assert response.status_code == HTTPStatus.NOT_FOUND
 
 
+def test_get_template_returns_400_when_template_id_has_invalid_format(
+    client: FlaskClient,
+):
+    # Given
+    template_id = "invalid-format-template-id"
+
+    # When
+    response = client.get(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATES_ROUTES,
+            url_type="retrieve_template",
+            path_parameters={"template_id": template_id},
+        ),
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.NOT_FOUND
+
+
 def test_create_template_creates_template_and_returns_data(
     client: FlaskClient,
 ):
@@ -172,3 +191,45 @@ def test_set_template_value_returns_404_when_specified_template_doesnt_exists(
 
     # Then
     assert response.status_code == HTTPStatus.NOT_FOUND
+
+
+def test_set_template_value_returns_400_when_template_id_has_invalid_format(
+    client: FlaskClient,
+):
+    # Given
+    template_id = "invalid-format-template-id"
+    template_value = fake_template_value().value
+
+    # When
+    response = client.patch(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATES_ROUTES,
+            url_type="set_template_value",
+            path_parameters={"template_id": template_id},
+        ),
+        json={"value": template_value},
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+
+
+def test_set_template_value_returns_400_when_missing_parameters(
+    client: FlaskClient,
+):
+    # Given
+    template_id = fake_template_id()
+
+    # When
+    response = client.patch(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATES_ROUTES,
+            url_type="set_template_value",
+            path_parameters={"template_id": template_id},
+        ),
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.BAD_REQUEST

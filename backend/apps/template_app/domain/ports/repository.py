@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import Optional
 
+from .dtos import TemplatesFilters
 from ..entities import Template
 from ..value_objects import TEMPLATE_ID_TYPE
+from ....common.dtos import Ordering
+from ....common.pagination import Pagination
 
 
 class TemplateRepository(ABC):
@@ -25,7 +29,12 @@ class TemplateRepository(ABC):
         pass
 
     @abstractmethod
-    def list(self) -> list[Template]:
+    def list(
+        self,
+        filters: TemplatesFilters,
+        ordering: list[Ordering],
+        pagination: Optional[Pagination] = None,
+    ) -> list[Template]:
         """
         :return: List of all templates.
         """

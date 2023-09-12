@@ -36,6 +36,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     app = Flask(__name__)
     app.config.from_object(configuration)
     configuration.init_app(app)
+    app.url_map.strict_slashes = False
 
     initialize_database(configuration.database_url)
     start_template_mappers()
