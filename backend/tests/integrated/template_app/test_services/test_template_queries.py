@@ -47,7 +47,7 @@ def test_list_templates_lists_all_templates(
     unit_of_work = fake_template_unit_of_work_factory(initial_templates=templates)
 
     # When
-    results = list_templates(
+    results, total_number_of_results = list_templates(
         unit_of_work=unit_of_work,
     )
 
@@ -65,10 +65,11 @@ def test_list_templates_returns_empty_list_when_no_templates_exist(
     unit_of_work = fake_template_unit_of_work_factory(initial_templates=[])
 
     # When
-    results = list_templates(
+    results, total_number_of_results = list_templates(
         unit_of_work=unit_of_work,
     )
 
     # Then
     assert isinstance(results, list)
     assert not results
+    assert total_number_of_results == 0

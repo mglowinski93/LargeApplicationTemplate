@@ -6,6 +6,7 @@ from apps.template_app.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateRepository,
 )
 from apps.template_app.domain.entities import Template as TemplateEntity
+from apps.template_app.domain.ports.dtos import TemplatesFilters
 
 
 def test_repository_can_save_template(
@@ -42,12 +43,20 @@ def test_repository_can_list_templates(
     db_session: Session, template_sqlalchemy_factory: Callable
 ):
     # Given
-    template_entity = template_sqlalchemy_factory()
+    number_of_templates = 3
+    templates_entities = [
+        template_sqlalchemy_factory() for _ in range(number_of_templates)
+    ]
     repository = SqlAlchemyTemplateRepository(db_session)
 
     # When
-    result = repository.list()[0]
+    results, total_number_of_results = repository.list(
+        filters=TemplatesFilters(),
+        ordering=[],
+        pagination=None,
+    )
 
     # Then
-    assert isinstance(result, TemplateEntity)
-    assert result == template_entity
+    assert isinstance(results, list)
+    assert results == templates_entities
+    assert total_number_of_results == number_of_templates

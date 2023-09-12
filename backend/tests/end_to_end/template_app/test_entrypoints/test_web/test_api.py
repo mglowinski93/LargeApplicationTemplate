@@ -2,8 +2,10 @@ from http import HTTPStatus
 
 from flask.testing import FlaskClient
 
+from apps.common import consts
 from ....utils import get_site_url
 from .....factories import fake_template_id, fake_template_value
+
 
 TEMPLATES_ROUTES = {
     "retrieve_template": "api.template-api.get_template_endpoint",
@@ -25,19 +27,25 @@ def test_list_templates_returns_empty_list_when_no_template_exists(
 
     # Then
     assert response.status_code == HTTPStatus.OK
-    assert isinstance(response.json, list)
-    assert not response.json
+    results = response.json[consts.PAGINATION_RESULTS_NAME]
+    assert isinstance(results, list)
+    assert not results
+    assert response.json[consts.PAGINATION_TOTAL_COUNT_NAME] == 0
 
 
 def test_list_templates_returns_templates_data_when_templates_exist(
     client: FlaskClient,
 ):
     # Given
-    client.post(
-        get_site_url(
-            app=client.application, routes=TEMPLATES_ROUTES, url_type="create_template"
+    number_of_templates = 3
+    for _ in range(number_of_templates):
+        client.post(
+            get_site_url(
+                app=client.application,
+                routes=TEMPLATES_ROUTES,
+                url_type="create_template",
+            )
         )
-    )
 
     # When
     response = client.get(
@@ -48,8 +56,9 @@ def test_list_templates_returns_templates_data_when_templates_exist(
 
     # Then
     assert response.status_code == HTTPStatus.OK
-    assert isinstance(response.json, list)
-    assert response.json
+    results = response.json[consts.PAGINATION_RESULTS_NAME]
+    assert isinstance(results, list)
+    assert response.json[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
 
 
 def test_get_template_returns_template_data_when_specified_template_exist(
@@ -114,7 +123,7 @@ def test_get_template_returns_400_when_template_id_has_invalid_format(
     )
 
     # Then
-    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert response.status_code == HTTPStatus.BAD_REQUEST
 
 
 def test_create_template_creates_template_and_returns_data(

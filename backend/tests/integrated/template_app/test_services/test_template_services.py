@@ -69,7 +69,7 @@ def test_set_template_value_raises_exception_when_requested_template_doesnt_exis
             value=value,
         )
 
-    assert not unit_of_work.templates.list()
+    assert not unit_of_work.templates._templates
 
 
 def test_create_template_creates_template_with_none_value(
