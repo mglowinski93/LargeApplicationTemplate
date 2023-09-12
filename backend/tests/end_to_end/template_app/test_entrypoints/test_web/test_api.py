@@ -101,8 +101,7 @@ def test_list_templates_pagination(client: FlaskClient):
     assert consts.PAGINATION_PREVIOUS_LINK_RELATION in json_response
 
 
-def test_list_templates_ordering(client: FlaskClient):
-    # Given
+def test_list_templates_ordering_timestamp(client: FlaskClient):
     with freeze_time(datetime.now() - timedelta(days=1)):
         client.post(
             get_site_url(
@@ -144,7 +143,80 @@ def test_list_templates_ordering(client: FlaskClient):
     )
 
 
-def test_list_templates_filtering(client: FlaskClient):
+def test_list_templates_ordering_value(client: FlaskClient):
+    templates = []
+    for template_value in ("a", "b"):
+        template_id = client.post(  # type: ignore
+            get_site_url(
+                app=client.application,
+                routes=TEMPLATES_ROUTES,
+                url_type="create-template",
+            )
+        ).json["id"]
+        client.patch(
+            get_site_url(
+                app=client.application,
+                routes=TEMPLATES_ROUTES,
+                url_type="set-template-value",
+                path_parameters={"template_id": template_id},
+            ),
+            json={"value": template_value},
+        )
+        templates.append(template_id)
+
+    response = client.get(
+        get_site_url(
+            app=client.application, routes=TEMPLATES_ROUTES, url_type="list-templates"
+        ),
+        query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-value"},
+    )
+    assert response.status_code == HTTPStatus.OK
+    results = response.json[consts.PAGINATION_RESULTS_NAME]  # type: ignore
+    assert results[0]["id"] == templates[1]
+    assert results[1]["id"] == templates[0]
+
+    response = client.get(
+        get_site_url(
+            app=client.application, routes=TEMPLATES_ROUTES, url_type="list-templates"
+        ),
+        query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "value"},
+    )
+    assert response.status_code == HTTPStatus.OK
+    results = response.json[consts.PAGINATION_RESULTS_NAME]  # type: ignore
+    assert results[0]["id"] == templates[0]
+    assert results[1]["id"] == templates[1]
+
+
+def test_list_templates_filtering_by_query(client: FlaskClient):
+    # Given
+    client.post(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATES_ROUTES,
+            url_type="create-template",
+        )
+    )
+    template_id = client.post(  # type: ignore
+        get_site_url(
+            app=client.application, routes=TEMPLATES_ROUTES, url_type="create-template"
+        )
+    ).json["id"]
+
+    # When
+    response = client.get(
+        get_site_url(
+            app=client.application, routes=TEMPLATES_ROUTES, url_type="list-templates"
+        ),
+        query_string={"query": template_id},
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.OK
+    results = response.json[consts.PAGINATION_RESULTS_NAME]  # type: ignore
+    assert all(item["id"] == template_id for item in results)
+
+
+def test_list_templates_filtering_by_value(client: FlaskClient):
     # Given
     client.post(
         get_site_url(

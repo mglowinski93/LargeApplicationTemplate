@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, or_
+from sqlalchemy import String, asc, desc, or_
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session, Query
 from sqlalchemy_utils.functions import cast_if
@@ -119,7 +119,7 @@ def _asc_order(query, field: str):
         return query.order_by(TemplateEntity.timestamp.asc())  # type: ignore
 
     if field == "value":
-        return query.order_by(TemplateEntity.value.asc())  # type: ignore
+        return query.order_by(asc(TemplateEntity._value))  # type: ignore
 
 
 def _desc_order(query: Query, field: str):
@@ -127,7 +127,7 @@ def _desc_order(query: Query, field: str):
         return query.order_by(TemplateEntity.timestamp.desc())  # type: ignore
 
     if field == "value":
-        return query.order_by(TemplateEntity.value.desc())  # type: ignore
+        return query.order_by(desc(TemplateEntity._value))  # type: ignore
 
 
 def _paginate(query: Query, pagination: Pagination):
