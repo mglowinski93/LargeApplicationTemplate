@@ -30,7 +30,7 @@ def test_orm_creates_default_value_for_template_model_value_data_field(
     assert isinstance(result.value_data, dict)
 
 
-def test_orm_doesnt_have_default_value_for_template_model(db_session: Session):
+def test_orm_doesnt_have_default_value_for_template_model_id(db_session: Session):
     with pytest.raises(IntegrityError):
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
