@@ -33,6 +33,7 @@ def test_orm_creates_default_value_for_template_model_value_data_field(
 def test_orm_doesnt_have_default_value_for_template_model_id(db_session: Session):
     with pytest.raises(IntegrityError):
         with warnings.catch_warnings():
+            # Temporary ignore the warning about missing value for the primary key.
             warnings.simplefilter("ignore")
             db_session.add(
                 TemplateDb(

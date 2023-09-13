@@ -50,6 +50,8 @@ def raw_db_session(  # <- This is the fixture to be used in tests.
         yield session
 
         session.close()
+        # Some tests are already rolling back the transaction,
+        # so there is a need to check if the transaction is active before rolling back.
         if transaction.is_active:
             transaction.rollback()
 
