@@ -1,0 +1,88 @@
+
+Endpoint to get templates.
+---
+parameters:
+- name: query
+  in: query
+  description: "String to be searched in templates IDs."
+  required: false
+  type: string
+  format: uuid
+- name: timestamp_from
+  in: query
+  description: "Timestamp from which templates are to be filtered."
+  required: false
+  type: string
+  format: date
+- name: timestamp_to
+  in: query
+  description: "Timestamp to which templates are to be filtered."
+  required: false
+  type: string
+  format: date
+- name: ordering
+  in: query
+  description: Fields by which the results will be sorted.
+               Multiple fields can be specified seperated by coma.
+               Field without "-" indicates ascending order.
+               Field with "-" indicates descending order.
+  required: false
+  type: string
+  enum: [ "timestamp", "-timestamp", "value", "-value"]
+  default: "-timestamp"
+- name: limit
+  in: query
+  description: Results limit per page.
+  required: false
+  type: int
+  default: 10
+- name: offset
+  in: query
+  description: "Number of records to be skipped."
+  required: false
+  type: int
+  default: 0
+definitions:
+  FinalResult:
+    type: object
+    properties:
+      count:
+        $ref: '#/definitions/Count'
+      results:
+        $ref: '#/definitions/GetTemplates'
+      next:
+        $ref: '#/definitions/NextPaginationLink'
+      previous:
+        $ref: '#/definitions/PreviousPaginationLink'
+  Count:
+    type: integer
+    example: 2
+  NextPaginationLink:
+    type: string
+    example: "http://0.0.0.0:8000/api/templates?limit=1&offset=1"
+  PreviousPaginationLink:
+    type: string
+    example: Null
+  GetTemplates:
+    type: array
+    items:
+      $ref: '#/definitions/SubGetTemplate'
+  SubGetTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "bf4803fc-16f2-4ddc-a53d-df0ec6deef39"
+      value:
+        type: string
+        example: "Test value"
+      timestamp:
+        type: string
+        format: date
+        example: "Wed, 23 Feb 2023 21:27:14 GMT"
+responses:
+  200:
+    description: "Templates data."
+    schema:
+      $ref: '#/definitions/FinalResult'

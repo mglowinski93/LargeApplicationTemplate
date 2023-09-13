@@ -1,0 +1,1 @@
+VALUE_NAME_IN_DATABASE = "value"

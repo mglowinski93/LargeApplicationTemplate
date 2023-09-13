@@ -1,0 +1,15 @@
+
+Endpoint to delete template specified by ID.
+---
+parameters:
+  - name: template_id
+    in: path
+    type: string
+    format: uuid
+    required: true
+    description: "Valid template ID"
+responses:
+  204:
+    description: "Successfully deleted template."
+  404:
+    description: "No stored template with specified ID found."

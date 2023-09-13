@@ -1,0 +1,32 @@
+
+Endpoint to get template data specified by ID.
+---
+parameters:
+  - name: template_id
+    in: path
+    type: string
+    format: uuid
+    required: true
+    description: "Valid template ID"
+definitions:
+  GetTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "bf4803fc-16f2-4ddc-a53d-df0ec6deef39"
+      value:
+        type: string
+        example: "Template value"
+      timestamp:
+        type: string
+        format: date
+        example: "Wed, 23 Feb 2023 21:27:14 GMT"
+responses:
+  200:
+    description: "Template data."
+    schema:
+      $ref: '#/definitions/GetTemplate'
+  404:
+    description: "No stored template with specified ID found."

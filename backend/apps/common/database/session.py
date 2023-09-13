@@ -1,45 +1,31 @@
-import os
-from contextlib import contextmanager
+from typing import Optional
 
 from sqlalchemy import (
     create_engine,
-    MetaData,
 )
-from sqlalchemy.orm import sessionmaker, registry
+from sqlalchemy.orm import sessionmaker, Session
 
 
-DATABASE_URL = (
-    f"postgresql://"
-    f"{os.environ['POSTGRES_DB_USER']}:{os.environ['POSTGRES_DB_PASSWORD']}"
-    f"@"
-    f"{os.environ['POSTGRES_DB_HOST']}:{os.environ['POSTGRES_DB_PORT']}"
-    f"/{os.environ['POSTGRES_DB_NAME']}"
-)
-
-engine = create_engine(
-    url=DATABASE_URL,
-    pool_pre_ping=True,
-    pool_size=20,
-    max_overflow=100,
-)
-metadata = MetaData()
-mapper_registry = registry()
+session: Optional[Session] = None
 
 
-def get_session():
-    return sessionmaker(autocommit=False, autoflush=False, bind=engine)()
+def initialize_database(database_url: str):
+    global session
+
+    session = sessionmaker(
+        autocommit=False,
+        autoflush=False,
+        bind=create_engine(
+            url=database_url,
+            pool_pre_ping=True,
+            pool_size=20,
+            max_overflow=100,
+        ),
+    )()
 
 
-@contextmanager
-def session_scope():
-    session = get_session()
+def get_session() -> Session:
+    if session is None:
+        raise RuntimeError("Database session not initialized.")
 
-    try:
-        yield session
-        session.commit()
-        session.flush()
-    except Exception as err:
-        session.rollback()
-        raise err from err
-    finally:
-        session.close()
+    return session

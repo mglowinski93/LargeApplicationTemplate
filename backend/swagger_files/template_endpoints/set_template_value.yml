@@ -1,0 +1,24 @@
+
+Endpoint to set template value.
+---
+consumes:
+  - application/json
+parameters:
+  - name: template_id
+    in: path
+    type: string
+    format: uuid
+    required: true
+    description: "Valid template ID"
+  - name: value
+    in: body
+    type: string
+    required: true
+    description: "Template value"
+responses:
+  200:
+    description: "Template value set."
+  404:
+    description: "No stored template with specified ID found."
+  422:
+    description: "Invalid input data."

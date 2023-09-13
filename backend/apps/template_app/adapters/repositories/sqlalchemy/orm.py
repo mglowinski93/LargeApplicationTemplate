@@ -1,27 +1,16 @@
-from sqlalchemy import Table, Column, DateTime, String, UUID
-from sqlalchemy.orm import composite
+from datetime import datetime
+from uuid import UUID
 
-from apps.common.database import metadata, mapper_registry
-from ....domain.entities import Template
-from ....domain.value_objects import TemplateValue
+from sqlalchemy import DateTime, JSON
+from sqlalchemy.orm import Mapped, mapped_column
 
-
-templates = Table(
-    "templates",
-    metadata,
-    Column("id", UUID, primary_key=True),
-    Column("value_data", String(255)),
-    Column("timestamp", DateTime),
-)
+from .....common.database import Base
 
 
-def start_mappers():
-    # Details can be found here
-    # https://docs.sqlalchemy.org/en/20/orm/mapping_styles.html#imperative-mapping
-    # and
-    # https://docs.sqlalchemy.org/en/20/orm/composites.html#sqlalchemy.orm.composite.
-    mapper_registry.map_imperatively(
-        class_=Template,
-        local_table=templates,
-        properties={"_value": composite(TemplateValue, templates.c.value_data)},
-    )
+# an example mapping using the base
+class Template(Base):
+    __tablename__ = "templates"
+
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    value_data: Mapped[dict] = mapped_column(JSON, default=dict, nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(DateTime)

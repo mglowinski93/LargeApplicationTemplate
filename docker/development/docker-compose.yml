@@ -14,6 +14,8 @@ services:
     container_name: large-application-template-db-development
     networks:
       large-application-template:
+    ports:
+        - "5432:5432"
     volumes:
       - "large-application-template-db-volume:/var/lib/postgresql/data"
     environment:
@@ -43,7 +45,7 @@ services:
         - "8000:8000"
     volumes:
       - "../../backend/:/app/"
-      - "./backend/run-development.sh:/tools/run-development.sh"
+      - "./backend/scripts/:/scripts/"
       - "large-application-template-backend-cache:/root/.cache/pip"
     environment:
       POSTGRES_DB_HOST: "large-application-template-db"
@@ -53,3 +55,8 @@ services:
       POSTGRES_DB_PASSWORD: "large_application_template_password"
     env_file:
       - ".env"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost:8000/health-check || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5

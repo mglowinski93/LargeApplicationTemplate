@@ -1,0 +1,25 @@
+
+Endpoint to create template.
+---
+consumes:
+  - multipart/form-data
+definitions:
+  CreateTemplate:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uuid
+        example: "bf4803fc-16f2-4ddc-a53d-df0ec6deef39"
+      value:
+        type: string
+        example: "Template value"
+      timestamp:
+        type: string
+        format: date
+        example: "Wed, 23 Feb 2022 21:27:14 GMT"
+responses:
+  201:
+    description: "Template created."
+    schema:
+      $ref: '#/definitions/CreateTemplate'
