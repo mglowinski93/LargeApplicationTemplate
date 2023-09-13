@@ -19,10 +19,20 @@ class TemplateRepository(ABC):
         pass
 
     @abstractmethod
+    def delete(self, template_id: TEMPLATE_ID_TYPE):
+        """
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
+        :param template_id: ID of template to delete.
+        :return:
+        """
+
+        pass
+
+    @abstractmethod
     def get(self, template_id: TEMPLATE_ID_TYPE) -> Template:
         """
         :raises TemplateDoesNotExist: Template with given id doesn't exist.
-        :param template_id: ID of template to get.
+        :param template_id: ID of template to retrieve.
         :return: Template with given id.
         """
 

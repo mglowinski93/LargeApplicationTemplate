@@ -16,6 +16,7 @@ TEMPLATE_ROUTES = {
     "retrieve-template": "api.template-api.get_template_endpoint",
     "list-templates": "api.template-api.list_templates_endpoint",
     "create-template": "api.template-api.create_template_endpoint",
+    "delete-template": "api.template-api.delete_template_endpoint",
     "set-template-value": "api.template-api.set_template_value_endpoint",
 }
 
@@ -341,6 +342,52 @@ def test_create_template_endpoint_creates_template_and_returns_data(
     assert "id" in json_response
     assert "value" in json_response
     assert json_response["value"] is None
+
+
+def test_delete_template_endpoint_deletes_template(
+    client: FlaskClient,
+):
+    # Given
+    template_id = client.post(  # type: ignore
+        get_site_url(
+            app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
+        )
+    ).json["id"]
+
+    # When
+    response = client.delete(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATE_ROUTES,
+            url_type="delete-template",
+            path_parameters={"template_id": template_id},
+        )
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.NO_CONTENT
+    assert response.json is None
+
+
+def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exist(
+    client: FlaskClient,
+):
+    # Given
+    template_id = fake_template_id()
+
+    # When
+    response = client.delete(
+        get_site_url(
+            app=client.application,
+            routes=TEMPLATE_ROUTES,
+            url_type="delete-template",
+            path_parameters={"template_id": template_id},
+        )
+    )
+
+    # Then
+    assert response.status_code == HTTPStatus.NOT_FOUND
+    assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json  # type: ignore
 
 
 def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_when_specified_template_exists(  # noqa: E501

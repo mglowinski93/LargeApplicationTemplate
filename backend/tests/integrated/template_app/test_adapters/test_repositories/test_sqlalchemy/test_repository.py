@@ -16,7 +16,7 @@ from apps.template_app.domain.ports.dtos import TemplatesFilters
 from ......factories import fake_template_value
 
 
-def test_repository_can_create_template(
+def test_repository_creates_template(
     db_session: Session, template_entity: TemplateEntity
 ):
     # Given
@@ -31,7 +31,7 @@ def test_repository_can_create_template(
     assert result.id == template_entity.id
 
 
-def test_repository_can_update_template(
+def test_repository_updates_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
@@ -52,6 +52,22 @@ def test_repository_can_update_template(
     assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
 
 
+def test_repository_deletes_template(
+    db_session: Session, persistent_template_entity_factory: Callable
+):
+    # Given
+    template_entity = persistent_template_entity_factory(value=fake_template_value())
+    repository = SqlAlchemyTemplateRepository(db_session)
+
+    # When
+    repository.delete(template_entity.id)
+    db_session.commit()
+
+    # Then
+    result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one_or_none()
+    assert result is None
+
+
 def test_repository_can_retrieve_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
@@ -67,7 +83,7 @@ def test_repository_can_retrieve_template(
     assert result == template_entity
 
 
-def test_repository_can_list_templates(
+def test_repository_lists_templates(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given

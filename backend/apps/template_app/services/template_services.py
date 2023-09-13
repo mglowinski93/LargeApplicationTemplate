@@ -21,6 +21,14 @@ def create_template(
     return output
 
 
+def delete_template(
+    unit_of_work: UnitOfWork,
+    template_id: value_objects.TEMPLATE_ID_TYPE,
+):
+    with unit_of_work:
+        unit_of_work.templates.delete(template_id)
+
+
 def set_template_value(
     unit_of_work: UnitOfWork,
     template_id: value_objects.TEMPLATE_ID_TYPE,

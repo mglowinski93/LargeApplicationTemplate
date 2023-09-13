@@ -37,6 +37,16 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
             if key != "_sa_instance_state":
                 setattr(template_instance, key, value)
 
+    def delete(self, template_id: TEMPLATE_ID_TYPE):
+        try:
+            self.session.delete(
+                self.session.query(TemplateDb).filter_by(id=template_id).one()
+            )
+        except NoResultFound as err:
+            raise exceptions.TemplateDoesNotExist(
+                f"Template with id '{template_id}' doesn't exist."
+            ) from err
+
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
         try:
             return _map_template_db_to_template_entity(

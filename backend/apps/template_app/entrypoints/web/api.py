@@ -43,6 +43,7 @@ def get_template_endpoint(template_id: str):
         )
         logger.debug("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
+        logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
             jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
             HTTPStatus.NOT_FOUND,
@@ -147,6 +148,41 @@ def create_template_endpoint():
     logger.info("Template '%s' created.", template.id)
 
     return make_response(jsonify(template.serialize()), HTTPStatus.CREATED)
+
+
+@api_blueprint.route("/<template_id>", methods=["DELETE"])
+def delete_template_endpoint(template_id: str):
+    """
+    file: ../../../../swagger_files/template_endpoints/delete_template.yml
+    """
+
+    logger.info("Deleting template '%s'.", template_id)
+
+    try:
+        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
+    except ValueError:
+        logger.warning("Invalid template ID format: '%s'.", template_id)
+        return make_response(
+            jsonify(
+                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
+            ),
+            HTTPStatus.BAD_REQUEST,
+        )
+
+    try:
+        services.delete_template(
+            unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+            template_id=template_id,  # type: ignore
+        )
+        logger.debug("Template '%s' found.", template_id)
+    except ports_exceptions.TemplateDoesNotExist:
+        logger.warning("Template '%s' does not exist.", template_id)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
+            HTTPStatus.NOT_FOUND,
+        )
+
+    return make_response("", HTTPStatus.NO_CONTENT)
 
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])

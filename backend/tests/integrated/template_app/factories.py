@@ -24,6 +24,9 @@ class FakeTemplateRepository(TemplateRepository):
             self._templates.remove(template)
         self._templates.add(template)
 
+    def delete(self, template_id: TEMPLATE_ID_TYPE):
+        self._templates.remove(self.get(template_id=template_id))
+
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
         try:
             return next(
