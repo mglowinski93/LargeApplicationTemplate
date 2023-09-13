@@ -116,10 +116,10 @@ def _filter_timestamp(
     query: Query, timestamp_from: Optional[datetime], timestamp_to: Optional[datetime]
 ):
     if timestamp_from is not None:
-        query = query.where(TemplateDb.timestamp >= timestamp_from)  # type: ignore
+        query = query.where(TemplateDb.timestamp >= timestamp_from)
 
     if timestamp_to is not None:
-        query = query.where(TemplateDb.timestamp <= timestamp_to)  # type: ignore
+        query = query.where(TemplateDb.timestamp <= timestamp_to)
 
     return query
 
