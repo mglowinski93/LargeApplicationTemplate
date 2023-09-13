@@ -169,7 +169,7 @@ def set_template_value_endpoint(template_id: str):
         )
 
     form = templates_forms.SetTemplateValueForm(
-        formdata=MultiDict(request.get_json(force=True)),
+        formdata=MultiDict(request.get_json(force=True, silent=True)),
         meta={"csrf": False},
     )
     if not form.validate():
