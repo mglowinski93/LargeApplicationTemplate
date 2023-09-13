@@ -1,3 +1,5 @@
-from .session import get_session, initialize_database, metadata, mapper_registry
+from .orm import Base
+from .session import get_session, initialize_database
 
-__all__ = ["get_session", "initialize_database", "metadata", "mapper_registry"]
+
+__all__ = ["Base", "get_session", "initialize_database"]

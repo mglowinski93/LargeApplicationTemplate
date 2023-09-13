@@ -2,16 +2,19 @@ from typing import Callable
 
 import pytest
 
+from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+    Template as TemplateDb,
+)
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.services.unit_of_work import SqlAlchemyTemplateUnitOfWork
 
 
 def test_unit_of_work_can_retrieve_template(
     db_session_factory: Callable,
-    template_sqlalchemy_factory: Callable,
+    persistent_template_entity_factory: Callable,
 ):
     # Given
-    template_entity = template_sqlalchemy_factory()
+    template_entity = persistent_template_entity_factory()
     unit_of_work = SqlAlchemyTemplateUnitOfWork(db_session_factory)
 
     # When
@@ -36,7 +39,7 @@ def test_unit_of_work_can_save_template(
         unit_of_work.templates.save(template_entity)
 
     # Then
-    assert db_session_factory().get(TemplateEntity, template_id)
+    assert db_session_factory().get(TemplateDb, template_id)
 
 
 def test_unit_of_work_rollbacks_when_exception_occur(
@@ -53,4 +56,4 @@ def test_unit_of_work_rollbacks_when_exception_occur(
             raise Exception
 
     # Then
-    assert db_session_factory().query(TemplateEntity).count() == 0
+    assert db_session_factory().query(TemplateDb).count() == 0

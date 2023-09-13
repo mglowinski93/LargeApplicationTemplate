@@ -8,10 +8,6 @@ from flask import Blueprint
 from flasgger import Swagger
 from flask import Flask
 
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (
-    clear_mappers as clear_template_mappers,
-    start_mappers as start_template_mappers,
-)
 from apps.common.database import initialize_database
 from config import config, swagger_template, swagger_config, Config
 
@@ -23,7 +19,11 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
 
 
 def close_application_cleanup():
-    clear_template_mappers()
+    """
+    Add here action to be performed before application shutdown.
+    """
+
+    pass
 
 
 def create_app(environment_name: Optional[str] = None) -> Flask:
@@ -39,7 +39,6 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     app.url_map.strict_slashes = False
 
     initialize_database(configuration.database_url)
-    start_template_mappers()
 
     logging.basicConfig(
         level=logging.getLevelName(app.config["LOG_LEVEL"]),

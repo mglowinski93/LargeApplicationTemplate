@@ -3,7 +3,7 @@ from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from apps.common.database.session import metadata
+from apps.common.database import Base
 from apps.template_app.domain.entities import Template as TemplateEntity
 from config import config
 from .factories import TemplateEntityFactory
@@ -32,11 +32,11 @@ def prepared_database(db_engine):
         dbname=configuration.DATABASE_NAME,
         version=0,
     ):
-        metadata.create_all(db_engine)  # Create the schema in the test database.
+        Base.metadata.create_all(db_engine)  # Create the schema in the test database.
 
         yield db_engine
 
-        metadata.drop_all(db_engine)  # Drop the schema from the test database.
+        Base.metadata.drop_all(db_engine)  # Drop the schema from the test database.
 
 
 @pytest.fixture
@@ -50,7 +50,8 @@ def raw_db_session(  # <- This is the fixture to be used in tests.
         yield session
 
         session.close()
-        transaction.rollback()
+        if transaction.is_active:
+            transaction.rollback()
 
 
 @pytest.fixture

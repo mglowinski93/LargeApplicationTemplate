@@ -2,9 +2,8 @@ from typing import Optional
 
 from sqlalchemy import (
     create_engine,
-    MetaData,
 )
-from sqlalchemy.orm import sessionmaker, registry, Session
+from sqlalchemy.orm import sessionmaker, Session
 
 
 session: Optional[Session] = None
@@ -30,7 +29,3 @@ def get_session() -> Session:
         raise RuntimeError("Database session not initialized.")
 
     return session
-
-
-metadata = MetaData()
-mapper_registry = registry()

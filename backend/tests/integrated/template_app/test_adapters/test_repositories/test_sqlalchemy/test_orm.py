@@ -1,41 +1,42 @@
-from typing import Callable
+import warnings
 
+import pytest
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.value_objects import TemplateValue
-from ......factories import fake_template_value
+from apps.common.time import get_current_utc_timestamp
+from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+    Template as TemplateDb,
+)
+from ......factories import fake_template_id
 
 
-def test_template_mapper_can_load_templates(
-    db_session: Session, template_sqlalchemy_factory: Callable
+def test_orm_creates_default_value_for_template_model_value_data_field(
+    db_session: Session,
 ):
     # Given
-    template_entity = template_sqlalchemy_factory(value=fake_template_value())
+    template_instance = TemplateDb(
+        id=fake_template_id(),
+        timestamp=get_current_utc_timestamp(),
+    )
+    db_session.add(template_instance)
+    db_session.flush()
 
     # When
-    result = db_session.query(TemplateEntity).filter_by(id=template_entity.id).one()
+    result = db_session.query(TemplateDb).filter_by(id=template_instance.id).one()
 
     # Then
-    assert isinstance(result, TemplateEntity)
-    assert isinstance(result.value, TemplateValue)
-    assert result == template_entity
+    assert isinstance(result, TemplateDb)
+    assert isinstance(result.value_data, dict)
 
 
-def test_template_mapper_can_save_templates(
-    db_session: Session, template_entity: TemplateEntity
-):
-    # Given
-    template_entity.set_value(value=fake_template_value())
-
-    # When
-    db_session.add(template_entity)
-    db_session.commit()
-
-    # Then
-    rows = db_session.query(TemplateEntity).all()
-    assert len(rows) == 1
-    record = rows[0]
-    assert isinstance(record, TemplateEntity)
-    assert isinstance(record.value, TemplateValue)
-    assert record == template_entity
+def test_orm_doesnt_have_default_value_for_template_model(db_session: Session):
+    with pytest.raises(IntegrityError):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            db_session.add(
+                TemplateDb(
+                    timestamp=get_current_utc_timestamp(),
+                )
+            )
+            db_session.commit()

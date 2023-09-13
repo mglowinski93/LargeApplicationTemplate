@@ -2,14 +2,21 @@ from typing import Callable
 
 from sqlalchemy.orm import Session
 
+from apps.template_app.adapters.repositories.sqlalchemy.consts import (
+    VALUE_NAME_IN_DATABASE,
+)
+from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+    Template as TemplateDb,
+)
 from apps.template_app.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateRepository,
 )
 from apps.template_app.domain.entities import Template as TemplateEntity
 from apps.template_app.domain.ports.dtos import TemplatesFilters
+from ......factories import fake_template_value
 
 
-def test_repository_can_save_template(
+def test_repository_can_create_template(
     db_session: Session, template_entity: TemplateEntity
 ):
     # Given
@@ -20,15 +27,36 @@ def test_repository_can_save_template(
     db_session.commit()
 
     # Then
-    result = db_session.query(TemplateEntity).filter_by(id=template_entity.id).one()
+    result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
     assert result.id == template_entity.id
 
 
-def test_repository_can_retrieve_template(
-    db_session: Session, template_sqlalchemy_factory: Callable
+def test_repository_can_update_template(
+    db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
-    template_entity = template_sqlalchemy_factory()
+    template_entity = persistent_template_entity_factory(value=fake_template_value())
+    repository = SqlAlchemyTemplateRepository(db_session)
+    new_template_value = fake_template_value()
+
+    # When
+    template_entity.set_value(value=new_template_value)
+    repository.save(template_entity)
+    db_session.commit()
+
+    # Then
+    result = (
+        db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
+    )  # Exactly one result must be present in a database. Otherwise, error is raised.
+    db_session.refresh(result)
+    assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
+
+
+def test_repository_can_retrieve_template(
+    db_session: Session, persistent_template_entity_factory: Callable
+):
+    # Given
+    template_entity = persistent_template_entity_factory()
     repository = SqlAlchemyTemplateRepository(db_session)
 
     # When
@@ -40,12 +68,12 @@ def test_repository_can_retrieve_template(
 
 
 def test_repository_can_list_templates(
-    db_session: Session, template_sqlalchemy_factory: Callable
+    db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
     number_of_templates = 3
-    templates_entities = [
-        template_sqlalchemy_factory() for _ in range(number_of_templates)
+    template_entities = [
+        persistent_template_entity_factory() for _ in range(number_of_templates)
     ]
     repository = SqlAlchemyTemplateRepository(db_session)
 
@@ -58,5 +86,6 @@ def test_repository_can_list_templates(
 
     # Then
     assert isinstance(results, list)
-    assert results == templates_entities
+    assert all(isinstance(result, TemplateEntity) for result in results)
+    assert set(results) == set(template_entities)
     assert total_number_of_results == number_of_templates

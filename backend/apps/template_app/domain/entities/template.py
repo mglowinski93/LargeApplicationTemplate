@@ -1,6 +1,5 @@
 from __future__ import annotations
 from datetime import datetime
-from typing import Optional
 from uuid import uuid4
 
 from ..exceptions import InvalidTemplateValue
@@ -27,11 +26,11 @@ class Template:
 
     def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime):
         self.id = id
-        self._value: Optional[TemplateValue] = None
+        self._value: TemplateValue = TemplateValue(value=None)
         self.timestamp = timestamp
 
     @property
-    def value(self) -> Optional[TemplateValue]:
+    def value(self) -> TemplateValue:
         return self._value
 
     @staticmethod

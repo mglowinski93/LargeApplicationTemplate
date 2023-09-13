@@ -19,6 +19,9 @@ class FakeTemplateRepository(TemplateRepository):
         self._templates = set(templates)
 
     def save(self, template: TemplateEntity):
+        # Template entities can be compared, due ot that hash method is implemented.
+        if template in self._templates:
+            self._templates.remove(template)
         self._templates.add(template)
 
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:

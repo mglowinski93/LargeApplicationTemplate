@@ -85,4 +85,4 @@ def test_create_template_creates_template_with_none_value(
 
     # Then
     template = unit_of_work.templates.get(output_template_dto.id)
-    assert template.value is None
+    assert template.value.value is None

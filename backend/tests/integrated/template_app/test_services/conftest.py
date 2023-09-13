@@ -3,6 +3,7 @@ import pytest
 from ..test_adapters.test_repositories.test_sqlalchemy.conftest import (
     db_session,  # noqa: F401
     template_sqlalchemy_factory,  # noqa: F401
+    persistent_template_entity_factory,  # noqa: F401
 )
 
 

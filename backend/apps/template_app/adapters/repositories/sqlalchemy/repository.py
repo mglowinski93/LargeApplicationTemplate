@@ -1,14 +1,16 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import String, asc, desc, or_
+from sqlalchemy import String, or_, text
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session, Query
 from sqlalchemy_utils.functions import cast_if
 
+from .consts import VALUE_NAME_IN_DATABASE
+from .orm import Template as TemplateDb
 from ....domain.ports import TemplateRepository, exceptions, dtos as ports_dtos
 from ....domain.entities import Template as TemplateEntity
-from ....domain.value_objects import TEMPLATE_ID_TYPE
+from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
 
@@ -22,11 +24,24 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
         self.session = session
 
     def save(self, template: TemplateEntity):
-        self.session.add(template)
+        template_instance = (
+            self.session.query(TemplateDb).filter_by(id=template.id).one_or_none()
+        )
+        if template_instance is None:
+            self.session.add(_map_template_entity_to_template_db(template))
+            return
+
+        for key, value in _map_template_entity_to_template_db(
+            template
+        ).__dict__.items():
+            if key != "_sa_instance_state":
+                setattr(template_instance, key, value)
 
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
         try:
-            return self.session.query(TemplateEntity).filter_by(id=template_id).one()
+            return _map_template_db_to_template_entity(
+                self.session.query(TemplateDb).filter_by(id=template_id).one()
+            )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(
                 f"Template with id '{template_id}' doesn't exist."
@@ -54,7 +69,7 @@ def _get_templates(
     ordering: list[Ordering],
     pagination: Optional[Pagination] = None,
 ) -> tuple:
-    query = session.query(TemplateEntity)
+    query = session.query(TemplateDb)
 
     query = _filter(query=query, filters=filters)
 
@@ -67,22 +82,24 @@ def _get_templates(
         query = _paginate(query=query, pagination=pagination)
 
     return (
-        query.all(),
+        [_map_template_db_to_template_entity(template) for template in query.all()],
         not_paginated_query,
     )
 
 
 def _filter(query: Query, filters: ports_dtos.TemplatesFilters):
     if filters.value is not None:
-        query = query.filter_by(value_data=filters.value)
+        query = query.filter(
+            text("value_data->>'value' = :val").params(val=filters.value)
+        )
 
     if filters.query is not None:
         query = query.filter(
             or_(
-                cast_if(TemplateEntity.id, String).ilike(f"%{filters.query}%"),
+                cast_if(TemplateDb.id, String).ilike(f"%{filters.query}%"),
                 # Add here other fields that should be searchable.
                 # Example:
-                #    TemplateEntity.value_data.ilike(f"%{filters.query}%"),
+                #    TemplateDb.value_data.ilike(f"%{filters.query}%"),
             )
         )
 
@@ -99,10 +116,10 @@ def _filter_timestamp(
     query: Query, timestamp_from: Optional[datetime], timestamp_to: Optional[datetime]
 ):
     if timestamp_from is not None:
-        query = query.where(TemplateEntity.timestamp >= timestamp_from)  # type: ignore
+        query = query.where(TemplateDb.timestamp >= timestamp_from)  # type: ignore
 
     if timestamp_to is not None:
-        query = query.where(TemplateEntity.timestamp <= timestamp_to)  # type: ignore
+        query = query.where(TemplateDb.timestamp <= timestamp_to)  # type: ignore
 
     return query
 
@@ -116,19 +133,54 @@ def _order(query: Query, order: Ordering):
 
 def _asc_order(query, field: str):
     if field == "timestamp":
-        return query.order_by(TemplateEntity.timestamp.asc())  # type: ignore
+        return query.order_by(TemplateDb.timestamp.asc())
 
     if field == "value":
-        return query.order_by(asc(TemplateEntity._value))  # type: ignore
+        return query.order_by(text(f"value_data->>'{VALUE_NAME_IN_DATABASE}' ASC"))
 
 
 def _desc_order(query: Query, field: str):
     if field == "timestamp":
-        return query.order_by(TemplateEntity.timestamp.desc())  # type: ignore
+        return query.order_by(TemplateDb.timestamp.desc())
 
     if field == "value":
-        return query.order_by(desc(TemplateEntity._value))  # type: ignore
+        return query.order_by(text(f"value_data->>'{VALUE_NAME_IN_DATABASE}' DESC"))
 
 
 def _paginate(query: Query, pagination: Pagination):
     return query.limit(pagination.records_per_page).offset(pagination.offset)
+
+
+def _map_template_entity_to_template_db(
+    template_entity: TemplateEntity,
+) -> TemplateDb:
+    return TemplateDb(
+        id=template_entity.id,
+        value_data=_map_template_value_dto_to_dict(template_entity.value),
+        timestamp=template_entity.timestamp,
+    )
+
+
+def _map_template_db_to_template_entity(
+    template_db: TemplateDb,
+) -> TemplateEntity:
+    entity = TemplateEntity(
+        id=template_db.id,
+        timestamp=template_db.timestamp,
+    )
+    # The Assumption is that data in a database are always correct and
+    # can be safely loaded to an entity.
+    entity._value = _map_template_data_dict_to_dto(template_db.value_data)
+    return entity
+
+
+def _map_template_value_dto_to_dict(template_value: TemplateValue) -> dict:
+    return {
+        VALUE_NAME_IN_DATABASE: template_value.value
+        if template_value.value is not None
+        else None,
+    }
+
+
+def _map_template_data_dict_to_dto(template_dict: dict) -> TemplateValue:
+    return TemplateValue(value=template_dict.get(VALUE_NAME_IN_DATABASE))

@@ -6,7 +6,7 @@ from flask import jsonify, make_response, request
 from werkzeug.datastructures import MultiDict
 
 from . import api_blueprint
-from . import forms as templates_forms
+from . import forms as template_forms
 from ... import services
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
@@ -76,7 +76,7 @@ def list_templates_endpoint():
             HTTPStatus.BAD_REQUEST,
         )
 
-    form = templates_forms.TemplatesFiltersForm(
+    form = template_forms.TemplatesFiltersForm(
         data=query_params,
         meta={"csrf": False},
     )
@@ -134,7 +134,7 @@ def list_templates_endpoint():
 
 
 @api_blueprint.route("/", methods=["POST"])
-def create_templates_endpoint():
+def create_template_endpoint():
     """
     file: ../../../../swagger_files/template_endpoints/create_template.yml
     """
@@ -146,7 +146,7 @@ def create_templates_endpoint():
     )
     logger.info("Template '%s' created.", template.id)
 
-    return make_response(jsonify(template), HTTPStatus.CREATED)
+    return make_response(jsonify(template.serialize()), HTTPStatus.CREATED)
 
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
@@ -168,7 +168,7 @@ def set_template_value_endpoint(template_id: str):
             HTTPStatus.BAD_REQUEST,
         )
 
-    form = templates_forms.SetTemplateValueForm(
+    form = template_forms.SetTemplateValueForm(
         formdata=MultiDict(request.get_json(force=True, silent=True)),
         meta={"csrf": False},
     )
