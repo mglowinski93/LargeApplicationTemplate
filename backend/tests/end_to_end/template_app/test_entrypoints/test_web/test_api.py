@@ -89,7 +89,7 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
         ),
         query_string={
             consts.PAGINATION_OFFSET_QUERY_PARAMETER_NAME: pagination_offset,
-            consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME: pagination_limit
+            consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME: pagination_limit,
         },
     )
 
