@@ -71,6 +71,8 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
 def test_list_templates_endpoint_pagination(client: FlaskClient):
     # Given
     number_of_templates = 20
+    pagination_offset = 1
+    pagination_limit = 5
     for _ in range(number_of_templates):
         client.post(
             get_site_url(
@@ -86,8 +88,8 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={
-            consts.PAGINATION_OFFSET_QUERY_PARAMETER_NAME: 1,
-            consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME: 5,
+            consts.PAGINATION_OFFSET_QUERY_PARAMETER_NAME: pagination_offset,
+            consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME: pagination_limit
         },
     )
 
@@ -95,7 +97,7 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
     assert response.status_code == HTTPStatus.OK
     json_response: dict[str, Any] = response.json  # type: ignore
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert len(results) == 5
+    assert len(results) == pagination_limit
     assert json_response[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
     assert consts.PAGINATION_NEXT_LINK_RELATION in json_response
     assert consts.PAGINATION_PREVIOUS_LINK_RELATION in json_response
