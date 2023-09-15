@@ -8,13 +8,13 @@ from sqlalchemy import pool
 from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
-from apps.common.database import Base  # noqa: E402
-from apps.common.database import initialize_database  # noqa: E402
+from modules.common.database import Base  # noqa: E402
+from modules.common.database import initialize_database  # noqa: E402
 from bootstrap import get_configuration  # noqa: E402
 
 # IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
 
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, F401
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, E501, F401
     Template,
 )
 

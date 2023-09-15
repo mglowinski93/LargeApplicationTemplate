@@ -2,10 +2,10 @@ from typing import Callable
 
 import pytest
 
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.ports.exceptions import TemplateDoesNotExist
-from apps.template_app.services import get_template, list_templates
-from apps.template_app.services.mappers import map_template_entity_to_output_dto
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
+from modules.template_module.services import get_template, list_templates
+from modules.template_module.services.mappers import map_template_entity_to_output_dto
 from ....factories import fake_template_id
 
 

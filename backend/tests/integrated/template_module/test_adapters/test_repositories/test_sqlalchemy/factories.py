@@ -2,11 +2,11 @@ from uuid import uuid4
 
 import factory
 
-from apps.common.time import get_current_utc_timestamp
-from apps.template_app.adapters.repositories.sqlalchemy.consts import (
+from modules.common.time import get_current_utc_timestamp
+from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as SqlAlchemyTemplateDb,
 )
 

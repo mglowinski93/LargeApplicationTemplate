@@ -2,11 +2,11 @@ from typing import Callable
 
 import pytest
 
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.services.unit_of_work import SqlAlchemyTemplateUnitOfWork
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.services.unit_of_work import SqlAlchemyTemplateUnitOfWork
 
 
 def test_unit_of_work_can_retrieve_template(

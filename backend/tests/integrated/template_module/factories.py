@@ -2,13 +2,13 @@ from typing import Optional, List
 
 from faker import Faker
 
-from apps.common.dtos import Ordering, OrderingEnum
-from apps.common.pagination import Pagination
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.ports.dtos import TemplatesFilters
-from apps.template_app.domain.value_objects import TEMPLATE_ID_TYPE
-from apps.template_app.domain.ports import TemplateRepository, exceptions
-from apps.template_app.domain.ports.unit_of_work import UnitOfWork
+from modules.common.dtos import Ordering, OrderingEnum
+from modules.common.pagination import Pagination
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.ports.dtos import TemplatesFilters
+from modules.template_module.domain.value_objects import TEMPLATE_ID_TYPE
+from modules.template_module.domain.ports import TemplateRepository, exceptions
+from modules.template_module.domain.ports.unit_of_work import UnitOfWork
 
 
 fake = Faker()

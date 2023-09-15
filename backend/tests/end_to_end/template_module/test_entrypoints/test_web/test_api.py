@@ -7,7 +7,7 @@ from typing import Any
 from flask.testing import FlaskClient
 from freezegun import freeze_time
 
-from apps.common import consts
+from modules.common import consts
 from ....utils import get_site_url
 from .....factories import fake_template_id, fake_template_value
 

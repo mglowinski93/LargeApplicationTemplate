@@ -2,17 +2,17 @@ from typing import Callable
 
 from sqlalchemy.orm import Session
 
-from apps.template_app.adapters.repositories.sqlalchemy.consts import (
+from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
-from apps.template_app.adapters.repositories.sqlalchemy import (
+from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateRepository,
 )
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.ports.dtos import TemplatesFilters
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.ports.dtos import TemplatesFilters
 from ......factories import fake_template_value
 
 

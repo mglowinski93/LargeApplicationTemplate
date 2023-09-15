@@ -1,14 +1,14 @@
 import pytest
 
 
-from apps.common.database import Base
-from bootstrap import create_app, close_application_cleanup
+from modules.common.database import Base
+from bootstrap import create_app, close_app_cleanup
 
 
 @pytest.fixture(scope="module")
 def app():
     yield create_app(environment_name="test")
-    close_application_cleanup()
+    close_app_cleanup()
 
 
 @pytest.fixture

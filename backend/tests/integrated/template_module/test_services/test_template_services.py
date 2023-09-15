@@ -2,11 +2,11 @@ from typing import Callable
 
 import pytest
 
-from apps.template_app.domain.exceptions import InvalidTemplateValue
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.value_objects import TemplateValue
-from apps.template_app.domain.ports.exceptions import TemplateDoesNotExist
-from apps.template_app.services import (
+from modules.template_module.domain.exceptions import InvalidTemplateValue
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.value_objects import TemplateValue
+from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
+from modules.template_module.services import (
     create_template,
     delete_template,
     set_template_value,
