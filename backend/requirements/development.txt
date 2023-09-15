@@ -8,3 +8,4 @@ mypy==1.5.*
 Faker==19.3.*
 factory-boy==3.3.*
 freezegun==1.2.*
+locust==2.16.*

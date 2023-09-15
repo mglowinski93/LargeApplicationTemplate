@@ -42,7 +42,8 @@ services:
     networks:
       large-application-template:
     ports:
-        - "8000:8000"
+        - "8000:8000"  # Application port.
+        - "8089:8089"  # Performance monitoring port.
     volumes:
       - "../../backend/:/app/"
       - "./backend/scripts/:/scripts/"
