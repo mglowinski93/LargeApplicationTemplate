@@ -28,10 +28,13 @@ http://localhost:8000/api/swagger/.
 
 #### Running performance tests
 
+**`CAUTION`: Performance tests are not included
+neither in automated tests nor in `CI/CD` pipeline.**
+
 1. Build development environment as described above
 2. Execute `docker exec -it large-application-template-backend-development locust --locustfile "tests/performance/PATH_TO_TESTS_PER_APP" --host "http://localhost:8000"`
 3. Open http://localhost:8089/ in browser
-4. [Optional step] Correct provided data.
+4. [Optional step] Correct provided data
 5. Run tests by [Locust](https://locust.io/) web interface
 
 ## Production environment
