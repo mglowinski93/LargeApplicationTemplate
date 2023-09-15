@@ -15,6 +15,7 @@ ARG USER=TemplateUser
 ARG GROUP=TemplateGroup
 ARG SCRIPTS_DIR="/scripts/"
 ARG APP_DIR="/app/"
+ARG TESTS_DIR="${APP_DIR}/tests/"
 
 # Define environment variables.
 ENV POSTGRES_DB_HOST=${POSTGRES_DB_HOST}
@@ -41,6 +42,7 @@ RUN apt-get install -y --no-install-recommends \
 # Add linux packages to install here
 
 COPY backend/ ${APP_DIR}
+RUN rm -rf ${TESTS_DIR}
 COPY docker/production/backend/scripts/ ${SCRIPTS_DIR}
 WORKDIR ${APP_DIR}
 
