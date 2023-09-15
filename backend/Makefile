@@ -1,4 +1,4 @@
-all: tests black_check ruff_check mypy_check security_linter_check
+all: tests black_check ruff_check mypy_check bandit_check
 	echo "All checks passed!"
 
 tests: unit_tests integrated_tests end_to_end_tests
