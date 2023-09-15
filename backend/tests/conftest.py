@@ -3,8 +3,8 @@ from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from apps.common.database import Base
-from apps.template_app.domain.entities import Template as TemplateEntity
+from modules.common.database import Base
+from modules.template_module.domain.entities import Template as TemplateEntity
 from config import config
 from .factories import TemplateEntityFactory
 

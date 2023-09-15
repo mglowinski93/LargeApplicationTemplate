@@ -3,9 +3,9 @@ from uuid import UUID, uuid4
 import factory
 from faker import Faker
 
-from apps.common.time import get_current_utc_timestamp
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.value_objects import TemplateValue
+from modules.common.time import get_current_utc_timestamp
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.value_objects import TemplateValue
 
 fake = Faker()
 

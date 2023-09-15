@@ -4,8 +4,8 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from apps.common.time import get_current_utc_timestamp
-from apps.template_app.adapters.repositories.sqlalchemy.orm import (
+from modules.common.time import get_current_utc_timestamp
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
 from ......factories import fake_template_id

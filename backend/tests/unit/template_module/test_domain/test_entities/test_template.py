@@ -1,11 +1,11 @@
 import pytest
 
-from apps.template_app.domain.exceptions import InvalidTemplateValue
-from apps.template_app.domain.entities import (
+from modules.template_module.domain.exceptions import InvalidTemplateValue
+from modules.template_module.domain.entities import (
     Template as TemplateEntity,
     set_template_value,
 )
-from apps.template_app.domain.value_objects import TemplateValue, TEMPLATE_ID_TYPE
+from modules.template_module.domain.value_objects import TemplateValue, TEMPLATE_ID_TYPE
 from .....factories import fake_template_value
 
 

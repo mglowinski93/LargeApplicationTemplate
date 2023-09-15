@@ -1,6 +1,6 @@
 from locust import task
 
-from tests.performance.entrypoints.template_app.base import BaseApiTests
+from tests.performance.entrypoints.template_module.base import BaseApiTests
 
 
 class TemplateApiTests(BaseApiTests):

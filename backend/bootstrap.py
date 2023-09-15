@@ -8,7 +8,7 @@ from flask import Blueprint
 from flasgger import Swagger
 from flask import Flask
 
-from apps.common.database import initialize_database
+from modules.common.database import initialize_database
 from config import config, swagger_template, swagger_config, Config
 
 
@@ -18,7 +18,7 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
     return config[environment_name]()
 
 
-def close_application_cleanup():
+def close_app_cleanup():
     """
     Add here action to be performed before application shutdown.
     """
@@ -53,7 +53,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     # START OF BLUEPRINT REGISTRATION
     main_api_blueprint = Blueprint("api", __name__)
 
-    from apps.template_app.entrypoints.web import (  # noqa: E402
+    from modules.template_module.entrypoints.web import (  # noqa: E402
         api_blueprint as template_api_blueprint,
     )
 
@@ -65,7 +65,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     # END OF BLUEPRINT REGISTRATION
 
     def closing_application_handler(signum, frame):
-        close_application_cleanup()
+        close_app_cleanup()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, closing_application_handler)

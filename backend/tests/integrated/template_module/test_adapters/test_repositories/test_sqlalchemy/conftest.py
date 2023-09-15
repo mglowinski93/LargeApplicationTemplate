@@ -3,14 +3,14 @@ from typing import Callable, Optional
 import pytest
 from sqlalchemy.orm import Session
 
-from apps.template_app.adapters.repositories.sqlalchemy.consts import (
+from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from apps.template_app.adapters.repositories.sqlalchemy.repository import (
+from modules.template_module.adapters.repositories.sqlalchemy.repository import (
     _map_template_db_to_template_entity,
 )
-from apps.template_app.domain.entities import Template as TemplateEntity
-from apps.template_app.domain.value_objects import TemplateValue
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.value_objects import TemplateValue
 from .factories import TemplateSqlAlchemyModelFactory
 
 
