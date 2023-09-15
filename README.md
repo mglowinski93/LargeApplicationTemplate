@@ -56,10 +56,8 @@ To build production
 
 ## Database migrations
 
-It's obligatory to navigate to proper folder,
-due to that all
-[alembic](https://alembic.sqlalchemy.org/en/latest/) commands
-has to be called in place where `alembic.ini` is located.
+Database migrations are managed by
+[alembic](https://alembic.sqlalchemy.org/en/latest/).
 
 #### Generating database migrations
 
