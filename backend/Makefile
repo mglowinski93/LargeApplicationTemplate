@@ -1,4 +1,4 @@
-all: tests black_check ruff_check mypy_check
+all: tests black_check ruff_check mypy_check bandit_check
 	echo "All checks passed!"
 
 tests: unit_tests integrated_tests end_to_end_tests
@@ -33,3 +33,8 @@ mypy_check:
 	echo "Checking mypy..."
 	mypy ./
 	echo "Mypy passed."
+
+bandit_check:
+	echo "Checking bandit..."
+	find . -name '*.py' | grep -v tests | xargs bandit
+	echo "Bandit passed."

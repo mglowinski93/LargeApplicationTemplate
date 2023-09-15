@@ -53,17 +53,21 @@ jobs:
         working-directory: backend/migrations/
 
       - name: Run tests
-        run: pytest
+        run: make tests
         working-directory: backend
 
       - name: Run black
-        run: black . --check
+        run: make black_check
         working-directory: backend
 
       - name: Lint code
-        run: find . -name '*.py' | grep -v alembic | xargs ruff
+        run: make ruff_check
         working-directory: backend
 
       - name: Run mypy
-        run: find . -name '*.py' | grep -v alembic | xargs mypy
+        run: make mypy_check
+        working-directory: backend
+
+      - name: Run bandit
+        run: make bandit_check
         working-directory: backend
