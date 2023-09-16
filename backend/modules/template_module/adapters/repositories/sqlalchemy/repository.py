@@ -168,6 +168,7 @@ def _map_template_entity_to_template_db(
         id=template_entity.id,
         value_data=_map_template_value_dto_to_dict(template_entity.value),
         timestamp=template_entity.timestamp,
+        version=template_entity.version,
     )
 
 
@@ -177,6 +178,7 @@ def _map_template_db_to_template_entity(
     entity = TemplateEntity(
         id=template_db.id,
         timestamp=template_db.timestamp,
+        version=template_db.version,
     )
     # The Assumption is that data in a database are always correct and
     # can be safely loaded to an entity.

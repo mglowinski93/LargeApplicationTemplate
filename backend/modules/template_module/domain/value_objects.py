@@ -4,6 +4,7 @@ from uuid import UUID
 
 
 TEMPLATE_ID_TYPE = UUID
+INITIAL_TEMPLATE_VERSION = 1
 
 
 @dataclass(frozen=True)

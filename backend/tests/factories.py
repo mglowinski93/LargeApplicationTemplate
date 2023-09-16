@@ -16,6 +16,7 @@ class TemplateEntityFactory(factory.Factory):
 
     id = factory.LazyFunction(uuid4)
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
+    version = 1
 
 
 def fake_template_id() -> UUID:

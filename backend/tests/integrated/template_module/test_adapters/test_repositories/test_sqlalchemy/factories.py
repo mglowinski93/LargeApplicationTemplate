@@ -18,3 +18,4 @@ class TemplateSqlAlchemyModelFactory(factory.alchemy.SQLAlchemyModelFactory):
     id = factory.LazyFunction(uuid4)
     value_data = factory.LazyFunction(lambda: {VALUE_NAME_IN_DATABASE: None})
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
+    version = 1
