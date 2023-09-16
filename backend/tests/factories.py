@@ -5,7 +5,10 @@ from faker import Faker
 
 from modules.common.time import get_current_utc_timestamp
 from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.value_objects import TemplateValue
+from modules.template_module.domain.value_objects import (
+    INITIAL_TEMPLATE_VERSION,
+    TemplateValue,
+)
 
 fake = Faker()
 
@@ -16,7 +19,7 @@ class TemplateEntityFactory(factory.Factory):
 
     id = factory.LazyFunction(uuid4)
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
-    version = 1
+    version = INITIAL_TEMPLATE_VERSION
 
 
 def fake_template_id() -> UUID:
