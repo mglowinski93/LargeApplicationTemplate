@@ -40,7 +40,7 @@ def prepared_database(db_engine):
 
 
 @pytest.fixture
-def raw_db_session(  # <- This is the fixture to be used in tests.
+def raw_db_session(  # < - This is the fixture to be used in tests.
     prepared_database,
 ):
     with prepared_database.connect() as db_connection:

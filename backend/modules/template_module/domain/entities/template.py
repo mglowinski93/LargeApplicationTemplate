@@ -9,9 +9,9 @@ from ....common.time import get_current_utc_timestamp
 
 def set_template_value(template: Template, value: TemplateValue):
     """
-    This is optional method only needed when
-    there is a logic related to particular action,
-    that can't be placed in entity,
+    This is an optional method only needed when
+    there is a logic related to a particular action
+    that can't be placed in an entity,
     due to it's not related to business logic, or it's too complicated.
     """
 
@@ -24,10 +24,11 @@ class Template:
     Allocate here business logic and high-level rules that are related to this entity.
     """
 
-    def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime):
+    def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime, version: int):
         self.id = id
         self._value: TemplateValue = TemplateValue(value=None)
         self.timestamp = timestamp
+        self.version = version
 
     @property
     def value(self) -> TemplateValue:
@@ -40,6 +41,7 @@ class Template:
     def set_value(self, value: TemplateValue):
         if isinstance(value.value, str) and len(value.value):
             self._value = value
+            self.version += 1
             return
 
         raise InvalidTemplateValue(f"Invalid value: '{value.value}'")

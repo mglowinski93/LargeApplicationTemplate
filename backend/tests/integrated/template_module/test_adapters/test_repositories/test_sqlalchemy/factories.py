@@ -9,6 +9,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.consts import (
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as SqlAlchemyTemplateDb,
 )
+from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 
 class TemplateSqlAlchemyModelFactory(factory.alchemy.SQLAlchemyModelFactory):
@@ -18,3 +19,4 @@ class TemplateSqlAlchemyModelFactory(factory.alchemy.SQLAlchemyModelFactory):
     id = factory.LazyFunction(uuid4)
     value_data = factory.LazyFunction(lambda: {VALUE_NAME_IN_DATABASE: None})
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
+    version = INITIAL_TEMPLATE_VERSION
