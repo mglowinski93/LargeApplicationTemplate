@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 from http import HTTPStatus
 
+import inject
 from flask import jsonify, make_response, request
 from werkzeug.datastructures import MultiDict
 
@@ -10,6 +11,7 @@ from . import forms as template_forms
 from ... import services
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
+from ...domain.ports.unit_of_work import UnitOfWork
 from ....common import pagination as pagination_utils, consts
 from ....common.entrypoints.web import forms as common_forms
 
@@ -18,7 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 @api_blueprint.route("/<template_id>", methods=["GET"])
-def get_template_endpoint(template_id: str):
+@inject.params(unit_of_work="main_unit_of_work")
+def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: ../../../../swagger_files/template_endpoints/get_template.yml
     """
@@ -38,7 +41,7 @@ def get_template_endpoint(template_id: str):
 
     try:
         template = services.get_template(
-            unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+            unit_of_work=unit_of_work,
             template_id=template_id,  # type: ignore
         )
         logger.debug("Template '%s' found.", template_id)
@@ -53,7 +56,8 @@ def get_template_endpoint(template_id: str):
 
 
 @api_blueprint.route("/", methods=["GET"])
-def list_templates_endpoint():
+@inject.params(unit_of_work="main_unit_of_work")
+def list_templates_endpoint(unit_of_work: UnitOfWork):
     """
     file: ../../../../swagger_files/template_endpoints/list_templates.yml
     """
@@ -104,7 +108,7 @@ def list_templates_endpoint():
     )
 
     templates, all_templates_count = services.list_templates(
-        unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+        unit_of_work=unit_of_work,
         filters=filters,
         ordering=ordering,
         pagination=pagination,
@@ -135,7 +139,8 @@ def list_templates_endpoint():
 
 
 @api_blueprint.route("/", methods=["POST"])
-def create_template_endpoint():
+@inject.params(unit_of_work="main_unit_of_work")
+def create_template_endpoint(unit_of_work: UnitOfWork):
     """
     file: ../../../../swagger_files/template_endpoints/create_template.yml
     """
@@ -143,7 +148,7 @@ def create_template_endpoint():
     logger.info("Creating a new template.")
 
     template = services.create_template(
-        unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+        unit_of_work=unit_of_work,
     )
     logger.info("Template '%s' created.", template.id)
 
@@ -151,7 +156,8 @@ def create_template_endpoint():
 
 
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
-def delete_template_endpoint(template_id: str):
+@inject.params(unit_of_work="main_unit_of_work")
+def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: ../../../../swagger_files/template_endpoints/delete_template.yml
     """
@@ -171,7 +177,7 @@ def delete_template_endpoint(template_id: str):
 
     try:
         services.delete_template(
-            unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+            unit_of_work=unit_of_work,
             template_id=template_id,  # type: ignore
         )
         logger.debug("Template '%s' found.", template_id)
@@ -186,7 +192,8 @@ def delete_template_endpoint(template_id: str):
 
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
-def set_template_value_endpoint(template_id: str):
+@inject.params(unit_of_work="main_unit_of_work")
+def set_template_value_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: ../../../../swagger_files/template_endpoints/set_template_value.yml
     """
@@ -220,7 +227,7 @@ def set_template_value_endpoint(template_id: str):
     try:
         logger.info("Setting value for template '%s'.", template_id)
         services.set_template_value(
-            unit_of_work=services.SqlAlchemyTemplateUnitOfWork(),
+            unit_of_work=unit_of_work,
             template_id=template_id,  # type: ignore
             value=value_objects.TemplateValue(value=template_value),
         )

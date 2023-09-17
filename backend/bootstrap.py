@@ -4,18 +4,24 @@ import signal
 import sys
 from typing import Optional
 
+import inject
 from flask import Blueprint
 from flasgger import Swagger
 from flask import Flask
 
 from modules.common.database import initialize_database
 from config import config, swagger_template, swagger_config, Config
+from modules.template_module.services import SqlAlchemyTemplateUnitOfWork
 
 
 def get_configuration(environment_name: Optional[str] = None) -> Config:
     if environment_name is None:
         environment_name = os.environ["ENVIRONMENT"]
     return config[environment_name]()
+
+
+def injector_config(binder):
+    binder.bind_to_constructor("main_unit_of_work", SqlAlchemyTemplateUnitOfWork)
 
 
 def close_app_cleanup():
@@ -37,6 +43,8 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     app.config.from_object(configuration)
     configuration.init_app(app)
     app.url_map.strict_slashes = False
+
+    inject.configure(injector_config)
 
     initialize_database(configuration.database_url)
 
