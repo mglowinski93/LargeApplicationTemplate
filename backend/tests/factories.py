@@ -15,7 +15,7 @@ fake = Faker()
 
 
 class FakeTaskDispatcher(TaskDispatcher):
-    def send_email(self, content: str) -> None:
+    def send_email(self, content: str):
         pass
 
 

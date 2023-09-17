@@ -2,5 +2,5 @@ from ...domain.ports import TaskDispatcher
 
 
 class CeleryTaskDispatcher(TaskDispatcher):
-    def send_email(self, content: str) -> None:
+    def send_email(self, content: str):
         pass
