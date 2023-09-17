@@ -14,7 +14,7 @@ def create_template(
     OutputTemplate
 ):  # It's correct to return data from command when no data are queried.
     # This approach meets the CQS pattern rules.
-    # More details about it can be found here:
+    # More details can be found here:
     # https://martinfowler.com/bliki/CommandQuerySeparation.html.
 
     template = entities.Template(
@@ -61,4 +61,5 @@ def set_template_value(
         # In this approach, a service layer is responsible for generating events.
         # More about this approach:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
+        # Moreover, in this example we don't care much about
         handle_event(TemplateValueSet(template_id=template.id, value=value))

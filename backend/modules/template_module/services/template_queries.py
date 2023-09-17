@@ -9,6 +9,12 @@ from ...common.dtos import Ordering, OrderingEnum
 from ...common.pagination import Pagination
 
 
+# In case of low efficiency,
+# this can be refactored to use the CQRS pattern.
+# More details can be found here:
+# https://martinfowler.com/bliki/CQRS.html.
+
+
 def get_template(
     unit_of_work: UnitOfWork,
     template_id: TEMPLATE_ID_TYPE,
