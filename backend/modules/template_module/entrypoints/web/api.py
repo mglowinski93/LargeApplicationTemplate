@@ -1,6 +1,7 @@
 import logging
-from uuid import UUID
 from http import HTTPStatus
+from typing import Optional
+from uuid import UUID
 
 import inject
 from flask import jsonify, make_response, request
@@ -13,6 +14,7 @@ from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
 from ...domain.ports.unit_of_work import UnitOfWork
 from ....common import pagination as pagination_utils, consts
+from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
 
 
@@ -69,9 +71,11 @@ def list_templates_endpoint(unit_of_work: UnitOfWork):
 
     try:
         pagination = pagination_utils.Pagination(
-            offset=query_params.get(consts.PAGINATION_OFFSET_QUERY_PARAMETER_NAME, 0),
-            records_per_page=query_params.get(
-                consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME, 10
+            offset=int(
+                query_params.get(consts.PAGINATION_OFFSET_QUERY_PARAMETER_NAME, 0)
+            ),
+            records_per_page=int(
+                query_params.get(consts.PAGINATION_LIMIT_QUERY_PARAMETER_NAME, 10)
             ),
         )
     except ValueError as err:
@@ -98,7 +102,7 @@ def list_templates_endpoint(unit_of_work: UnitOfWork):
         timestamp_to=form.timestamp_to.data,
     )
 
-    ordering = (
+    ordering: Optional[list[common_dtos.Ordering]] = (
         common_forms.OrderingForm(
             data=request.args,
             meta={"csrf": False},
