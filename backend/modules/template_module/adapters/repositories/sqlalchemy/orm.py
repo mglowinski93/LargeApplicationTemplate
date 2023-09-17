@@ -7,7 +7,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from .....common.database import Base
 
 
-# an example mapping using the base
 class Template(Base):
     __tablename__ = "templates"
 
