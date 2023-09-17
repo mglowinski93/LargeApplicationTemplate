@@ -9,8 +9,9 @@ from flask import Blueprint
 from flasgger import Swagger
 from flask import Flask
 
-from modules.common.database import initialize_database
 from config import config, swagger_template, swagger_config, Config
+from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
+from modules.common.database import initialize_database
 from modules.template_module.services import SqlAlchemyTemplateUnitOfWork
 
 
@@ -20,8 +21,9 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
     return config[environment_name]()
 
 
-def injector_config(binder):
+def inject_config(binder):
     binder.bind_to_constructor("main_unit_of_work", SqlAlchemyTemplateUnitOfWork)
+    binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
 
 
 def close_app_cleanup():
@@ -44,7 +46,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
     configuration.init_app(app)
     app.url_map.strict_slashes = False
 
-    inject.configure(injector_config)
+    inject.configure(inject_config)
 
     initialize_database(configuration.database_url)
 

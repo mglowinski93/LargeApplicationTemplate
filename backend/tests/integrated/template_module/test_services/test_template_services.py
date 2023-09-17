@@ -62,6 +62,7 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
 
 
 def test_set_template_value_sets_value_when_valid_value(
+    fake_inject: None,
     fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
@@ -126,7 +127,9 @@ def test_set_template_value_raises_exception_when_requested_template_doesnt_exis
 
 
 def test_concurrent_template_updates_are_not_allowed(
-    fake_template_unit_of_work_factory: Callable, template_entity: TemplateEntity
+    fake_inject: None,
+    fake_template_unit_of_work_factory: Callable,
+    template_entity: TemplateEntity,
 ):
     # Given
     final_template_value = fake_template_value()

@@ -3,6 +3,7 @@ from uuid import UUID, uuid4
 import factory
 from faker import Faker
 
+from modules.common.domain.ports import TaskDispatcher
 from modules.common.time import get_current_utc_timestamp
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.value_objects import (
@@ -11,6 +12,11 @@ from modules.template_module.domain.value_objects import (
 )
 
 fake = Faker()
+
+
+class FakeTaskDispatcher(TaskDispatcher):
+    def send_email(self, content: str) -> None:
+        pass
 
 
 class TemplateEntityFactory(factory.Factory):
