@@ -12,7 +12,7 @@ from ...common.pagination import Pagination
 # In case of low efficiency,
 # this can be refactored to use the CQRS pattern.
 # More details can be found here:
-# https://martinfowler.com/bliki/CQRS.html.
+# https://www.cosmicpython.com/book/chapter_12_cqrs.html.
 
 
 def get_template(
