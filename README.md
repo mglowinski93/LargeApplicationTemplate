@@ -13,7 +13,7 @@ present on the host system:
 ## Development environment
 
 To run development environment
-1. Go into `docker/development` folder
+1. Go into `docker/development/` folder
 2. Execute `docker-compose up`
 
 ### API description
@@ -68,3 +68,7 @@ Database migrations are managed by
 
 1. Go into `migrations/` folder
 2. Execute `alembic upgrade head` command
+
+## Working with repository
+
+1. `backend` folder must be marked as `Sources Root` in `IDE` to make imports work
