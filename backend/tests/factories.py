@@ -15,8 +15,10 @@ fake = Faker()
 
 
 class FakeTaskDispatcher(TaskDispatcher):
+    sent_emails_count = 0
+
     def send_email(self, content: str):
-        pass
+        self.sent_emails_count += 1
 
 
 class TemplateEntityFactory(factory.Factory):

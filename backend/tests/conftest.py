@@ -63,14 +63,16 @@ def template_entity() -> TemplateEntity:
     return TemplateEntityFactory()
 
 
-@pytest.fixture(scope="session")
-def fake_inject():
+@pytest.fixture
+def fake_main_task_dispatcher_inject():
+    fake_task_dispatcher_instance = FakeTaskDispatcher()
+
     inject.clear_and_configure(
-        lambda binder: binder.bind_to_constructor(
-            "main_task_dispatcher", FakeTaskDispatcher
+        lambda binder: binder.bind(
+            "main_task_dispatcher", fake_task_dispatcher_instance
         )
     )
 
-    yield
+    yield fake_task_dispatcher_instance
 
     inject.clear()

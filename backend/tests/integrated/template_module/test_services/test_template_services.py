@@ -15,7 +15,7 @@ from modules.template_module.services import (
     delete_template,
     set_template_value,
 )
-from ....factories import fake_template_id, fake_template_value
+from ....factories import FakeTaskDispatcher, fake_template_id, fake_template_value
 
 
 def test_create_template_creates_template_with_none_value(
@@ -62,7 +62,7 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
 
 
 def test_set_template_value_sets_value_when_valid_value(
-    fake_inject: None,
+    fake_main_task_dispatcher_inject: FakeTaskDispatcher,
     fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
@@ -86,6 +86,7 @@ def test_set_template_value_sets_value_when_valid_value(
     assert unit_of_work.templates.get(template_entity.id).value == value
     assert timestamp_before_setting_value < template_entity.timestamp
     assert version_before_setting_value + 1 == template_entity.version
+    assert fake_main_task_dispatcher_inject.sent_emails_count == 1
 
 
 def test_set_template_value_raises_exception_when_invalid_value(
@@ -127,7 +128,7 @@ def test_set_template_value_raises_exception_when_requested_template_doesnt_exis
 
 
 def test_concurrent_template_updates_are_not_allowed(
-    fake_inject: None,
+    fake_main_task_dispatcher_inject: FakeTaskDispatcher,
     fake_template_unit_of_work_factory: Callable,
     template_entity: TemplateEntity,
 ):
@@ -161,3 +162,4 @@ def test_concurrent_template_updates_are_not_allowed(
     retrieved_template = unit_of_work.templates.get(template_entity.id)
     assert retrieved_template.version == 3
     assert retrieved_template.value == final_template_value
+    assert fake_main_task_dispatcher_inject.sent_emails_count == 2
