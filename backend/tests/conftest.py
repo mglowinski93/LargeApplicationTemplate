@@ -3,10 +3,12 @@ from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import inject
+
 from modules.common.database import Base
 from modules.template_module.domain.entities import Template as TemplateEntity
 from config import config
-from .factories import TemplateEntityFactory
+from .factories import TemplateEntityFactory, FakeTaskDispatcher
 
 
 configuration = config["test"]()
@@ -59,3 +61,18 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 @pytest.fixture
 def template_entity() -> TemplateEntity:
     return TemplateEntityFactory()
+
+
+@pytest.fixture
+def fake_main_task_dispatcher_inject():
+    fake_task_dispatcher_instance = FakeTaskDispatcher()
+
+    inject.clear_and_configure(
+        lambda binder: binder.bind(
+            "main_task_dispatcher", fake_task_dispatcher_instance
+        )
+    )
+
+    yield fake_task_dispatcher_instance
+
+    inject.clear()
