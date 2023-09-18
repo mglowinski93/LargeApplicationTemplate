@@ -8,6 +8,14 @@ from ..domain.value_objects import INITIAL_TEMPLATE_VERSION
 from ...common.time import get_current_utc_timestamp
 
 
+# In this example app, there is no need to care much about history of changes,
+# and rather focus on separating business logic from infrastructure and data integrity.
+
+# In case there is a need to track history of changes,
+# adapts the following approach:
+# https://www.cosmicpython.com/book/part2.html.
+
+
 def create_template(
     unit_of_work: UnitOfWork,
 ) -> (
@@ -59,7 +67,7 @@ def set_template_value(
         unit_of_work.templates.save(template)
 
         # In this approach, a service layer is responsible for generating events.
-        # More about this approach:
+        # More details can be found here:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
         # Moreover, in this example we don't care much about
         handle_event(TemplateValueSet(template_id=template.id, value=value))
