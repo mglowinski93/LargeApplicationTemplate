@@ -3,7 +3,7 @@ from typing import Optional
 from flask import Flask, url_for
 
 
-def get_site_url(
+def get_url(
     app: Flask,
     routes: dict,
     url_type: str,
