@@ -8,7 +8,7 @@ from flask.testing import FlaskClient
 from freezegun import freeze_time
 
 from modules.common import consts
-from ....utils import get_site_url
+from ....utils import get_url
 from .....factories import fake_template_id, fake_template_value
 
 
@@ -26,7 +26,7 @@ def test_list_templates_endpoint_returns_empty_list_when_no_template_exists(
 ):
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         )
     )
@@ -47,7 +47,7 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
     number_of_templates = 3
     for _ in range(number_of_templates):
         client.post(
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
@@ -56,7 +56,7 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         )
     )
@@ -76,7 +76,7 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
     pagination_limit = 5
     for _ in range(number_of_templates):
         client.post(
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
@@ -85,7 +85,7 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={
@@ -107,14 +107,14 @@ def test_list_templates_endpoint_pagination(client: FlaskClient):
 def test_list_templates_endpoint_ordering_timestamp(client: FlaskClient):
     with freeze_time(datetime.now() - timedelta(days=1)):
         client.post(
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
             )
         )
     client.post(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
@@ -122,7 +122,7 @@ def test_list_templates_endpoint_ordering_timestamp(client: FlaskClient):
     )
 
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-timestamp"},
@@ -134,7 +134,7 @@ def test_list_templates_endpoint_ordering_timestamp(client: FlaskClient):
     )
 
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "timestamp"},
@@ -150,14 +150,14 @@ def test_list_templates_endpoint_ordering_value(client: FlaskClient):
     templates = []
     for template_value in ("a", "b"):
         template_id = client.post(  # type: ignore
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
             )
         ).json["id"]
         client.patch(
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="set-template-value",
@@ -168,7 +168,7 @@ def test_list_templates_endpoint_ordering_value(client: FlaskClient):
         templates.append(template_id)
 
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-value"},
@@ -179,7 +179,7 @@ def test_list_templates_endpoint_ordering_value(client: FlaskClient):
     assert results[1]["id"] == templates[0]
 
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "value"},
@@ -193,21 +193,21 @@ def test_list_templates_endpoint_ordering_value(client: FlaskClient):
 def test_list_templates_endpoint_filtering_by_query(client: FlaskClient):
     # Given
     client.post(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
         )
     )
     template_id = client.post(  # type: ignore
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     ).json["id"]
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={"query": template_id},
@@ -222,7 +222,7 @@ def test_list_templates_endpoint_filtering_by_query(client: FlaskClient):
 def test_list_templates_endpoint_filtering_by_value(client: FlaskClient):
     # Given
     client.post(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
@@ -231,12 +231,12 @@ def test_list_templates_endpoint_filtering_by_value(client: FlaskClient):
     template_value = fake_template_value().value
 
     template_id = client.post(  # type: ignore
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     ).json["id"]
     client.patch(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
@@ -247,7 +247,7 @@ def test_list_templates_endpoint_filtering_by_value(client: FlaskClient):
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
         ),
         query_string={"value": template_value},
@@ -264,14 +264,14 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
 ):
     # Given
     template_id = client.post(  # type: ignore
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     ).json["id"]
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
@@ -292,7 +292,7 @@ def test_get_template_endpoint_returns_404_when_specified_template_doesnt_exist(
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
@@ -313,7 +313,7 @@ def test_get_template_endpoint_returns_400_when_template_id_has_invalid_format(
 
     # When
     response = client.get(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
@@ -331,7 +331,7 @@ def test_create_template_endpoint_creates_template_and_returns_data(
 ):
     # When
     response = client.post(
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     )
@@ -349,14 +349,14 @@ def test_delete_template_endpoint_deletes_template(
 ):
     # Given
     template_id = client.post(  # type: ignore
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     ).json["id"]
 
     # When
     response = client.delete(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="delete-template",
@@ -377,7 +377,7 @@ def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exi
 
     # When
     response = client.delete(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="delete-template",
@@ -395,7 +395,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 ):
     # Given
     template_id = client.post(  # type: ignore
-        get_site_url(
+        get_url(
             app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
         )
     ).json["id"]
@@ -403,7 +403,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 
     # When
     response = client.patch(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
@@ -416,7 +416,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     assert response.status_code == HTTPStatus.OK
     assert (
         client.get(  # type: ignore
-            get_site_url(
+            get_url(
                 app=client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="retrieve-template",
@@ -436,7 +436,7 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_
 
     # When
     response = client.patch(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
@@ -459,7 +459,7 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
 
     # When
     response = client.patch(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
@@ -481,7 +481,7 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
 
     # When
     response = client.patch(
-        get_site_url(
+        get_url(
             app=client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
