@@ -103,4 +103,9 @@ services:
       BROKER_URL: "redis://large-application-template-broker:6379/0"
     env_file:
       - ".env"
+    healthcheck:
+      test: ["CMD", "celery", "-A", "celery-task-dispatcher", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     command: ["/scripts/run-worker.sh"]
