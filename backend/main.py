@@ -11,7 +11,7 @@ app = create_app()
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 def health_check():
     """
-    file: {0}/swagger_files/health_check_endpoint.yml
+    file: {0}/health_check_endpoint.yml
     """
 
     return jsonify(
