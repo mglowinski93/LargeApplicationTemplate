@@ -104,7 +104,7 @@ services:
     env_file:
       - ".env"
     healthcheck:
-      test: ["CMD", "celery", "-A", "celery-task-dispatcher", "inspect", "ping"]
+      test: ["CMD-SHELL", "celery", "-A", "modules.common.adapters.task_dispatchers.celery.task_dispatcher", "inspect", "ping"]
       interval: 30s
       timeout: 10s
       retries: 5
