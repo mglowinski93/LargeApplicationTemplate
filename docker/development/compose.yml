@@ -7,6 +7,13 @@ volumes:
   large-application-template-backend-cache:
   large-application-template-db-volume:
 
+x-shared: &database-environment-credentials
+    POSTGRES_DB_HOST: "large-application-template-db"
+    POSTGRES_DB_PORT: 5432
+    POSTGRES_DB_NAME: "large_application_template"
+    POSTGRES_DB_USER: "large_application_template_user"
+    POSTGRES_DB_PASSWORD: "large_application_template_password"
+
 services:
   large-application-template-db:
     restart: "no"
@@ -30,6 +37,21 @@ services:
       timeout: 5s
       retries: 5
 
+  large-application-template-broker:
+    restart: "no"
+    image: "redis:5.0.0"
+    container_name: large-application-template-broker-development
+    networks:
+      large-application-template:
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+
   large-application-template-backend:
     restart: "no"
     build:
@@ -38,6 +60,8 @@ services:
     container_name: large-application-template-backend-development
     depends_on:
       large-application-template-db:
+        condition: service_healthy
+      large-application-template-broker:
         condition: service_healthy
     networks:
       large-application-template:
@@ -49,11 +73,8 @@ services:
       - "./backend/scripts/:/scripts/"
       - "large-application-template-backend-cache:/root/.cache/pip"
     environment:
-      POSTGRES_DB_HOST: "large-application-template-db"
-      POSTGRES_DB_PORT: 5432
-      POSTGRES_DB_NAME: "large_application_template"
-      POSTGRES_DB_USER: "large_application_template_user"
-      POSTGRES_DB_PASSWORD: "large_application_template_password"
+      <<: *database-environment-credentials
+      BROKER_URL: "redis://large-application-template-broker:6379/0"
     env_file:
       - ".env"
     healthcheck:
@@ -61,3 +82,25 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    command: ["/scripts/run-development.sh"]
+
+  large-application-template-worker:
+    restart: "no"
+    build:
+      context: ../../backend/
+      dockerfile: ../docker/development/backend/Dockerfile
+    container_name: large-application-template-worker-development
+    depends_on:
+      large-application-template-broker:
+        condition: service_healthy
+    networks:
+      large-application-template:
+    volumes:
+      - "../../backend/:/app/"
+      - "./backend/scripts/:/scripts/"
+      - "large-application-template-backend-cache:/root/.cache/pip"
+    environment:
+      BROKER_URL: "redis://large-application-template-broker:6379/0"
+    env_file:
+      - ".env"
+    command: ["/scripts/run-worker.sh"]

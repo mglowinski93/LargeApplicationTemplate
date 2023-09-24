@@ -19,5 +19,3 @@ ENV FLASK_DEBUG=1
 # More details at https://flask.palletsprojects.com/en/2.0.x/config/.
 ENV FLASK_APP="main.py"
 # Defines file with Flask application.
-
-CMD ["/scripts/run-development.sh"]
