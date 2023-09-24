@@ -24,7 +24,7 @@ def client(app, prepared_database):
 
 # Mocking Celery worker.
 # More details can be found here:
-# https://docs.celeryq.dev/en/stable/userguide/testing.html#celery-worker-embed-live-worker
+# https://docs.celeryq.dev/en/stable/userguide/testing.html#celery-worker-embed-live-worker.
 @pytest.fixture(scope="module")
 def task_dispatcher(request):
     """
