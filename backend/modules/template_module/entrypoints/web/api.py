@@ -13,19 +13,20 @@ from ... import services
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
 from ...domain.ports.unit_of_work import UnitOfWork
-from ....common import pagination as pagination_utils, consts
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
+from ....common import consts, docstrings, pagination as pagination_utils
 
 
 logger = logging.getLogger(__name__)
 
 
 @api_blueprint.route("/<template_id>", methods=["GET"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="main_unit_of_work")
 def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
-    file: ../../../../swagger_files/template_endpoints/get_template.yml
+    file: {0}/template_endpoints/get_template.yml
     """
 
     logger.debug("Getting data for template '%s'.", template_id)
@@ -58,10 +59,11 @@ def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 
 
 @api_blueprint.route("/", methods=["GET"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="main_unit_of_work")
 def list_templates_endpoint(unit_of_work: UnitOfWork):
     """
-    file: ../../../../swagger_files/template_endpoints/list_templates.yml
+    file: {0}/template_endpoints/list_templates.yml
     """
 
     logger.debug("Listing all templates.")
@@ -143,10 +145,11 @@ def list_templates_endpoint(unit_of_work: UnitOfWork):
 
 
 @api_blueprint.route("/", methods=["POST"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="main_unit_of_work")
 def create_template_endpoint(unit_of_work: UnitOfWork):
     """
-    file: ../../../../swagger_files/template_endpoints/create_template.yml
+    file: {0}/template_endpoints/create_template.yml
     """
 
     logger.info("Creating a new template.")
@@ -160,10 +163,11 @@ def create_template_endpoint(unit_of_work: UnitOfWork):
 
 
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="main_unit_of_work")
 def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
-    file: ../../../../swagger_files/template_endpoints/delete_template.yml
+    file: {0}/template_endpoints/delete_template.yml
     """
 
     logger.info("Deleting template '%s'.", template_id)
@@ -196,10 +200,11 @@ def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="main_unit_of_work")
 def set_template_value_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
-    file: ../../../../swagger_files/template_endpoints/set_template_value.yml
+    file: {0}/template_endpoints/set_template_value.yml
     """
 
     logger.info("Setting value for template '%s'.", template_id)

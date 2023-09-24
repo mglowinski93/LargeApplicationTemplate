@@ -66,5 +66,3 @@ ENV ENVIRONMENT="production"
 ENV FLASK_DEBUG=0
 # Disable Flask debugger for hot-reloading.
 # More details at https://flask.palletsprojects.com/en/2.0.x/config/.
-
-CMD ["/scripts/run-production.sh"]

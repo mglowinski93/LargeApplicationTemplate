@@ -14,6 +14,7 @@ jobs:
       POSTGRES_DB_NAME: "large_application_template"
       POSTGRES_DB_USER: "large_application_template_user"
       POSTGRES_DB_PASSWORD: "large_application_template_password"
+      BROKER_URL: "memory://"
 
     services:
       db:

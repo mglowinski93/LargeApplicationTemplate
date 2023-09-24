@@ -17,7 +17,7 @@ fake = Faker()
 class FakeTaskDispatcher(TaskDispatcher):
     sent_emails_count = 0
 
-    def send_email(self, content: str):
+    def send_email(self, content: str):  # type: ignore
         self.sent_emails_count += 1
 
 

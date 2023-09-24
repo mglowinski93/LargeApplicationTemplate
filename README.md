@@ -60,8 +60,14 @@ To build production
 2. Execute 
 
     ```bash
-   docker build -t large-application-template-backend-production --build-arg {REQUIRED ARGUMENTS} .
+    docker build -f docker/production/Dockerfile -t large-application-template-backend-production --build-arg {REQUIRED ARGUMENTS} .
     ```
+
+The built image can be used as image for:
+- `application` - `run-production.sh` as
+[Docker CMD](https://docs.docker.com/engine/reference/builder/#cmd)
+to run application
+- `worker` - `run-worker.sh` as `Docker CMD` to run worker
 
 #### Required build arguments are:
 `POSTGRES_DB_HOST` - Host of the postgres database  

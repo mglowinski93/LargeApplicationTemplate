@@ -1,9 +1,8 @@
+import inject
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-import inject
 
 from modules.common.database import Base
 from modules.template_module.domain.entities import Template as TemplateEntity
