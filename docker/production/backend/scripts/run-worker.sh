@@ -1,9 +1,5 @@
 #!/bin/bash
 set -e
 
-# Run the production server.
-exec gunicorn "main:app" --bind :8000 \
-    --name "large-application-template" \
-    --workers 5 \
-    --log-level="info" \
-    --capture-output
+# Run the worker.
+exec celery -A modules.common.adapters.task_dispatchers.celery.task_dispatcher worker --loglevel=WARNING

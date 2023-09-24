@@ -11,4 +11,4 @@ exec watchmedo auto-restart \
     --patterns="*.py" \
     --recursive \
     --signal SIGTERM \
-    -- celery -A modules.common.adapters.task_dispatchers.celery.task_dispatcher worker
+    -- celery -A modules.common.adapters.task_dispatchers.celery.task_dispatcher worker --loglevel=INFO
