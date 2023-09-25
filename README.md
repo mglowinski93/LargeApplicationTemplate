@@ -75,6 +75,7 @@ to run application
 `POSTGRES_DB_NAME` - Name of the postgres database  
 `POSTGRES_DB_USER` - User of the postgres database  
 `POSTGRES_DB_PASSWORD` - Password of the postgres database  
+`BROKER_URL` - URL of broker passing messages between application and worker  
 `TZ` - TimeZone identifier (e.g. Europe/Warsaw)  
 
 ## Database migrations
