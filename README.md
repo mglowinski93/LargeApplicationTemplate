@@ -104,3 +104,24 @@ Database migrations are managed by
 ## Working with repository
 
 1. `backend` folder must be marked as `Sources Root` in `IDE` to make imports work
+
+## Known issues
+
+1. For
+   [Chrome](https://www.google.com/chrome/)/
+   [Chromium](https://www.chromium.org/chromium-projects/)
+   web-browsers the application is not available over `0.0.0.0` address (development environment),
+   because `Private Network Access` is disabled for `HTTP` protocol for those browsers.
+   More details can be found
+   [here](https://bugs.chromium.org/p/chromium/issues/detail?id=1300021).
+   Nevertheless, the application still can be accessed over `localhost` address.
+2. Running development environment on `Windows` may require additional steps to be taken.
+   scripts in `docker/development/scripts/` path may not be found, due to invalid `EOF` characters in shell scripts.
+   (more details can be found
+   [here](https://stackoverflow.com/questions/2920416/configure-bin-shm-bad-interpreter)).
+   
+   There are a few solutions to this issue:
+   1) Change `EOF` characters in shell scripts from `LF` (Unix) format to `CRLF` (Windows) format manually
+   2) Run 
+   [dos2unix](https://dos2unix.sourceforge.io)
+   program on scripts in `docker/development/scripts/` path
