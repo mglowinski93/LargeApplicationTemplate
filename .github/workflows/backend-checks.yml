@@ -53,9 +53,6 @@ jobs:
         run: alembic upgrade head
         working-directory: backend/migrations/
 
-      - name: Run tests
-        run: make tests
-        working-directory: backend
 
       - name: Run black
         run: make black_check
@@ -71,4 +68,8 @@ jobs:
 
       - name: Run bandit
         run: make bandit_check
+        working-directory: backend
+
+      - name: Run tests
+        run: make tests
         working-directory: backend
