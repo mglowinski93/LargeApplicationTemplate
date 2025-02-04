@@ -121,7 +121,7 @@ Database migrations are managed by
    [here](https://stackoverflow.com/questions/2920416/configure-bin-shm-bad-interpreter)).
    
    There are a few solutions to this issue:
-   1) Change `EOF` characters in shell scripts from `CRLF` (Windows) format to `LF` (Unix) format manually. Use your IDE settings to effectively change end of lines to LF. Make sure you saved the file afterwards.
+   1) Change `EOF` characters in shell scripts from `CRLF` (Windows) format to `LF` (Unix) format manually. Use your IDE settings to effectively change end of lines to LF. Make sure       you saved the file afterwards.
    2) Run 
    [dos2unix](https://dos2unix.sourceforge.io)
    program on scripts in `docker/development/scripts/` path.
