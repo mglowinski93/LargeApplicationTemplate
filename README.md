@@ -121,7 +121,12 @@ Database migrations are managed by
    [here](https://stackoverflow.com/questions/2920416/configure-bin-shm-bad-interpreter)).
    
    There are a few solutions to this issue:
-   1) Change `EOF` characters in shell scripts from `LF` (Unix) format to `CRLF` (Windows) format manually
-   2) Run 
+   1) Change `EOF` characters in shell scripts from `CRLF` (Windows) format to `LF` (Unix) format manually
+   2) If a shell script is used to run a python file and the following error happens:
+      ```shell
+      env: python\r: No such file or directory
+      ```
+      Change `EOF` characters from `CRLF` (Windows) format to `LF` (Unix) format manually in the python file used in the shell script. 
+   3) Run 
    [dos2unix](https://dos2unix.sourceforge.io)
    program on scripts in `docker/development/scripts/` path
