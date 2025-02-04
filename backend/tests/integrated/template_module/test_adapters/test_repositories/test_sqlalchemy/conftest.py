@@ -27,7 +27,10 @@ def template_sqlalchemy_factory(db_session: Session) -> Callable:
     def template_sqlalchemy_model(
         value: Optional[TemplateValue] = None,
     ) -> TemplateEntity:
-        TemplateSqlAlchemyModelFactory._meta.sqlalchemy_session = db_session
+        db_session
+        TemplateSqlAlchemyModelFactory._meta.sqlalchemy_session = (  # type: ignore
+            db_session
+        )
         instance = TemplateSqlAlchemyModelFactory(
             **{"value_data": {VALUE_NAME_IN_DATABASE: value.value}}
             if value is not None
@@ -35,7 +38,7 @@ def template_sqlalchemy_factory(db_session: Session) -> Callable:
         )
         db_session.commit()
 
-        return instance
+        return instance  # type: ignore
 
     return template_sqlalchemy_model
 
