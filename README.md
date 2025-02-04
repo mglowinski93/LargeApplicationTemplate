@@ -119,9 +119,9 @@ Database migrations are managed by
    scripts in `docker/development/scripts/` path may not be found, due to invalid `EOF` characters in shell scripts.
    (more details can be found
    [here](https://stackoverflow.com/questions/2920416/configure-bin-shm-bad-interpreter)).
-   
+
    There are a few solutions to this issue:
-   1) Change `EOF` characters in shell scripts from `LF` (Unix) format to `CRLF` (Windows) format manually
+   1) Manually change `EOF` characters from `CRLF` (Windows) format to `LF` (Unix) format
    2) Run 
    [dos2unix](https://dos2unix.sourceforge.io)
    program on scripts in `docker/development/scripts/` path
