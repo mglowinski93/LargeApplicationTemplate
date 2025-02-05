@@ -4,7 +4,7 @@ from .dtos import OutputTemplate
 from .mappers import map_template_entity_to_output_dto
 from ..domain.ports.dtos import TemplatesFilters
 from ..domain.value_objects import TEMPLATE_ID_TYPE
-from ..domain.ports.unit_of_work import UnitOfWork
+from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ...common.dtos import Ordering, OrderingEnum
 from ...common.pagination import Pagination
 
@@ -16,7 +16,7 @@ from ...common.pagination import Pagination
 
 
 def get_template(
-    unit_of_work: UnitOfWork,
+    unit_of_work: AbstractTemplatesUnitOfWork,
     template_id: TEMPLATE_ID_TYPE,
 ) -> OutputTemplate:
     with unit_of_work:
@@ -26,7 +26,7 @@ def get_template(
 
 
 def list_templates(
-    unit_of_work: UnitOfWork,
+    unit_of_work: AbstractTemplatesUnitOfWork,
     filters: Optional[TemplatesFilters] = None,
     ordering: Optional[list[Ordering]] = None,
     pagination: Optional[Pagination] = None,

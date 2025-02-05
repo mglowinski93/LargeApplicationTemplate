@@ -3,7 +3,7 @@ from ..domain.events.template import TemplateValueSet
 from .mappers import map_template_entity_to_output_dto
 from .template_message_bus import handle_event
 from ..domain import entities, value_objects
-from ..domain.ports.unit_of_work import UnitOfWork
+from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ..domain.value_objects import INITIAL_TEMPLATE_VERSION
 from ...common.time import get_current_utc_timestamp
 
@@ -17,7 +17,7 @@ from ...common.time import get_current_utc_timestamp
 
 
 def create_template(
-    unit_of_work: UnitOfWork,
+    unit_of_work: AbstractTemplatesUnitOfWork,
 ) -> (
     OutputTemplate
 ):  # It's correct to return data from command when no data are queried.
@@ -39,7 +39,7 @@ def create_template(
 
 
 def delete_template(
-    unit_of_work: UnitOfWork,
+    unit_of_work: AbstractTemplatesUnitOfWork,
     template_id: value_objects.TEMPLATE_ID_TYPE,
 ):
     with unit_of_work:
@@ -47,7 +47,7 @@ def delete_template(
 
 
 def set_template_value(
-    unit_of_work: UnitOfWork,
+    unit_of_work: AbstractTemplatesUnitOfWork,
     template_id: value_objects.TEMPLATE_ID_TYPE,
     value: value_objects.TemplateValue,
 ):
