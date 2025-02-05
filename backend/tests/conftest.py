@@ -59,7 +59,7 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 
 @pytest.fixture
 def template_entity() -> TemplateEntity:
-    return TemplateEntityFactory()  # type: ignore
+    return TemplateEntityFactory.create()  # type: ignore
 
 
 @pytest.fixture

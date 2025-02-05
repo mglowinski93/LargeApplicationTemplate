@@ -31,7 +31,7 @@ def template_sqlalchemy_factory(db_session: Session) -> Callable:
         TemplateSqlAlchemyModelFactory._meta.sqlalchemy_session = (  # type: ignore
             db_session
         )
-        instance = TemplateSqlAlchemyModelFactory(
+        instance = TemplateSqlAlchemyModelFactory.create(
             **{"value_data": {VALUE_NAME_IN_DATABASE: value.value}}
             if value is not None
             else {}
