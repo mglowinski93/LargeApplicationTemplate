@@ -4,10 +4,10 @@ import abc
 from .repository import TemplateRepository
 
 
-class UnitOfWork(abc.ABC):
+class AbstractTemplatesUnitOfWork(abc.ABC):
     templates: TemplateRepository
 
-    def __enter__(self) -> UnitOfWork:
+    def __enter__(self) -> AbstractTemplatesUnitOfWork:
         return self
 
     def __exit__(self, *args):

@@ -12,7 +12,7 @@ from . import forms as template_forms
 from ... import services
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
-from ...domain.ports.unit_of_work import UnitOfWork
+from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
 from ....common import consts, docstrings, pagination as pagination_utils
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
+def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
     """
     file: {0}/template_endpoints/get_template.yml
     """
@@ -61,7 +61,7 @@ def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 @api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def list_templates_endpoint(unit_of_work: UnitOfWork):
+def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
     """
     file: {0}/template_endpoints/list_templates.yml
     """
@@ -147,7 +147,7 @@ def list_templates_endpoint(unit_of_work: UnitOfWork):
 @api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def create_template_endpoint(unit_of_work: UnitOfWork):
+def create_template_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
     """
     file: {0}/template_endpoints/create_template.yml
     """
@@ -165,7 +165,7 @@ def create_template_endpoint(unit_of_work: UnitOfWork):
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
+def delete_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
     """
     file: {0}/template_endpoints/delete_template.yml
     """
@@ -202,7 +202,7 @@ def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def set_template_value_endpoint(template_id: str, unit_of_work: UnitOfWork):
+def set_template_value_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
     """
     file: {0}/template_endpoints/set_template_value.yml
     """
