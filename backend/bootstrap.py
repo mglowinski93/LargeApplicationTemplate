@@ -22,7 +22,7 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
 
 
 def inject_config(binder):
-    binder.bind_to_constructor("main_unit_of_work", SqlAlchemyTemplateUnitOfWork)
+    binder.bind_to_constructor("templates_unit_of_work", SqlAlchemyTemplateUnitOfWork)
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
 
 

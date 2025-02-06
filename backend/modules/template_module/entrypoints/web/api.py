@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 @api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="main_unit_of_work")
+@inject.params(unit_of_work="templates_unit_of_work")
 def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: {0}/template_endpoints/get_template.yml
@@ -60,7 +60,7 @@ def get_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 
 @api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="main_unit_of_work")
+@inject.params(unit_of_work="templates_unit_of_work")
 def list_templates_endpoint(unit_of_work: UnitOfWork):
     """
     file: {0}/template_endpoints/list_templates.yml
@@ -146,7 +146,7 @@ def list_templates_endpoint(unit_of_work: UnitOfWork):
 
 @api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="main_unit_of_work")
+@inject.params(unit_of_work="templates_unit_of_work")
 def create_template_endpoint(unit_of_work: UnitOfWork):
     """
     file: {0}/template_endpoints/create_template.yml
@@ -164,7 +164,7 @@ def create_template_endpoint(unit_of_work: UnitOfWork):
 
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="main_unit_of_work")
+@inject.params(unit_of_work="templates_unit_of_work")
 def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: {0}/template_endpoints/delete_template.yml
@@ -201,7 +201,7 @@ def delete_template_endpoint(template_id: str, unit_of_work: UnitOfWork):
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="main_unit_of_work")
+@inject.params(unit_of_work="templates_unit_of_work")
 def set_template_value_endpoint(template_id: str, unit_of_work: UnitOfWork):
     """
     file: {0}/template_endpoints/set_template_value.yml
