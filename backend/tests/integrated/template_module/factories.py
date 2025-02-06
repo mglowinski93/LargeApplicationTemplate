@@ -8,7 +8,9 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.value_objects import TEMPLATE_ID_TYPE
 from modules.template_module.domain.ports import TemplateRepository, exceptions
-from modules.template_module.domain.ports.unit_of_work import UnitOfWork
+from modules.template_module.domain.ports.unit_of_work import (
+    AbstractTemplatesUnitOfWork,
+)
 
 
 fake = Faker()
@@ -110,7 +112,7 @@ class FakeTemplateRepository(TemplateRepository):
         return set(list(templates)[start : start + pagination.records_per_page])
 
 
-class FakeTemplateUnitOfWork(UnitOfWork):
+class FakeTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
     def __init__(self, templates: list[TemplateEntity]):
         self.templates = FakeTemplateRepository(templates=templates)
         self.committed = False
