@@ -7,7 +7,7 @@ from ..adapters.repositories.sqlalchemy import SqlAlchemyTemplateRepository
 from ...common.database import get_session
 
 
-class SqlAlchemyTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
+class SqlAlchemyTemplatesUnitOfWork(AbstractTemplatesUnitOfWork):
     def __init__(self, session_factory: Callable = get_session):
         self.session_factory: Callable = session_factory
         self._session: Optional[Session] = None

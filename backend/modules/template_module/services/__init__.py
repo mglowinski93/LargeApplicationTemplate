@@ -1,6 +1,6 @@
 from .template_queries import get_template, list_templates
 from .template_services import create_template, delete_template, set_template_value
-from .unit_of_work import SqlAlchemyTemplateUnitOfWork
+from .unit_of_work import SqlAlchemyTemplatesUnitOfWork
 
 
 __all__ = [
@@ -9,5 +9,5 @@ __all__ = [
     "get_template",
     "list_templates",
     "set_template_value",
-    "SqlAlchemyTemplateUnitOfWork",
+    "SqlAlchemyTemplatesUnitOfWork",
 ]
