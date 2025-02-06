@@ -165,7 +165,9 @@ def create_template_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def delete_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
+def delete_template_endpoint(
+    template_id: str, unit_of_work: AbstractTemplatesUnitOfWork
+):
     """
     file: {0}/template_endpoints/delete_template.yml
     """
@@ -202,7 +204,9 @@ def delete_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUn
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(unit_of_work="templates_unit_of_work")
-def set_template_value_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
+def set_template_value_endpoint(
+    template_id: str, unit_of_work: AbstractTemplatesUnitOfWork
+):
     """
     file: {0}/template_endpoints/set_template_value.yml
     """
