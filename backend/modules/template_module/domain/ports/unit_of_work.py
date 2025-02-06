@@ -1,22 +1,6 @@
-from __future__ import annotations
-
 import abc
 from .repository import TemplateRepository
+from  modules.common.ports.unit_of_work import AbstractUnitOfWork
 
-
-class AbstractTemplatesUnitOfWork(abc.ABC):
+class AbstractTemplatesUnitOfWork(AbstractUnitOfWork, abc.ABC):
     templates: TemplateRepository
-
-    def __enter__(self) -> AbstractTemplatesUnitOfWork:
-        return self
-
-    def __exit__(self, *args):
-        self.rollback()
-
-    @abc.abstractmethod
-    def commit(self):
-        pass
-
-    @abc.abstractmethod
-    def rollback(self):
-        pass
