@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 
+
 class AbstractUnitOfWork(abc.ABC):
     def __enter__(self) -> AbstractUnitOfWork:
         return self
