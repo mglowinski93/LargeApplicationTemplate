@@ -13,7 +13,9 @@ from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
-from .....template_module.services.queries.ports.repository import AbstractTemplateQueryRepository
+from .....template_module.services.queries.ports.repository import (
+    AbstractTemplateQueryRepository,
+)
 
 
 class SqlAlchemyTemplateRepository(TemplateRepository):
@@ -72,9 +74,9 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
         )
 
         return templates, query.count()
-    
-class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
 
+
+class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
     def __init__(self, session):
         self.session = session
 
