@@ -17,3 +17,8 @@ class OutputTemplate:
             "value": self.value.value,
             "timestamp": self.timestamp,
         }
+
+
+@dataclass
+class DetailedOutputTemplate(OutputTemplate):
+    pass
