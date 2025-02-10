@@ -9,7 +9,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
 from modules.template_module.adapters.repositories.sqlalchemy import (
-    SqlAlchemyTemplateRepository,
+    SqlAlchemyTemplateDomainRepository,
 )
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
@@ -20,7 +20,7 @@ def test_repository_creates_template(
     db_session: Session, template_entity: TemplateEntity
 ):
     # Given
-    repository = SqlAlchemyTemplateRepository(db_session)
+    repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
     repository.save(template_entity)
@@ -36,7 +36,7 @@ def test_repository_updates_template(
 ):
     # Given
     template_entity = persistent_template_entity_factory(value=fake_template_value())
-    repository = SqlAlchemyTemplateRepository(db_session)
+    repository = SqlAlchemyTemplateDomainRepository(db_session)
     new_template_value = fake_template_value()
 
     # When
@@ -57,7 +57,7 @@ def test_repository_deletes_template(
 ):
     # Given
     template_entity = persistent_template_entity_factory(value=fake_template_value())
-    repository = SqlAlchemyTemplateRepository(db_session)
+    repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
     repository.delete(template_entity.id)
@@ -73,7 +73,7 @@ def test_repository_can_retrieve_template(
 ):
     # Given
     template_entity = persistent_template_entity_factory()
-    repository = SqlAlchemyTemplateRepository(db_session)
+    repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
     result = repository.get(template_entity.id)
@@ -91,7 +91,7 @@ def test_repository_lists_templates(
     template_entities = [
         persistent_template_entity_factory() for _ in range(number_of_templates)
     ]
-    repository = SqlAlchemyTemplateRepository(db_session)
+    repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
     results, total_number_of_results = repository.list(

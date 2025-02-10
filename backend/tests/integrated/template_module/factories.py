@@ -7,7 +7,7 @@ from modules.common.pagination import Pagination
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.value_objects import TEMPLATE_ID_TYPE
-from modules.template_module.domain.ports import TemplateRepository, exceptions
+from modules.template_module.domain.ports import AbstractTemplateDomainRepository, exceptions
 from modules.template_module.domain.ports.unit_of_work import (
     AbstractTemplatesUnitOfWork,
 )
@@ -16,7 +16,7 @@ from modules.template_module.domain.ports.unit_of_work import (
 fake = Faker()
 
 
-class FakeTemplateRepository(TemplateRepository):
+class FakeTemplateRepository(AbstractTemplateDomainRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 

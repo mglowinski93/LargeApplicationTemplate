@@ -8,7 +8,7 @@ from ....common.dtos import Ordering
 from ....common.pagination import Pagination
 
 
-class TemplateRepository(ABC):
+class AbstractTemplateDomainRepository(ABC):
     @abstractmethod
     def save(self, template: Template):
         """

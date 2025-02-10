@@ -8,7 +8,7 @@ from sqlalchemy_utils.functions import cast_if
 
 from .consts import VALUE_NAME_IN_DATABASE
 from .orm import Template as TemplateDb
-from ....domain.ports import TemplateRepository, exceptions, dtos as ports_dtos
+from ....domain.ports import AbstractTemplateDomainRepository, exceptions, dtos as ports_dtos
 from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from .....common.dtos import Ordering, OrderingEnum
@@ -18,7 +18,7 @@ from .....template_module.services.queries.ports.repository import (
 )
 
 
-class SqlAlchemyTemplateRepository(TemplateRepository):
+class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
     """
     See description of parent class to get more details.
     """
