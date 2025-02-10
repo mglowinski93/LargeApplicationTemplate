@@ -13,6 +13,7 @@ from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
+from .....template_module.services.queries.ports.repository import AbstractTemplateQueryRepository
 
 
 class SqlAlchemyTemplateRepository(TemplateRepository):
@@ -70,6 +71,35 @@ class SqlAlchemyTemplateRepository(TemplateRepository):
             session=self.session,
         )
 
+        return templates, query.count()
+    
+class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
+
+    def __init__(self, session):
+        self.session = session
+
+    def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
+        try:
+            return _map_template_db_to_template_entity(
+                self.session.query(TemplateDb).filter_by(id=template_id).one()
+            )
+        except NoResultFound as err:
+            raise exceptions.TemplateDoesNotExist(
+                f"Template with id '{template_id}' doesn't exist."
+            ) from err
+
+    def list(
+        self,
+        filters: ports_dtos.TemplatesFilters,
+        ordering: list[Ordering],
+        pagination: Optional[Pagination] = None,
+    ) -> tuple[list[TemplateEntity], int]:
+        templates, query = _get_templates(
+            filters=filters,
+            ordering=ordering,
+            pagination=pagination,
+            session=self.session,
+        )
         return templates, query.count()
 
 
