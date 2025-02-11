@@ -8,7 +8,11 @@ from sqlalchemy_utils.functions import cast_if
 
 from .consts import VALUE_NAME_IN_DATABASE
 from .orm import Template as TemplateDb
-from ....domain.ports import AbstractTemplateDomainRepository, exceptions, dtos as ports_dtos
+from ....domain.ports import (
+    AbstractTemplateDomainRepository,
+    exceptions,
+    dtos as ports_dtos,
+)
 from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from .....common.dtos import Ordering, OrderingEnum
@@ -53,7 +57,10 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
         try:
             return _map_template_db_to_template_entity(
-                self.session.query(TemplateDb).filter_by(id=template_id).with_for_update().one()
+                self.session.query(TemplateDb)
+                .filter_by(id=template_id)
+                .with_for_update()
+                .one()
             )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(

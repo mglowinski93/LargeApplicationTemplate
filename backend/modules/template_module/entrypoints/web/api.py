@@ -13,6 +13,7 @@ from ... import services
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
 from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
+from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplateQueryRepository
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
 from ....common import consts, docstrings, pagination as pagination_utils
@@ -23,8 +24,10 @@ logger = logging.getLogger(__name__)
 
 @api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
+@inject.params(query_repository="templates_query_repository")
+def get_template_endpoint(
+    template_id: str, query_repository: SqlAlchemyTemplateQueryRepository
+):
     """
     file: {0}/template_endpoints/get_template.yml
     """
@@ -44,7 +47,7 @@ def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitO
 
     try:
         template = services.get_template(
-            unit_of_work=unit_of_work,
+            query_repository=query_repository,
             template_id=template_id,  # type: ignore
         )
         logger.debug("Template '%s' found.", template_id)
@@ -60,8 +63,8 @@ def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitO
 
 @api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
+@inject.params(query_repository="templates_query_repository")
+def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository):
     """
     file: {0}/template_endpoints/list_templates.yml
     """
@@ -114,7 +117,7 @@ def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
     )
 
     templates, all_templates_count = services.list_templates(
-        unit_of_work=unit_of_work,
+        query_repository=query_repository,
         filters=filters,
         ordering=ordering,
         pagination=pagination,

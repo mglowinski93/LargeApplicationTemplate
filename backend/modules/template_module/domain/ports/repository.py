@@ -38,6 +38,8 @@ class AbstractTemplateDomainRepository(ABC):
 
         pass
 
+    #TODO list method to be deleted. Remember to unhook in all places and possibly switch with QueryRepository.
+
     @abstractmethod
     def list(
         self,

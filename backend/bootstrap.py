@@ -13,6 +13,9 @@ from config import config, swagger_template, swagger_config, Config
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database
 from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
+from modules.template_module.adapters.repositories.sqlalchemy import (
+    SqlAlchemyTemplateQueryRepository,
+)
 
 
 def get_configuration(environment_name: Optional[str] = None) -> Config:
@@ -23,6 +26,9 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
 
 def inject_config(binder):
     binder.bind_to_constructor("templates_unit_of_work", SqlAlchemyTemplatesUnitOfWork)
+    binder.bind_to_constructor(
+        "templates_query_repository", SqlAlchemyTemplateQueryRepository
+    )
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
 
 

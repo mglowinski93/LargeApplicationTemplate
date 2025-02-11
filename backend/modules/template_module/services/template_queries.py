@@ -4,23 +4,22 @@ from .dtos import OutputTemplate
 from .mappers import map_template_entity_to_output_dto
 from ..domain.ports.dtos import TemplatesFilters
 from ..domain.value_objects import TEMPLATE_ID_TYPE
-from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ...common.dtos import Ordering, OrderingEnum
 from ...common.pagination import Pagination
+from ...template_module.adapters.repositories.sqlalchemy import (
+    SqlAlchemyTemplateQueryRepository,
+)
 
 
 def get_template(
-    unit_of_work: AbstractTemplatesUnitOfWork,
+    query_repository: SqlAlchemyTemplateQueryRepository,
     template_id: TEMPLATE_ID_TYPE,
 ) -> OutputTemplate:
-    with unit_of_work:
-        return map_template_entity_to_output_dto(
-            unit_of_work.templates.get(template_id)
-        )
+    return map_template_entity_to_output_dto(query_repository.get(template_id))
 
 
 def list_templates(
-    unit_of_work: AbstractTemplatesUnitOfWork,
+    query_repository: SqlAlchemyTemplateQueryRepository,
     filters: Optional[TemplatesFilters] = None,
     ordering: Optional[list[Ordering]] = None,
     pagination: Optional[Pagination] = None,
@@ -31,8 +30,8 @@ def list_templates(
     if ordering is None:
         ordering = [Ordering(field="timestamp", order=OrderingEnum.DESCENDING)]
 
-    with unit_of_work:
-        templates, all_templates_count = unit_of_work.templates.list(
+    with query_repository:
+        templates, all_templates_count = query_repository.list(
             filters=filters,
             ordering=ordering,
             pagination=pagination,

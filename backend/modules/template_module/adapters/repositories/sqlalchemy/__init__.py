@@ -1,4 +1,7 @@
-from .repository import SqlAlchemyTemplateDomainRepository
+from .repository import (
+    SqlAlchemyTemplateDomainRepository,
+    SqlAlchemyTemplateQueryRepository,
+)
 
 
-__all__ = ["SqlAlchemyTemplateDomainRepository"]
+__all__ = ["SqlAlchemyTemplateDomainRepository", "SqlAlchemyTemplateQueryRepository"]
