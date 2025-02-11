@@ -1,7 +1,7 @@
 from typing import Optional
 
-from .dtos import OutputTemplate
-from .mappers import map_template_entity_to_output_dto
+from .dtos import OutputTemplate, DetailedOutputTemplate
+from .mappers import map_template_entity_to_output_dto, map_template_entity_to_output_detailed_dto
 from ..domain.ports.dtos import TemplatesFilters
 from ..domain.value_objects import TEMPLATE_ID_TYPE
 from ...common.dtos import Ordering, OrderingEnum
@@ -14,8 +14,8 @@ from ...template_module.adapters.repositories.sqlalchemy import (
 def get_template(
     query_repository: SqlAlchemyTemplateQueryRepository,
     template_id: TEMPLATE_ID_TYPE,
-) -> OutputTemplate:
-    return map_template_entity_to_output_dto(query_repository.get(template_id))
+) -> DetailedOutputTemplate:
+    return map_template_entity_to_output_detailed_dto(query_repository.get(template_id))
 
 
 def list_templates(
