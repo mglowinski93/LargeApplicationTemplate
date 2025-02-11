@@ -37,19 +37,3 @@ class AbstractTemplateDomainRepository(ABC):
         """
 
         pass
-
-    #TODO list method to be deleted. Remember to unhook in all places and possibly switch with QueryRepository.
-
-    @abstractmethod
-    def list(
-        self,
-        filters: TemplatesFilters,
-        ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
-    ) -> tuple[list[Template], int]:
-        """
-        :return: List of all templates and
-                 total count of templates matching given filters.
-        """
-
-        pass

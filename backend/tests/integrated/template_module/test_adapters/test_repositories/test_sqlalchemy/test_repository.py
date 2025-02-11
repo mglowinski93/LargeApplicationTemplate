@@ -81,27 +81,3 @@ def test_repository_can_retrieve_template(
     # Then
     assert isinstance(result, TemplateEntity)
     assert result == template_entity
-
-
-def test_repository_lists_templates(
-    db_session: Session, persistent_template_entity_factory: Callable
-):
-    # Given
-    number_of_templates = 3
-    template_entities = [
-        persistent_template_entity_factory() for _ in range(number_of_templates)
-    ]
-    repository = SqlAlchemyTemplateDomainRepository(db_session)
-
-    # When
-    results, total_number_of_results = repository.list(
-        filters=TemplatesFilters(),
-        ordering=[],
-        pagination=None,
-    )
-
-    # Then
-    assert isinstance(results, list)
-    assert all(isinstance(result, TemplateEntity) for result in results)
-    assert set(results) == set(template_entities)
-    assert total_number_of_results == number_of_templates

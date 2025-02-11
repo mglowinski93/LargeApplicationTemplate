@@ -67,21 +67,6 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
                 f"Template with id '{template_id}' doesn't exist."
             ) from err
 
-    def list(
-        self,
-        filters: ports_dtos.TemplatesFilters,
-        ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
-    ) -> tuple[list[TemplateEntity], int]:
-        templates, query = _get_templates(
-            filters=filters,
-            ordering=ordering,
-            pagination=pagination,
-            session=self.session,
-        )
-
-        return templates, query.count()
-
 
 class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
     def __init__(self, session):
