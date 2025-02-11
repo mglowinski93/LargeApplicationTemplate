@@ -1,3 +1,4 @@
+import pytest
 from typing import Callable
 
 from sqlalchemy.orm import Session
@@ -10,13 +11,15 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
 )
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateDomainRepository,
+    SqlAlchemyTemplateQueryRepository,
 )
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
-from ......factories import fake_template_value
+from modules.template_module.domain.ports import exceptions
+from ......factories import fake_template_value, fake_template_id
 
 
-def test_repository_creates_template(
+def test_domain_repository_creates_template(
     db_session: Session, template_entity: TemplateEntity
 ):
     # Given
@@ -31,7 +34,7 @@ def test_repository_creates_template(
     assert result.id == template_entity.id
 
 
-def test_repository_updates_template(
+def test_domain_repository_updates_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
@@ -52,7 +55,7 @@ def test_repository_updates_template(
     assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
 
 
-def test_repository_deletes_template(
+def test_domain_repository_deletes_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
@@ -68,7 +71,7 @@ def test_repository_deletes_template(
     assert result is None
 
 
-def test_repository_can_retrieve_template(
+def test_domain_repository_can_retrieve_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
@@ -81,3 +84,53 @@ def test_repository_can_retrieve_template(
     # Then
     assert isinstance(result, TemplateEntity)
     assert result == template_entity
+
+
+def test_query_repository_can_retrieve_template(
+    db_session: Session, persistent_template_entity_factory: Callable
+):
+    # Given
+    template_entity = persistent_template_entity_factory()
+    repository = SqlAlchemyTemplateQueryRepository(db_session)
+
+    # When
+    result = repository.get(template_entity.id)
+
+    # Then
+    assert isinstance(result, TemplateEntity)
+    assert result == template_entity
+
+
+def test_query_repository_raises_exception_when_template_does_not_exist(
+    db_session: Session,
+):
+    # Given
+    repository = SqlAlchemyTemplateQueryRepository(db_session)
+
+    # When
+    with pytest.raises(exceptions.TemplateDoesNotExist) as exception_information:
+        repository.get(template_id=fake_template_id())
+
+
+def test_query_repository_lists_templates(
+    db_session: Session, persistent_template_entity_factory: Callable
+):
+    # Given
+    number_of_templates = 3
+    template_entities = [
+        persistent_template_entity_factory() for _ in range(number_of_templates)
+    ]
+    repository = SqlAlchemyTemplateQueryRepository(db_session)
+
+    # When
+    results, total_number_of_results = repository.list(
+        filters=TemplatesFilters(),
+        ordering=[],
+        pagination=None,
+    )
+
+    # Then
+    assert isinstance(results, list)
+    assert all(isinstance(result, TemplateEntity) for result in results)
+    assert set(results) == set(template_entities)
+    assert total_number_of_results == number_of_templates

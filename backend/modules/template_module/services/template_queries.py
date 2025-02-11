@@ -1,7 +1,10 @@
 from typing import Optional
 
 from .dtos import OutputTemplate, DetailedOutputTemplate
-from .mappers import map_template_entity_to_output_dto, map_template_entity_to_output_detailed_dto
+from .mappers import (
+    map_template_entity_to_output_dto,
+    map_template_entity_to_output_detailed_dto,
+)
 from ..domain.ports.dtos import TemplatesFilters
 from ..domain.value_objects import TEMPLATE_ID_TYPE
 from ...common.dtos import Ordering, OrderingEnum
