@@ -26,7 +26,7 @@ class FakeTemplateRepository(AbstractTemplateDomainRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 
-    def save(self, template: TemplateEntity):
+    def create(self, template: TemplateEntity):
         # Template entities can be compared, due ot that hash method is implemented.
         if template in self._templates:
             self._templates.remove(template)

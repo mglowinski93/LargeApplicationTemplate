@@ -10,9 +10,18 @@ from ....common.pagination import Pagination
 
 class AbstractTemplateDomainRepository(ABC):
     @abstractmethod
-    def save(self, template: Template):
+    def create(self, template: Template):
         """
         :param template: Template to save.
+        :return:
+        """
+
+        pass
+
+    @abstractmethod
+    def update(self, template: Template):
+        """
+        :param template: Template to update.
         :return:
         """
 

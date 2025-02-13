@@ -26,7 +26,7 @@ def test_domain_repository_creates_template(
     repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
-    repository.save(template_entity)
+    repository.create(template_entity)
     db_session.commit()
 
     # Then
@@ -44,7 +44,7 @@ def test_domain_repository_updates_template(
 
     # When
     template_entity.set_value(value=new_template_value)
-    repository.save(template_entity)
+    repository.create(template_entity)
     db_session.commit()
 
     # Then

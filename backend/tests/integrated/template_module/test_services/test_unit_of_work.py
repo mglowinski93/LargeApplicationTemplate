@@ -36,7 +36,7 @@ def test_unit_of_work_can_save_template(
 
     # When
     with unit_of_work:
-        unit_of_work.templates.save(template_entity)
+        unit_of_work.templates.create(template_entity)
 
     # Then
     assert db_session_factory().get(TemplateDb, template_id)
@@ -52,7 +52,7 @@ def test_unit_of_work_rollbacks_when_exception_occur(
     # When
     with pytest.raises(Exception):
         with unit_of_work:
-            unit_of_work.templates.save(template_entity)
+            unit_of_work.templates.create(template_entity)
             raise Exception
 
     # Then

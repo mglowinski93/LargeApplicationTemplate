@@ -33,7 +33,7 @@ def create_template(
     output = map_template_entity_to_output_dto(template)
 
     with unit_of_work:
-        unit_of_work.templates.save(template)
+        unit_of_work.templates.create(template)
 
     return output
 
@@ -64,7 +64,7 @@ def set_template_value(
     with unit_of_work:
         template = unit_of_work.templates.get(template_id)
         entities.set_template_value(template=template, value=value)
-        unit_of_work.templates.save(template)
+        unit_of_work.templates.create(template)
 
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:
