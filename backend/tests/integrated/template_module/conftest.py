@@ -3,7 +3,7 @@ from typing import Callable
 import pytest
 
 from modules.template_module.domain.entities import Template as TemplateEntity
-from .factories import (
+from .fakers import (
     FakeTemplateRepository,
     FakeTemplateQueryRepository,
     FakeTemplateUnitOfWork,
