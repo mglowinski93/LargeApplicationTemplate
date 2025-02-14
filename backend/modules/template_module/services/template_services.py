@@ -1,7 +1,16 @@
 from .dtos import OutputTemplate
-from ..domain.events.template import TemplateValueSet
+from ..domain.events.template import (
+    TemplateValueSet,
+    TemplateCreated,
+    TemplateDeleted, 
+)
+from ..domain.commands.template import (
+    SetTemplateValue,
+    CreateTemplate,
+    DeleteTemplate, 
+)
 from .mappers import map_template_entity_to_output_dto
-from .template_message_bus import handle_event
+from .template_message_bus import handle
 from ..domain import entities, value_objects
 from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ..domain.value_objects import INITIAL_TEMPLATE_VERSION
@@ -18,6 +27,7 @@ from ...common.time import get_current_utc_timestamp
 
 def create_template(
     unit_of_work: AbstractTemplatesUnitOfWork,
+    command: CreateTemplate,
 ) -> (
     OutputTemplate
 ):  # It's correct to return data from command when no data are queried.
@@ -34,22 +44,23 @@ def create_template(
 
     with unit_of_work:
         unit_of_work.templates.create(template)
+        handle(TemplateCreated(template_id=template.id, timestamp=template.timestamp))
 
     return output
 
 
 def delete_template(
     unit_of_work: AbstractTemplatesUnitOfWork,
-    template_id: value_objects.TEMPLATE_ID_TYPE,
+    command: DeleteTemplate,
 ):
     with unit_of_work:
-        unit_of_work.templates.delete(template_id)
+        unit_of_work.templates.delete(command.template_id)
+        handle(TemplateDeleted(template_id=command.template_id))
 
 
 def set_template_value(
     unit_of_work: AbstractTemplatesUnitOfWork,
-    template_id: value_objects.TEMPLATE_ID_TYPE,
-    value: value_objects.TemplateValue,
+    command: SetTemplateValue,
 ):
     """
     Allocate here invokes of business logic related to particular action,
@@ -62,12 +73,12 @@ def set_template_value(
     """
 
     with unit_of_work:
-        template = unit_of_work.templates.get(template_id)
-        entities.set_template_value(template=template, value=value)
+        template = unit_of_work.templates.get(command.template_id)
+        entities.set_template_value(template=template, value=command.value)
         unit_of_work.templates.create(template)
 
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
         # Moreover, in this example we don't care much about
-        handle_event(TemplateValueSet(template_id=template.id, value=value))
+        handle(TemplateValueSet(template_id=template.id, value=command.value))

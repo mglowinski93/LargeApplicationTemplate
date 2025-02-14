@@ -1,8 +1,9 @@
+import inspect
 import logging
 import os
 import signal
 import sys
-from typing import Optional
+from typing import Callable, Optional
 
 import inject
 from flask import Blueprint
@@ -22,6 +23,38 @@ def get_configuration(environment_name: Optional[str] = None) -> Config:
     if environment_name is None:
         environment_name = os.environ["ENVIRONMENT"]
     return config[environment_name]()
+
+
+def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Callable:
+    all_function_parameters = inspect.signature(handler).parameters
+    dependencies = {
+        parameter_name: bindings[parameter_name]()
+        for parameter_name, parameter_value in all_function_parameters.items()
+        if parameter_name in bindings
+    }
+
+    def wrapper(*args, **kwargs):
+        try:
+            return handler(
+                **dependencies,
+                **{
+                    parameter_name: args[index]
+                    for index, (parameter_name, parameter_value) in enumerate(
+                        {
+                            parameter_name: parameter_value
+                            for parameter_name, parameter_value in all_function_parameters.items()
+                            if parameter_name not in dependencies
+                        }.items()
+                    )
+                },
+                **kwargs,
+            )
+        except IndexError as err:
+            raise RuntimeError(
+                "Could not find dependency (or dependencies) to inject into handler function based on it's signature."
+            ) from err
+
+    return wrapper
 
 
 def inject_config(binder):

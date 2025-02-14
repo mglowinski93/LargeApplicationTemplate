@@ -1,25 +1,24 @@
-import datetime
 from dataclasses import dataclass
 
 from ..value_objects import TEMPLATE_ID_TYPE, TemplateValue
-from ....common.domain.events import Event
+from ....common.domain.commands import Command
 
 
 @dataclass(frozen=True)
-class TemplateBaseEvent(Event):
+class TemplateBaseCommand(Command):
     template_id: TEMPLATE_ID_TYPE
 
 
 @dataclass(frozen=True)
-class TemplateValueSet(TemplateBaseEvent):
+class SetTemplateValue(TemplateBaseCommand):
     value: TemplateValue
 
 
 @dataclass(frozen=True)
-class TemplateCreated(TemplateBaseEvent):
-    timestamp: datetime
+class CreateTemplate(TemplateBaseCommand):
+    pass
 
 
 @dataclass(frozen=True)
-class TemplateDeleted(TemplateBaseEvent):
+class DeleteTemplate(TemplateBaseCommand):
     pass
