@@ -3,6 +3,7 @@ import logging
 import os
 import signal
 import sys
+from collections import defaultdict
 from typing import Callable, Optional
 
 import inject
@@ -13,9 +14,15 @@ from flask import Flask
 from config import config, swagger_template, swagger_config, Config
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database
+from modules.common.domain.events import Event as DomainEvent
 from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateQueryRepository,
+)
+from modules.template_module.services.template_message_bus import MessageBus
+from modules.template_module.services.template_handlers import (
+    EVENT_HANDLERS,
+    COMMAND_HANDLERS,
 )
 
 
@@ -63,6 +70,49 @@ def inject_config(binder):
         "templates_query_repository", SqlAlchemyTemplateQueryRepository
     )
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
+    binder.bind(
+        "message_bus",
+        MessageBus(
+            event_handlers=_parse_event_handlers(
+                handlers=[
+                    EVENT_HANDLERS,
+                ],
+                bindings=binder._bindings,
+            ),
+            command_handlers={
+                event: inject_dependencies_into_handlers(
+                    handler=handler, bindings=binder._bindings
+                )
+                for handler_ in [
+                    COMMAND_HANDLERS,
+                ]
+                for event, handler in handler_.items()
+            },
+        ),
+    )
+
+
+def _parse_event_handlers(
+    handlers: list[
+        dict[
+            type[DomainEvent],
+            list[Callable],
+        ]
+    ],
+    bindings: dict,
+) -> dict:
+    results: dict[type[DomainEvent], list[Callable]] = defaultdict(list)
+
+    for _handlers in handlers:
+        for key, _event_handlers in _handlers.items():
+            results[key].extend(
+                inject_dependencies_into_handlers(
+                    handler=_event_handler, bindings=bindings
+                )
+                for _event_handler in _event_handlers
+            )
+
+    return results
 
 
 def close_app_cleanup():

@@ -37,7 +37,7 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
         if template_instance is None:
             self.session.add(_map_template_entity_to_template_db(template))
             return
-        
+
     def update(self, template: TemplateEntity) -> None:
         try:
             template_instance = (
@@ -47,12 +47,12 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
             raise exceptions.TemplateDoesNotExist(
                 f"Cannot update template with id '{template.id}', because it doesn't exist."
             ) from err
-        
+
         for key, value in _map_template_entity_to_template_db(
             template
         ).__dict__.items():
             if key != "_sa_instance_state":
-                setattr(template_instance, key, value)       
+                setattr(template_instance, key, value)
 
     def delete(self, template_id: TEMPLATE_ID_TYPE):
         try:

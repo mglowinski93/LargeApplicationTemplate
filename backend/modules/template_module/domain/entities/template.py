@@ -29,6 +29,7 @@ class Template:
         self._value: TemplateValue = TemplateValue(value=None)
         self.timestamp = timestamp
         self.version = version
+        self.messages = []
 
     @property
     def value(self) -> TemplateValue:

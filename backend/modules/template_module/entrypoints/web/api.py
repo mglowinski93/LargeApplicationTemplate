@@ -13,7 +13,7 @@ from ... import services
 from ...domain.commands.template import SetTemplateValue, CreateTemplate, DeleteTemplate
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
-from ...services.template_message_bus import handle
+from ...services.template_message_bus import MessageBus
 from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplateQueryRepository
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
@@ -150,14 +150,15 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository)
 
 @api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-def create_template_endpoint():
+@inject.params(message_bus="message_bus")
+def create_template_endpoint(message_bus: MessageBus):
     """
     file: {0}/template_endpoints/create_template.yml
     """
 
     logger.info("Creating a new template.")
 
-    template = handle(CreateTemplate())
+    template = message_bus.handle(CreateTemplate())
 
     logger.info("Template '%s' created.", template.id)
 
@@ -166,7 +167,8 @@ def create_template_endpoint():
 
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-def delete_template_endpoint(template_id: str):
+@inject.params(message_bus="message_bus")
+def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     """
     file: {0}/template_endpoints/delete_template.yml
     """
@@ -183,9 +185,9 @@ def delete_template_endpoint(template_id: str):
             ),
             HTTPStatus.BAD_REQUEST,
         )
-    
+
     try:
-        handle(DeleteTemplate(template_id=template_id))
+        message_bus.handle(DeleteTemplate(template_id=template_id))
         logger.debug("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
@@ -199,7 +201,8 @@ def delete_template_endpoint(template_id: str):
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-def set_template_value_endpoint(template_id: str):
+@inject.params(message_bus="message_bus")
+def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """
     file: {0}/template_endpoints/set_template_value.yml
     """
@@ -232,7 +235,9 @@ def set_template_value_endpoint(template_id: str):
 
     try:
         logger.info("Setting value for template '%s'.", template_id)
-        handle(SetTemplateValue(template_id=template_id, value=template_value))
+        message_bus.handle(
+            SetTemplateValue(template_id=template_id, value=template_value)
+        )
         logger.info("Value '%s' set for template '%s'.", template_value, template_id)
     except domain_exceptions.InvalidTemplateValue:
         logger.warning(

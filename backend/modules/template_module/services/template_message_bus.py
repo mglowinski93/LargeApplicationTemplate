@@ -1,78 +1,69 @@
-import logging
-from typing import Callable
+from collections import deque
+from typing import Any, Callable, Sequence, Type
 
-import inject
+from ..domain.entities.template import Template
+from ...common.domain.events import Event as DomainEvent
+from ...common.domain.commands import Command as DomainCommand
 
-from ..domain.events.template import (
-    TemplateValueSet,
-    TemplateCreated,
-    TemplateDeleted,
-)
-from ..domain.commands.template import (
-    SetTemplateValue,
-    CreateTemplate,
-    DeleteTemplate,
-)
-from ...common.domain.events import Event
-from ...common.domain.commands import Command
-from ...common.domain.ports import TaskDispatcher
-from .template_services import (
-    set_template_value,
-    create_template,
-    delete_template,
-)
+Message = DomainEvent | DomainCommand
 
 
-logger = logging.getLogger(__name__)
-Message = Event | Command
+class MessageBus:
+    def __init__(
+        self,
+        event_handlers: dict[Type[DomainEvent], list[Callable]],
+        command_handlers: dict[Type[DomainCommand], Callable],
+    ):
+        self.event_handlers = event_handlers
+        self.command_handlers = command_handlers
+        self.queue: deque[Message] = deque()
 
+    def handle(self, messages: Sequence[Message]):
+        self.queue.extend(messages)
 
-@inject.params(task_dispatcher="main_task_dispatcher")
-def send_template_value_set_notification(
-    event: TemplateValueSet, task_dispatcher: TaskDispatcher
-):
-    logger.debug("Dispatching email about setting template value.")
-    task_dispatcher.send_email(
-        f"Template value set to '{event.value.value}' for template {event.template_id}."
-    )
-    logger.debug("Email about setting template value dispatched.")
+        while self.queue:
+            message = self.queue.popleft()
 
+            if isinstance(message, DomainEvent):
+                self.handle_event(message)
+            elif isinstance(message, DomainCommand):
+                self.handle_command(message)
+            else:
+                raise NotImplementedError(
+                    f"Message type '{type(message)}' not supported."
+                )
 
-def handle_event(event: Event):
-    for handler in EVENT_HANDLERS[type(event)]:
-        handler(event)
+    def handle_event(self, event: DomainEvent):
+        try:
+            handlers = self.event_handlers[type(event)]
+        except KeyError as err:
+            raise NotImplementedError(
+                f"Event type '{type(event)}' not supported."
+            ) from err
 
+        for handler in handlers:
+            result = handler(event)
 
-def handle_command(command: Command):
-    try:
-        handler = COMMAND_HANDLERS[type(command)]
-        result = handler(command)
-        return result
-    except Exception as exception:
-        logger.exception("Exception handling command %s", command)
-        raise exception
+            self._collect_new_messages(result)
 
+    def handle_command(self, command: DomainCommand):
+        try:
+            result = self.command_handlers[type(command)](command)
+        except KeyError as err:
+            raise NotImplementedError(
+                f"Command type '{type(command)}' not supported."
+            ) from err
 
-def handle(
-    message: Message
-):
-    if isinstance(message, Event):
-        handle_event(message)
-    elif isinstance(message, Command):
-        handle_command(message)
-    else:
-        raise Exception(f"{message} was not an Event or Command.")
+        self._collect_new_messages(result)
 
-
-EVENT_HANDLERS: dict[type[Event], list[Callable]] = {
-    TemplateValueSet: [send_template_value_set_notification],
-    TemplateCreated: [],
-    TemplateDeleted: [],
-}
-
-
-COMMAND_HANDLERS: dict[type[Command], list[Callable]] = {
-    SetTemplateValue: [set_template_value],
-    CreateTemplate: [create_template],
-    DeleteTemplate: [delete_template],
-}
+    def _collect_new_messages(self, result: Any):
+        if isinstance(result, Message):
+            self.queue.append(result)
+        elif isinstance(result, Sequence):
+            self.queue.extend(
+                message for message in result if isinstance(message, Message)
+            )
+        elif isinstance(result, Template):
+            self.queue.extend(
+                message for message in result.messages if isinstance(message, Message)
+            )
