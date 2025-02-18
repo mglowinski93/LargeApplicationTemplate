@@ -10,7 +10,7 @@ from ..domain.commands.template import (
     DeleteTemplate,
 )
 from .mappers import map_template_entity_to_output_dto
-from .template_message_bus import MessageBus
+from ...common.message_bus import MessageBus
 from ..domain import entities, value_objects
 from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ..domain.value_objects import INITIAL_TEMPLATE_VERSION

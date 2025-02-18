@@ -13,7 +13,7 @@ from ... import services
 from ...domain.commands.template import SetTemplateValue, CreateTemplate, DeleteTemplate
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
-from ...services.template_message_bus import MessageBus
+from ....common.message_bus import MessageBus
 from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplateQueryRepository
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms

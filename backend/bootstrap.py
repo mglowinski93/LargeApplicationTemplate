@@ -19,7 +19,7 @@ from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateQueryRepository,
 )
-from modules.template_module.services.template_message_bus import MessageBus
+from backend.modules.common.message_bus import MessageBus
 from modules.template_module.services.template_handlers import (
     EVENT_HANDLERS,
     COMMAND_HANDLERS,
