@@ -15,14 +15,6 @@ from .factories import TemplateSqlAlchemyModelFactory
 
 
 @pytest.fixture
-def db_session(raw_db_session):
-    # Add here logic responsible for additional ORM configuration
-    # e.g. mappers setup: https://docs.sqlalchemy.org/en/13/orm/mapping_styles.html#classical-mappings.
-
-    yield raw_db_session
-
-
-@pytest.fixture
 def template_sqlalchemy_factory(db_session: Session) -> Callable:
     def template_sqlalchemy_model(
         value: Optional[TemplateValue] = None,

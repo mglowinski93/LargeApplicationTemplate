@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from dataclasses import dataclass
 
 from ..value_objects import TEMPLATE_ID_TYPE, TemplateValue

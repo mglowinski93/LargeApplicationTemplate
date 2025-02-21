@@ -11,7 +11,7 @@ from ..domain.commands.template import (
 )
 from .mappers import map_template_entity_to_output_dto
 from ...common.message_bus import MessageBus
-from ..domain import entities, value_objects
+from ..domain import entities
 from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ..domain.value_objects import INITIAL_TEMPLATE_VERSION
 from ...common.time import get_current_utc_timestamp
@@ -26,9 +26,9 @@ from ...common.time import get_current_utc_timestamp
 
 
 def create_template(
-    unit_of_work: AbstractTemplatesUnitOfWork,
-    command: CreateTemplate,
+    templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
+    command: CreateTemplate,
 ) -> (
     OutputTemplate
 ):  # It's correct to return data from command when no data are queried.
@@ -43,27 +43,35 @@ def create_template(
     )
     output = map_template_entity_to_output_dto(template)
 
-    with unit_of_work:
-        unit_of_work.templates.create(template)
-        message_bus.handle(TemplateCreated(template_id=template.id, timestamp=template.timestamp))
+    with templates_unit_of_work:
+        templates_unit_of_work.templates.create(template)
+        message_bus.handle(
+            messages=(
+                TemplateCreated(template_id=template.id, timestamp=template.timestamp),
+            )
+        )
 
     return output
 
 
 def delete_template(
-    unit_of_work: AbstractTemplatesUnitOfWork,
-    command: DeleteTemplate,
+    templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
+    command: DeleteTemplate,
 ):
-    with unit_of_work:
-        unit_of_work.templates.delete(command.template_id)
-        message_bus.handle(TemplateDeleted(template_id=command.template_id))
+    with templates_unit_of_work:
+        templates_unit_of_work.templates.delete(command.template_id)
+        message_bus.handle(
+            messages=[
+                TemplateDeleted(template_id=command.template_id),
+            ]
+        )
 
 
 def set_template_value(
-    unit_of_work: AbstractTemplatesUnitOfWork,
-    command: SetTemplateValue,
+    templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
+    command: SetTemplateValue,
 ):
     """
     Allocate here invokes of business logic related to particular action,
@@ -75,13 +83,17 @@ def set_template_value(
     that doesn't belong neither to the domain layer nor to the infrastructure layer.
     """
 
-    with unit_of_work:
-        template = unit_of_work.templates.get(command.template_id)
+    with templates_unit_of_work:
+        template = templates_unit_of_work.templates.get(command.template_id)
         entities.set_template_value(template=template, value=command.value)
-        unit_of_work.templates.create(template)
+        templates_unit_of_work.templates.create(template)
 
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
         # Moreover, in this example we don't care much about
-        message_bus.handle(TemplateValueSet(template_id=template.id, value=command.value))
+        message_bus.handle(
+            messages=[
+                TemplateValueSet(template_id=template.id, value=command.value),
+            ]
+        )

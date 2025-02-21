@@ -1,7 +1,7 @@
 import threading
 
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import session
 
 
 class TestThread(threading.Thread):
@@ -20,7 +20,7 @@ class TestThread(threading.Thread):
         except BaseException as err:
             self.exc = err
         finally:
-            Session.close()
+            session.close_all_sessions()
 
     def join(self, timeout=None):
         super(TestThread, self).join(timeout)

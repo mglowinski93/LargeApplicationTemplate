@@ -1,11 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
-from .dtos import TemplatesFilters
 from ..entities import Template
 from ..value_objects import TEMPLATE_ID_TYPE
-from ....common.dtos import Ordering
-from ....common.pagination import Pagination
 
 
 class AbstractTemplateDomainRepository(ABC):
@@ -21,6 +17,7 @@ class AbstractTemplateDomainRepository(ABC):
     @abstractmethod
     def update(self, template: Template):
         """
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template: Template to update.
         :return:
         """

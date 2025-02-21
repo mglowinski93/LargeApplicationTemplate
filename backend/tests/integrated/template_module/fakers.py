@@ -1,9 +1,13 @@
-from typing import Optional, List
+from collections import deque
+from typing import Optional, List, Sequence
 
 from faker import Faker
 
 from modules.common.dtos import Ordering, OrderingEnum
+from modules.common.message_bus import MessageBus, Message
 from modules.common.pagination import Pagination
+from modules.common.domain.events import Event as DomainEvent
+from modules.common.domain.commands import Command as DomainCommand
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.value_objects import TEMPLATE_ID_TYPE
@@ -17,6 +21,10 @@ from modules.template_module.domain.ports.unit_of_work import (
 from modules.template_module.services.queries.ports import (
     AbstractTemplateQueryRepository,
 )
+from modules.template_module.domain.events.template import TemplateValueSet
+
+
+from tests.factories import FakeTaskDispatcher
 
 
 fake = Faker()
@@ -44,6 +52,10 @@ class FakeTemplateRepository(AbstractTemplateDomainRepository):
             raise exceptions.TemplateDoesNotExist(
                 f"Template with id '{template_id}' doesn't exist."
             ) from err
+
+    def update(self, template: TemplateEntity):
+        self._templates.remove(self.get(template_id=template.id))
+        self._templates.add(template)
 
 
 class FakeTemplateQueryRepository(AbstractTemplateQueryRepository):
@@ -142,4 +154,30 @@ class FakeTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
         self.committed = True
 
     def rollback(self):
+        pass
+
+
+class FakeMessageBus(MessageBus):
+    def __init__(self, fake_task_dispatcher: FakeTaskDispatcher):
+        self.queue: deque[Message] = deque()
+        self.fake_task_dispatcher = fake_task_dispatcher
+
+    def handle(self, messages: Sequence[Message]):
+        self.queue.extend(messages)
+
+        while self.queue:
+            message = self.queue.popleft()
+
+            if isinstance(message, DomainEvent):
+                self.handle_event(message)
+            elif isinstance(message, DomainCommand):
+                self.handle_command(message)
+
+    def handle_event(self, event: DomainEvent):
+        if isinstance(event, TemplateValueSet):
+            self.fake_task_dispatcher.send_email("test")
+        else:
+            pass
+
+    def handle_command(self, command: DomainCommand):
         pass

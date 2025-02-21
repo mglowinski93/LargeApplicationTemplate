@@ -44,7 +44,7 @@ def test_domain_repository_updates_template(
 
     # When
     template_entity.set_value(value=new_template_value)
-    repository.create(template_entity)
+    repository.update(template_entity)
     db_session.commit()
 
     # Then
@@ -87,11 +87,11 @@ def test_domain_repository_can_retrieve_template(
 
 
 def test_query_repository_can_retrieve_template(
-    db_session: Session, persistent_template_entity_factory: Callable
+    db_session_factory: Callable, persistent_template_entity_factory: Callable
 ):
     # Given
     template_entity = persistent_template_entity_factory()
-    repository = SqlAlchemyTemplateQueryRepository(db_session)
+    repository = SqlAlchemyTemplateQueryRepository(db_session_factory)
 
     # When
     result = repository.get(template_entity.id)
@@ -102,25 +102,25 @@ def test_query_repository_can_retrieve_template(
 
 
 def test_query_repository_raises_exception_when_template_does_not_exist(
-    db_session: Session,
+    db_session_factory: Callable,
 ):
     # Given
-    repository = SqlAlchemyTemplateQueryRepository(db_session)
+    repository = SqlAlchemyTemplateQueryRepository(db_session_factory)
 
     # When
-    with pytest.raises(exceptions.TemplateDoesNotExist) as exception_information:
+    with pytest.raises(exceptions.TemplateDoesNotExist):
         repository.get(template_id=fake_template_id())
 
 
 def test_query_repository_lists_templates(
-    db_session: Session, persistent_template_entity_factory: Callable
+    db_session_factory: Callable, persistent_template_entity_factory: Callable
 ):
     # Given
     number_of_templates = 3
     template_entities = [
         persistent_template_entity_factory() for _ in range(number_of_templates)
     ]
-    repository = SqlAlchemyTemplateQueryRepository(db_session)
+    repository = SqlAlchemyTemplateQueryRepository(db_session_factory)
 
     # When
     results, total_number_of_results = repository.list(

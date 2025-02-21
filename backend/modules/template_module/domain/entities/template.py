@@ -5,6 +5,7 @@ from uuid import uuid4
 from ..exceptions import InvalidTemplateValue
 from ...domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
 from ....common.time import get_current_utc_timestamp
+from ....common.domain.events import Event
 
 
 def set_template_value(template: Template, value: TemplateValue):
@@ -29,7 +30,7 @@ class Template:
         self._value: TemplateValue = TemplateValue(value=None)
         self.timestamp = timestamp
         self.version = version
-        self.messages = []
+        self.messages: list[Event] = []
 
     @property
     def value(self) -> TemplateValue:

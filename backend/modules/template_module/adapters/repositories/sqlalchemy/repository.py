@@ -1,5 +1,6 @@
 from datetime import datetime
-from typing import Optional
+import logging
+from typing import Callable, Optional
 
 from sqlalchemy import String, or_, text
 from sqlalchemy.exc import NoResultFound
@@ -15,11 +16,14 @@ from ....domain.ports import (
 )
 from ....domain.entities import Template as TemplateEntity
 from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
+from .....common.database import get_session
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
 from .....template_module.services.queries.ports.repository import (
     AbstractTemplateQueryRepository,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
@@ -41,11 +45,11 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
     def update(self, template: TemplateEntity) -> None:
         try:
             template_instance = (
-                self.session.query(TemplateDb).filter_by(id=template.id).scalar_one()
+                self.session.query(TemplateDb).filter_by(id=template.id).scalar()
             )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(
-                f"Cannot update template with id '{template.id}', because it doesn't exist."
+                f"Cannot update template with id '{template.id}', it doesn't exist."
             ) from err
 
         for key, value in _map_template_entity_to_template_db(
@@ -79,14 +83,15 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
 
 
 class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
-    def __init__(self, session):
-        self.session = session
+    def __init__(self, session_factory: Callable = get_session):
+        self.session_factory = session_factory
 
     def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
         try:
-            return _map_template_db_to_template_entity(
-                self.session.query(TemplateDb).filter_by(id=template_id).one()
-            )
+            with self.session_factory() as session:
+                return _map_template_db_to_template_entity(
+                    session.query(TemplateDb).filter_by(id=template_id).one()
+                )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(
                 f"Template with id '{template_id}' doesn't exist."
@@ -102,18 +107,19 @@ class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
             filters=filters,
             ordering=ordering,
             pagination=pagination,
-            session=self.session,
+            session_factory=self.session_factory
         )
         return templates, query.count()
 
 
 def _get_templates(
-    session: Session,
     filters: ports_dtos.TemplatesFilters,
     ordering: list[Ordering],
+    session_factory: Callable,
     pagination: Optional[Pagination] = None,
 ) -> tuple:
-    query = session.query(TemplateDb)
+    with session_factory() as session:
+        query = session.query(TemplateDb)
 
     query = _filter(query=query, filters=filters)
 

@@ -1,10 +1,9 @@
 from collections import deque
 from typing import Any, Callable, Sequence, Type
 
-from template_module.domain.entities.template import Template
-
 from .domain.events import Event as DomainEvent
 from .domain.commands import Command as DomainCommand
+from ..template_module.domain.entities import Template
 
 Message = DomainEvent | DomainCommand
 

@@ -36,15 +36,10 @@ def get_template_endpoint(
     logger.debug("Getting data for template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
+        template_id: value_objects.TEMPLATE_ID_TYPE = value_objects.TEMPLATE_ID_TYPE(template_id)  # type: ignore
+        # TODO napraw tak jak Mateo pokazał
     except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
-        )
+        _handle_invalid_template_id(template_id=template_id)
 
     try:
         template = services.get_template(
@@ -158,7 +153,7 @@ def create_template_endpoint(message_bus: MessageBus):
 
     logger.info("Creating a new template.")
 
-    template = message_bus.handle(CreateTemplate())
+    template = message_bus.handle([CreateTemplate()])
 
     logger.info("Template '%s' created.", template.id)
 
@@ -176,19 +171,13 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     logger.info("Deleting template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
-    except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
+        template_id_uuid: value_objects.TEMPLATE_ID_TYPE = (
+            value_objects.TEMPLATE_ID_TYPE(template_id)
         )
-
-    try:
-        message_bus.handle(DeleteTemplate(template_id=template_id))
+        message_bus.handle([DeleteTemplate(template_id=template_id_uuid)])
         logger.debug("Template '%s' found.", template_id)
+    except ValueError:
+        _handle_invalid_template_id(template_id=template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
@@ -207,19 +196,6 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     file: {0}/template_endpoints/set_template_value.yml
     """
 
-    logger.info("Setting value for template '%s'.", template_id)
-
-    try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
-    except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
-        )
-
     form = template_forms.SetTemplateValueForm(
         formdata=MultiDict(request.get_json(force=True, silent=True)),
         meta={"csrf": False},
@@ -234,9 +210,10 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     template_value = form.value.data
 
     try:
+        template_id_uuid: value_objects.TEMPLATE_ID_TYPE = value_objects.TEMPLATE_ID_TYPE(template_id)  # type: ignore
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
-            SetTemplateValue(template_id=template_id, value=template_value)
+            [SetTemplateValue(template_id=template_id_uuid, value=template_value)]
         )
         logger.info("Value '%s' set for template '%s'.", template_value, template_id)
     except domain_exceptions.InvalidTemplateValue:
@@ -255,3 +232,13 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
         )
 
     return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
+
+
+def _handle_invalid_template_id(template_id: str):
+    logger.warning("Invalid template ID format: '%s'.", template_id)
+    return make_response(
+        jsonify(
+            {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
+        ),
+        HTTPStatus.BAD_REQUEST,
+    )

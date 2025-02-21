@@ -43,8 +43,8 @@ EVENT_HANDLERS: dict[type[DomainEvent], list[Callable]] = {
 }
 
 
-COMMAND_HANDLERS: dict[type[DomainCommand], list[Callable]] = {
-    SetTemplateValue: [set_template_value],
-    CreateTemplate: [create_template],
-    DeleteTemplate: [delete_template],
+COMMAND_HANDLERS: dict[type[DomainCommand], Callable] = {
+    SetTemplateValue: set_template_value,
+    CreateTemplate: create_template,
+    DeleteTemplate: delete_template,
 }

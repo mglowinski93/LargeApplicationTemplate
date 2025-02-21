@@ -7,7 +7,9 @@ from .fakers import (
     FakeTemplateRepository,
     FakeTemplateQueryRepository,
     FakeTemplateUnitOfWork,
+    FakeMessageBus,
 )
+from tests.factories import FakeTaskDispatcher
 
 
 @pytest.fixture
@@ -38,3 +40,13 @@ def fake_template_unit_of_work_factory() -> Callable:
         return FakeTemplateUnitOfWork(templates=initial_templates)
 
     return fake_unit_of_work
+
+
+@pytest.fixture
+def fake_message_bus_factory(
+    fake_main_task_dispatcher_inject: FakeTaskDispatcher,
+) -> Callable:
+    def fake_message_bus() -> FakeMessageBus:
+        return FakeMessageBus(fake_main_task_dispatcher_inject)
+
+    return fake_message_bus

@@ -5,7 +5,10 @@ import pytest
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
 from modules.template_module.services import get_template, list_templates
-from modules.template_module.services.mappers import map_template_entity_to_output_dto
+from modules.template_module.services.mappers import (
+    map_template_entity_to_output_dto,
+    map_template_entity_to_output_detailed_dto,
+)
 from ....factories import fake_template_id
 
 
@@ -25,7 +28,9 @@ def test_get_template_returns_output_dto_when_template_exists(
     )
 
     # Then
-    assert output_template_dto == map_template_entity_to_output_dto(template_entity)
+    assert output_template_dto == map_template_entity_to_output_detailed_dto(
+        template_entity
+    )
 
 
 def test_get_template_raises_exception_when_requested_template_doesnt_exist(

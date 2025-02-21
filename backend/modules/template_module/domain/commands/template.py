@@ -5,20 +5,16 @@ from ....common.domain.commands import Command
 
 
 @dataclass(frozen=True)
-class TemplateBaseCommand(Command):
+class SetTemplateValue(Command):
     template_id: TEMPLATE_ID_TYPE
-
-
-@dataclass(frozen=True)
-class SetTemplateValue(TemplateBaseCommand):
     value: TemplateValue
 
 
 @dataclass(frozen=True)
-class CreateTemplate(TemplateBaseCommand):
+class CreateTemplate(Command):
     pass
 
 
 @dataclass(frozen=True)
-class DeleteTemplate(TemplateBaseCommand):
-    pass
+class DeleteTemplate(Command):
+    template_id: TEMPLATE_ID_TYPE

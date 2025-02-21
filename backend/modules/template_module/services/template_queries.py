@@ -33,12 +33,11 @@ def list_templates(
     if ordering is None:
         ordering = [Ordering(field="timestamp", order=OrderingEnum.DESCENDING)]
 
-    with query_repository:
-        templates, all_templates_count = query_repository.list(
-            filters=filters,
-            ordering=ordering,
-            pagination=pagination,
-        )
-        return [
-            map_template_entity_to_output_dto(template) for template in templates
-        ], all_templates_count
+    templates, all_templates_count = query_repository.list(
+        filters=filters,
+        ordering=ordering,
+        pagination=pagination,
+    )
+    return [
+        map_template_entity_to_output_dto(template) for template in templates
+    ], all_templates_count

@@ -58,6 +58,22 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 
 
 @pytest.fixture
+def db_session(raw_db_session):
+    # Add here logic responsible for additional ORM configuration
+    # e.g. mappers setup: https://docs.sqlalchemy.org/en/13/orm/mapping_styles.html#classical-mappings.
+
+    yield raw_db_session
+
+
+@pytest.fixture
+def db_session_factory(db_session):  # noqa: F811
+    def db_session_():
+        return db_session
+
+    return db_session_
+
+
+@pytest.fixture
 def template_entity() -> TemplateEntity:
     return TemplateEntityFactory.create()  # type: ignore
 
