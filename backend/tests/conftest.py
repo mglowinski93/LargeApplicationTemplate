@@ -1,20 +1,24 @@
+from typing import Callable
+
 import inject
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 from modules.common.database import Base
-from modules.template_module.domain.entities import Template as TemplateEntity
 from config import config
-from .factories import TemplateEntityFactory, FakeTaskDispatcher
+from modules.common import message_bus as common_message_bus
+from modules.template_module.domain import commands as template_domain_commands, events as template_domain_events
+from . import factories
+from .common import annotations
 
 
 configuration = config["test"]()
 
 
 @pytest.fixture(scope="session")
-def db_engine():
+def db_engine() -> annotations.YieldFixture[Engine]:
     engine = create_engine(
         url=configuration.database_url,
         pool_pre_ping=True,
@@ -24,7 +28,7 @@ def db_engine():
 
 
 @pytest.fixture(scope="module")
-def prepared_database(db_engine):
+def prepared_database(db_engine) -> annotations.YieldFixture[Engine]:
     with DatabaseJanitor(
         user=configuration.DATABASE_USER,
         password=configuration.DATABASE_PASSWORD,
@@ -43,7 +47,7 @@ def prepared_database(db_engine):
 @pytest.fixture
 def raw_db_session(  # < - This is the fixture to be used in tests.
     prepared_database,
-):
+) -> annotations.YieldFixture[Session]:
     with prepared_database.connect() as db_connection:
         transaction = db_connection.begin()
         session = sessionmaker(autocommit=False, autoflush=False, bind=db_connection)()
@@ -58,7 +62,7 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 
 
 @pytest.fixture
-def db_session(raw_db_session):
+def db_session(raw_db_session) -> annotations.YieldFixture[Session]:
     # Add here logic responsible for additional ORM configuration
     # e.g. mappers setup: https://docs.sqlalchemy.org/en/13/orm/mapping_styles.html#classical-mappings.
 
@@ -66,7 +70,7 @@ def db_session(raw_db_session):
 
 
 @pytest.fixture
-def db_session_factory(db_session):  # noqa: F811
+def db_session_factory(db_session) -> Callable:
     def db_session_():
         return db_session
 
@@ -74,13 +78,8 @@ def db_session_factory(db_session):  # noqa: F811
 
 
 @pytest.fixture
-def template_entity() -> TemplateEntity:
-    return TemplateEntityFactory.create()  # type: ignore
-
-
-@pytest.fixture
 def fake_main_task_dispatcher_inject():
-    fake_task_dispatcher_instance = FakeTaskDispatcher()
+    fake_task_dispatcher_instance = factories.FakeTaskDispatcher()
 
     inject.clear_and_configure(
         lambda binder: binder.bind(
@@ -91,3 +90,21 @@ def fake_main_task_dispatcher_inject():
     yield fake_task_dispatcher_instance
 
     inject.clear()
+
+
+@pytest.fixture
+def message_bus(
+    fake_main_task_dispatcher_inject: factories.FakeTaskDispatcher,
+) -> annotations.YieldFixture[common_message_bus.MessageBus]:
+    yield common_message_bus.MessageBus(
+        event_handlers={
+            template_domain_events.TemplateCreated: [],
+            template_domain_events.TemplateDeleted: [],
+            template_domain_events.TemplateValueSet: [],
+        },
+        command_handlers={
+            template_domain_commands.CreateTemplate: lambda event: None,
+            template_domain_commands.DeleteTemplate: lambda event: None,
+            template_domain_commands.SetTemplateValue: lambda event: None,
+        },
+    )

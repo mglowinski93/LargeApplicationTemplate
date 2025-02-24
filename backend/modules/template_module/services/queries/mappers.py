@@ -1,5 +1,5 @@
-from .template_queries import OutputTemplate, DetailedOutputTemplate
-from ..domain.entities import Template
+from .dtos import OutputTemplate, DetailedOutputTemplate
+from ...domain.entities import Template
 
 
 def map_template_entity_to_output_dto(template: Template) -> OutputTemplate:

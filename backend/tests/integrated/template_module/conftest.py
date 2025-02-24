@@ -2,7 +2,6 @@ from typing import Callable, Optional
 
 import pytest
 
-from modules.template_module.domain.entities import Template as TemplateEntity
 from .fakers import (
     FakeTemplateRepository,
     FakeTemplateQueryRepository,
@@ -18,7 +17,9 @@ from modules.template_module.adapters.repositories.sqlalchemy.repository import 
 )
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.value_objects import TemplateValue
-from .test_adapters.test_repositories.test_sqlalchemy.factories import TemplateSqlAlchemyModelFactory
+from .adapters.test_repositories.test_sqlalchemy.factories import (
+    TemplateSqlAlchemyModelFactory,
+)
 from sqlalchemy.orm import Session
 
 
@@ -52,14 +53,6 @@ def fake_template_unit_of_work_factory() -> Callable:
     return fake_unit_of_work
 
 
-@pytest.fixture
-def fake_message_bus_factory(
-    fake_main_task_dispatcher_inject: FakeTaskDispatcher,
-) -> Callable:
-    def fake_message_bus() -> FakeMessageBus:
-        return FakeMessageBus(fake_main_task_dispatcher_inject)
-
-    return fake_message_bus
 
 
 @pytest.fixture
@@ -67,7 +60,6 @@ def template_sqlalchemy_factory(db_session: Session) -> Callable:
     def template_sqlalchemy_model(
         value: Optional[TemplateValue] = None,
     ) -> TemplateEntity:
-        db_session
         TemplateSqlAlchemyModelFactory._meta.sqlalchemy_session = (  # type: ignore
             db_session
         )

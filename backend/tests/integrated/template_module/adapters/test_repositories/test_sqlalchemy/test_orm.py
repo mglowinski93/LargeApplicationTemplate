@@ -9,7 +9,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
 from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
-from ......factories import fake_template_id
+from ...... import fakers
 
 
 def test_orm_creates_default_value_for_template_model_value_data_field(
@@ -17,7 +17,7 @@ def test_orm_creates_default_value_for_template_model_value_data_field(
 ):
     # Given
     template_instance = TemplateDb(
-        id=fake_template_id(),
+        id=fakers.fake_template_id(),
         timestamp=get_current_utc_timestamp(),
         version=INITIAL_TEMPLATE_VERSION,
     )

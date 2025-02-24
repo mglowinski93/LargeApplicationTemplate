@@ -1,38 +1,22 @@
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import factory
-from faker import Faker
 
-from modules.common.domain.ports import TaskDispatcher
 from modules.common.time import get_current_utc_timestamp
-from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.value_objects import (
-    INITIAL_TEMPLATE_VERSION,
-    TemplateValue,
+from modules.template_module.adapters.repositories.sqlalchemy.consts import (
+    VALUE_NAME_IN_DATABASE,
 )
-
-fake = Faker()
-
-
-class FakeTaskDispatcher(TaskDispatcher):
-    sent_emails_count = 0
-
-    def send_email(self, content: str):  # type: ignore
-        self.sent_emails_count += 1
+from modules.template_module.adapters.repositories.sqlalchemy.orm import (
+    Template as SqlAlchemyTemplateDb,
+)
+from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 
-class TemplateEntityFactory(factory.Factory):
+class TemplateSqlAlchemyModelFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
-        model = TemplateEntity
+        model = SqlAlchemyTemplateDb
 
     id = factory.LazyFunction(uuid4)
+    value_data = factory.LazyFunction(lambda: {VALUE_NAME_IN_DATABASE: None})
     timestamp = factory.LazyFunction(get_current_utc_timestamp)
     version = INITIAL_TEMPLATE_VERSION
-
-
-def fake_template_id() -> UUID:
-    return uuid4()
-
-
-def fake_template_value() -> TemplateValue:
-    return TemplateValue(value=fake.pystr(min_chars=1, max_chars=100))

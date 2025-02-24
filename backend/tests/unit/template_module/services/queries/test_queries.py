@@ -5,31 +5,27 @@ import pytest
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
 from modules.template_module.services import get_template, list_templates
-from modules.template_module.services.mappers import (
-    map_template_entity_to_output_dto,
-    map_template_entity_to_output_detailed_dto,
-)
-from ....factories import fake_template_id
-
+from ... import factories
+from ..... import fakers as common_fakers
 
 def test_get_template_returns_output_dto_when_template_exists(
     fake_template_query_repository_factory: Callable,
-    template_entity: TemplateEntity,
 ):
     # Given
+    template = factories.TemplateEntityFactory.create()
     query_repository = fake_template_query_repository_factory(
-        initial_templates=[template_entity]
+        initial_templates=[template]
     )
 
     # When
     output_template_dto = get_template(
         query_repository=query_repository,
-        template_id=template_entity.id,
+        template_id=template.id,
     )
 
     # Then
     assert output_template_dto == map_template_entity_to_output_detailed_dto(
-        template_entity
+        template
     )
 
 
@@ -41,16 +37,15 @@ def test_get_template_raises_exception_when_requested_template_doesnt_exist(
             query_repository=fake_template_query_repository_factory(
                 initial_templates=[]
             ),
-            template_id=fake_template_id(),
+            template_id=common_fakers.fake_template_id(),
         )
 
 
 def test_list_templates_lists_all_templates(
     fake_template_query_repository_factory: Callable,
-    template_entity: TemplateEntity,
 ):
     # Given
-    templates = [template_entity]
+    templates = [factories.TemplateEntityFactory.create()]
     query_repository = fake_template_query_repository_factory(
         initial_templates=templates
     )
@@ -68,7 +63,6 @@ def test_list_templates_lists_all_templates(
 
 def test_list_templates_returns_empty_list_when_no_templates_exist(
     fake_template_query_repository_factory: Callable,
-    template_entity: TemplateEntity,
 ):
     # Given
     query_repository = fake_template_query_repository_factory(initial_templates=[])

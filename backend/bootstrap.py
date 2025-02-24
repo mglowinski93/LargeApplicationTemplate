@@ -14,7 +14,7 @@ from flask import Flask
 from config import config, swagger_template, swagger_config, Config
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database
-from modules.common.domain.events import Event as DomainEvent
+from modules.common.domain.events import DomainEvent
 from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateQueryRepository,

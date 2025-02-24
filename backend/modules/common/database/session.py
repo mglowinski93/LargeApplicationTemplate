@@ -25,7 +25,6 @@ def initialize_database(
     SESSION = sessionmaker(
         autocommit=False,
         autoflush=False,
-        
         bind=create_engine(
             url=database_url,
             pool_pre_ping=True,

@@ -1,0 +1,22 @@
+from dataclasses import dataclass
+
+from .value_objects import TemplateId, TemplateValue
+from ...common.domain.events import DomainEvent
+
+
+
+@dataclass(frozen=True)
+class TemplateValueSet(DomainEvent):
+    template_id: TemplateId
+    value: TemplateValue
+
+
+@dataclass(frozen=True)
+class TemplateCreated(DomainEvent):
+    template_id: TemplateId
+    value: TemplateValue
+
+
+@dataclass(frozen=True)
+class TemplateDeleted(DomainEvent):
+    template_id: TemplateId

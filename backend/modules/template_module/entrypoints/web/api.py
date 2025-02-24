@@ -152,7 +152,11 @@ def create_template_endpoint(message_bus: MessageBus, unit_of_work):
 
     logger.info("Creating a new template.")
 
-    template = services.create_template(templates_unit_of_work=unit_of_work, message_bus=message_bus, command=CreateTemplate())
+    template = services.create_template(
+        templates_unit_of_work=unit_of_work,
+        message_bus=message_bus,
+        command=CreateTemplate(),
+    )
 
     logger.info("Template '%s' created.", template.id)
 

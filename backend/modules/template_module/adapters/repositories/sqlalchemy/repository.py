@@ -107,7 +107,7 @@ class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
             filters=filters,
             ordering=ordering,
             pagination=pagination,
-            session_factory=self.session_factory
+            session_factory=self.session_factory,
         )
         return templates, query.count()
 

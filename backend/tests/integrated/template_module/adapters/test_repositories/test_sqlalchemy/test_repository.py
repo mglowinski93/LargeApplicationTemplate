@@ -16,17 +16,19 @@ from modules.template_module.adapters.repositories.sqlalchemy import (
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.ports import exceptions
-from ......factories import fake_template_value, fake_template_id
+from ...... import fakers
+from ......unit import factories as entity_factories
 
 
 def test_domain_repository_creates_template(
-    db_session: Session, template_entity: TemplateEntity
+    db_session: Session
 ):
     # Given
+    template_entity = entity_factories.TemplateEntityFactory.create()
     repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
-    repository.create(template_entity)
+    repository.create()
     db_session.commit()
 
     # Then
@@ -38,9 +40,9 @@ def test_domain_repository_updates_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
-    template_entity = persistent_template_entity_factory(value=fake_template_value())
+    template_entity = persistent_template_entity_factory(value=fakers.fake_template_value())
     repository = SqlAlchemyTemplateDomainRepository(db_session)
-    new_template_value = fake_template_value()
+    new_template_value = fakers.fake_template_value()
 
     # When
     template_entity.set_value(value=new_template_value)
@@ -59,7 +61,7 @@ def test_domain_repository_deletes_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
-    template_entity = persistent_template_entity_factory(value=fake_template_value())
+    template_entity = persistent_template_entity_factory(value=fakers.fake_template_value())
     repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
@@ -109,7 +111,7 @@ def test_query_repository_raises_exception_when_template_does_not_exist(
 
     # When
     with pytest.raises(exceptions.TemplateDoesNotExist):
-        repository.get(template_id=fake_template_id())
+        repository.get(template_id=fakers.fake_template_id())
 
 
 def test_query_repository_lists_templates(
