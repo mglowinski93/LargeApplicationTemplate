@@ -49,10 +49,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
                     for index, (parameter_name, parameter_value) in enumerate(
                         {
                             parameter_name: parameter_value
-                            for (
-                                parameter_name,
-                                parameter_value,
-                            ) in all_function_parameters.items()
+                            for parameter_name, parameter_value in all_function_parameters.items()
                             if parameter_name not in dependencies
                         }.items()
                     )
@@ -61,7 +58,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
             )
         except IndexError as err:
             raise RuntimeError(
-                "Could not find dependency to inject into handler function."
+                "Could not find dependency (or dependencies) to inject into handler function based on it's signature."
             ) from err
 
     return wrapper

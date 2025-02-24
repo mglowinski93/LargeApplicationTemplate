@@ -1,7 +1,6 @@
 import logging
 from http import HTTPStatus
 from typing import Optional
-from uuid import UUID
 
 import inject
 from flask import jsonify, make_response, request
@@ -145,15 +144,15 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository)
 
 @api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(message_bus="message_bus")
-def create_template_endpoint(message_bus: MessageBus):
+@inject.params(message_bus="message_bus", unit_of_work="templates_unit_of_work")
+def create_template_endpoint(message_bus: MessageBus, unit_of_work):
     """
     file: {0}/template_endpoints/create_template.yml
     """
 
     logger.info("Creating a new template.")
 
-    template = message_bus.handle([CreateTemplate()])
+    template = services.create_template(templates_unit_of_work=unit_of_work, message_bus=message_bus, command=CreateTemplate())
 
     logger.info("Template '%s' created.", template.id)
 
