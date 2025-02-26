@@ -32,7 +32,7 @@ def get_template_endpoint(
     file: {0}/template_endpoints/get_template.yml
     """
 
-    logger.debug("Getting data for template '%s'.", template_id)
+    logger.info("Getting data for template '%s'.", template_id)
 
     try:
         template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
@@ -44,7 +44,7 @@ def get_template_endpoint(
             templates_query_repository=query_repository,
             template_id=template_id,  # type: ignore
         )
-        logger.debug("Template '%s' found.", template_id)
+        logger.info("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
@@ -63,7 +63,7 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository)
     file: {0}/template_endpoints/list_templates.yml
     """
 
-    logger.debug("Listing all templates.")
+    logger.info("Listing templates...")
 
     query_params = request.args
     logger.debug("Query params are: '%s'.", query_params)
@@ -177,7 +177,7 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
             template_id
         )
         message_bus.handle([DeleteTemplate(template_id_uuid)])
-        logger.debug("Template '%s' found.", template_id)
+        logger.info("Template '%s' found.", template_id)
     except ValueError:
         _handle_invalid_template_id(template_id=template_id)
     except ports_exceptions.TemplateDoesNotExist:

@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 def send_template_value_set_notification(
     event: TemplateValueSet, task_dispatcher: TaskDispatcher
 ):
-    logger.debug("Dispatching email about setting template value.")
+    logger.info("Dispatching email about setting template value.")
     task_dispatcher.send_email(
         f"Template value set to '{event.value.value}' for template {event.template_id}."
     )
-    logger.debug("Email about setting template value dispatched.")
+    logger.info("Email about setting template value dispatched.")
