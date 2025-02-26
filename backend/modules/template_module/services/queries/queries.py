@@ -18,7 +18,9 @@ def get_template(
     templates_query_repository: SqlAlchemyTemplateQueryRepository,
     template_id: TemplateId,
 ) -> DetailedOutputTemplate:
-    return map_template_entity_to_output_detailed_dto(templates_query_repository.get(template_id))
+    return map_template_entity_to_output_detailed_dto(
+        templates_query_repository.get(template_id)
+    )
 
 
 def list_templates(

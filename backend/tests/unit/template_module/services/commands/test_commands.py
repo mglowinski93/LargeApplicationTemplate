@@ -28,7 +28,7 @@ def test_create_template_creates_template_with_none_value(
     message_bus: MessageBus,
 ):
     # Given
-    unit_of_work = fake_template_unit_of_work_factory(initial_templates=[])
+    unit_of_work = fake_template_unit_of_work_factory()
 
     # When
     output_template_dto = create_template(
@@ -70,9 +70,7 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
 ):
     with pytest.raises(TemplateDoesNotExist):
         delete_template(
-            templates_unit_of_work=fake_template_unit_of_work_factory(
-                initial_templates=[]
-            ),
+            templates_unit_of_work=fake_template_unit_of_work_factory(),
             command=DeleteTemplate(template_id=fakers.fake_template_id()),
             message_bus=message_bus,
         )
@@ -137,7 +135,7 @@ def test_set_template_value_raises_exception_when_requested_template_doesnt_exis
 ):
     # Given
     value = fakers.fake_template_value()
-    unit_of_work = fake_template_unit_of_work_factory(initial_templates=[])
+    unit_of_work = fake_template_unit_of_work_factory()
 
     # When
     with pytest.raises(TemplateDoesNotExist):

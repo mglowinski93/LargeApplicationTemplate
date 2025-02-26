@@ -23,7 +23,7 @@ def test_get_template_returns_output_dto_when_template_exists(
 
     # When
     output_template_dto = get_template(
-        query_repository=query_repository,
+        templates_query_repository=query_repository,
         template_id=template.id,
     )
 
@@ -34,11 +34,13 @@ def test_get_template_returns_output_dto_when_template_exists(
 def test_get_template_raises_exception_when_requested_template_doesnt_exist(
     fake_template_query_repository_factory: Callable,
 ):
+    # Given
+    query_repository = fake_template_query_repository_factory()
+
+    # When and then
     with pytest.raises(TemplateDoesNotExist):
         get_template(
-            query_repository=fake_template_query_repository_factory(
-                initial_templates=[]
-            ),
+            templates_query_repository=query_repository,
             template_id=fakers.fake_template_id(),
         )
 
@@ -54,7 +56,7 @@ def test_list_templates_lists_all_templates(
 
     # When
     results, total_number_of_results = list_templates(
-        query_repository=query_repository,
+        templates_query_repository=query_repository,
     )
 
     # Then
@@ -67,11 +69,11 @@ def test_list_templates_returns_empty_list_when_no_templates_exist(
     fake_template_query_repository_factory: Callable,
 ):
     # Given
-    query_repository = fake_template_query_repository_factory(initial_templates=[])
+    query_repository = fake_template_query_repository_factory()
 
     # When
     results, total_number_of_results = list_templates(
-        query_repository=query_repository,
+        templates_query_repository=query_repository,
     )
 
     # Then

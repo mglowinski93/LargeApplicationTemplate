@@ -19,8 +19,10 @@ def fake_template_repository_factory() -> Callable:
 @pytest.fixture
 def fake_template_query_repository_factory() -> Callable:
     def fake_repository(
-        initial_templates: list[TemplateEntity],
+        initial_templates: list[TemplateEntity] = None,
     ) -> FakeTemplateQueryRepository:
-        return FakeTemplateQueryRepository(templates=initial_templates)
+        return FakeTemplateQueryRepository(
+            templates=initial_templates if initial_templates else []
+        )
 
     return fake_repository

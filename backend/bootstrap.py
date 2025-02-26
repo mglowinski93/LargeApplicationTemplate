@@ -33,10 +33,10 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
     all_function_parameters = inspect.signature(handler).parameters
     dependencies = {
         parameter_name: bindings[parameter_name]()
-        for parameter_name, parameter_value in all_function_parameters.items()
+        for parameter_name in all_function_parameters.keys()
         if parameter_name in bindings
     }
-    breakpoint()
+
     def wrapper(*args, **kwargs):
         try:
             return handler(

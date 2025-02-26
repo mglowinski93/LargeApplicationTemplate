@@ -4,7 +4,7 @@ from typing import Callable, Optional
 
 from sqlalchemy import String, or_, text
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import Session, Query
+from sqlalchemy.orm import Query
 from sqlalchemy_utils.functions import cast_if
 
 from .consts import VALUE_NAME_IN_DATABASE
