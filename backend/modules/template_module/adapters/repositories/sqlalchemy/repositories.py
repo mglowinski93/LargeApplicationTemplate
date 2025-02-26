@@ -19,7 +19,7 @@ from ....domain.value_objects import TemplateId, TemplateValue
 from .....common.database import get_session
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
-from .....template_module.services.queries.ports.repository import (
+from .....template_module.services.queries.ports.repositories import (
     AbstractTemplatesQueryRepository,
 )
 
