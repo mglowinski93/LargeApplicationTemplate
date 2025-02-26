@@ -1,7 +1,7 @@
 import pytest
 from typing import Callable
 
-from .fakers import FakeTemplateQueryRepository, FakeTemplateRepository
+from .fakers import FakeTemplatesQueryRepository, FakeTemplatesRepository
 
 from modules.template_module.domain.entities import Template as TemplateEntity
 
@@ -10,8 +10,8 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 def fake_template_repository_factory() -> Callable:
     def fake_repository(
         initial_templates: list[TemplateEntity],
-    ) -> FakeTemplateRepository:
-        return FakeTemplateRepository(templates=initial_templates)
+    ) -> FakeTemplatesRepository:
+        return FakeTemplatesRepository(templates=initial_templates)
 
     return fake_repository
 
@@ -20,8 +20,8 @@ def fake_template_repository_factory() -> Callable:
 def fake_template_query_repository_factory() -> Callable:
     def fake_repository(
         initial_templates: list[TemplateEntity] = None,
-    ) -> FakeTemplateQueryRepository:
-        return FakeTemplateQueryRepository(
+    ) -> FakeTemplatesQueryRepository:
+        return FakeTemplatesQueryRepository(
             templates=initial_templates if initial_templates else []
         )
 

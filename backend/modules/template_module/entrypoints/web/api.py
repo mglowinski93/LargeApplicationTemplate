@@ -13,7 +13,7 @@ from ...domain.commands import SetTemplateValue, CreateTemplate, DeleteTemplate
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
 from ....common.message_bus import MessageBus
-from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplateQueryRepository
+from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplatesQueryRepository
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
 from ....common import consts, docstrings, pagination as pagination_utils
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(query_repository="templates_query_repository")
 def get_template_endpoint(
-    template_id: str, query_repository: SqlAlchemyTemplateQueryRepository
+    template_id: str, query_repository: SqlAlchemyTemplatesQueryRepository
 ):
     """
     file: {0}/template_endpoints/get_template.yml
@@ -58,7 +58,7 @@ def get_template_endpoint(
 @api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
 @inject.params(query_repository="templates_query_repository")
-def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository):
+def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository):
     """
     file: {0}/template_endpoints/list_templates.yml
     """

@@ -5,7 +5,7 @@ from faker import Faker
 from modules.template_module.domain.ports.unit_of_work import (
     AbstractTemplatesUnitOfWork,
 )
-from tests.unit.template_module.fakers import FakeTemplateRepository
+from tests.unit.template_module.fakers import FakeTemplatesRepository
 from modules.template_module.domain import value_objects as template_value_objects
 from modules.template_module.domain.events import TemplateValueSet
 from modules.template_module.domain.entities import Template as TemplateEntity
@@ -36,7 +36,7 @@ class FakeTaskDispatcher(common_ports.TaskDispatcher):
 
 class FakeTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
     def __init__(self, templates: list[TemplateEntity]):
-        self.templates = FakeTemplateRepository(templates=templates)
+        self.templates = FakeTemplatesRepository(templates=templates)
         self.committed = False
 
     def commit(self):

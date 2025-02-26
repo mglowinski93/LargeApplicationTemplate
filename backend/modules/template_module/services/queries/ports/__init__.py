@@ -1,3 +1,3 @@
-from .repository import AbstractTemplateQueryRepository
+from .repository import AbstractTemplatesQueryRepository
 
-__all__ = ["AbstractTemplateQueryRepository"]
+__all__ = ["AbstractTemplatesQueryRepository"]

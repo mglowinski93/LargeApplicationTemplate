@@ -15,11 +15,8 @@ from config import config, swagger_template, swagger_config, Config
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database_sessions
 from modules.common.domain.events import DomainEvent
-from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
-from modules.template_module.adapters.repositories.sqlalchemy import (
-    SqlAlchemyTemplateQueryRepository,
-)
 from modules.common import message_bus as common_message_bus
+from modules.template_module import adapters as template_adapters
 from modules.template_module.services import handlers as template_handlers
 
 
@@ -63,11 +60,11 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
 
 
 def inject_config(binder):
-    binder.bind_to_constructor("templates_unit_of_work", SqlAlchemyTemplatesUnitOfWork)
-    binder.bind_to_constructor(
-        "templates_query_repository", SqlAlchemyTemplateQueryRepository
-    )
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
+    binder.bind_to_constructor("templates_unit_of_work", template_adapters.SqlAlchemyTemplatesUnitOfWork)
+    binder.bind_to_constructor(
+        "templates_query_repository", template_adapters.SqlAlchemyTemplatesQueryRepository
+    )
     binder.bind(
         "message_bus",
         common_message_bus.MessageBus(

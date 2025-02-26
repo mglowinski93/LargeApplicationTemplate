@@ -10,12 +10,12 @@ from ...domain.value_objects import TemplateId
 from ....common.dtos import Ordering, OrderingEnum
 from ....common.pagination import Pagination
 from ....template_module.adapters.repositories.sqlalchemy import (
-    SqlAlchemyTemplateQueryRepository,
+    SqlAlchemyTemplatesQueryRepository,
 )
 
 
 def get_template(
-    templates_query_repository: SqlAlchemyTemplateQueryRepository,
+    templates_query_repository: SqlAlchemyTemplatesQueryRepository,
     template_id: TemplateId,
 ) -> DetailedOutputTemplate:
     return map_template_entity_to_output_detailed_dto(
@@ -24,7 +24,7 @@ def get_template(
 
 
 def list_templates(
-    templates_query_repository: SqlAlchemyTemplateQueryRepository,
+    templates_query_repository: SqlAlchemyTemplatesQueryRepository,
     filters: Optional[TemplatesFilters] = None,
     ordering: Optional[list[Ordering]] = None,
     pagination: Optional[Pagination] = None,

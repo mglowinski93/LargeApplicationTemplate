@@ -10,7 +10,7 @@ from sqlalchemy_utils.functions import cast_if
 from .consts import VALUE_NAME_IN_DATABASE
 from .orm import Template as TemplateDb
 from ....domain.ports import (
-    AbstractTemplateDomainRepository,
+    AbstractTemplatesDomainRepository,
     exceptions,
     dtos as ports_dtos,
 )
@@ -20,13 +20,13 @@ from .....common.database import get_session
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
 from .....template_module.services.queries.ports.repository import (
-    AbstractTemplateQueryRepository,
+    AbstractTemplatesQueryRepository,
 )
 
 logger = logging.getLogger(__name__)
 
 
-class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
+class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
     """
     See description of parent class to get more details.
     """
@@ -82,7 +82,7 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
             ) from err
 
 
-class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
+class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def __init__(self, session_factory: Callable = get_session):
         self.session_factory = session_factory
 

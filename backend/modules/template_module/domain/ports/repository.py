@@ -4,7 +4,7 @@ from ..entities import Template
 from ..value_objects import TemplateId
 
 
-class AbstractTemplateDomainRepository(ABC):
+class AbstractTemplatesDomainRepository(ABC):
     @abstractmethod
     def create(self, template: Template):
         """

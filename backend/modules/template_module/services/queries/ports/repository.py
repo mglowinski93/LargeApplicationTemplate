@@ -8,7 +8,7 @@ from .....template_module.domain.ports.dtos import TemplatesFilters
 from .....template_module.domain.entities import Template
 
 
-class AbstractTemplateQueryRepository(ABC):
+class AbstractTemplatesQueryRepository(ABC):
     @abstractmethod
     def get(self, template_id: TemplateId) -> Template:
         """

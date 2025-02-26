@@ -3,7 +3,7 @@ from typing import Callable, Optional
 from sqlalchemy.orm import Session
 
 from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
-from ..adapters.repositories.sqlalchemy import SqlAlchemyTemplateDomainRepository
+from ..adapters.repositories.sqlalchemy import SqlAlchemyTemplatesDomainRepository
 from ...common.database import get_session
 
 
@@ -14,7 +14,7 @@ class SqlAlchemyTemplatesUnitOfWork(AbstractTemplatesUnitOfWork):
 
     def __enter__(self):
         self._session = self.session_factory()
-        self.templates = SqlAlchemyTemplateDomainRepository(self._session)
+        self.templates = SqlAlchemyTemplatesDomainRepository(self._session)
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):

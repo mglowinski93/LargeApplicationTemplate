@@ -6,15 +6,15 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.value_objects import TemplateId
 from modules.template_module.domain.ports import (
-    AbstractTemplateDomainRepository,
+    AbstractTemplatesDomainRepository,
     exceptions,
 )
 from modules.template_module.services.queries.ports import (
-    AbstractTemplateQueryRepository,
+    AbstractTemplatesQueryRepository,
 )
 
 
-class FakeTemplateRepository(AbstractTemplateDomainRepository):
+class FakeTemplatesRepository(AbstractTemplatesDomainRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 
@@ -42,7 +42,7 @@ class FakeTemplateRepository(AbstractTemplateDomainRepository):
         self._templates.add(template)
 
 
-class FakeTemplateQueryRepository(AbstractTemplateQueryRepository):
+class FakeTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 
