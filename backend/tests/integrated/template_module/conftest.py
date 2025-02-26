@@ -7,7 +7,7 @@ from tests.factories import TemplateSqlAlchemyModelFactory
 from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from modules.template_module.adapters.repositories.sqlalchemy.repository import (
+from modules.template_module.adapters.repositories.sqlalchemy.repositories import (
     _map_template_db_to_template_entity,
 )
 from modules.template_module.domain.entities import Template as TemplateEntity

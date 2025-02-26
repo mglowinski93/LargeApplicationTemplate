@@ -1,4 +1,4 @@
-from .repository import (
+from .repositories import (
     SqlAlchemyTemplateDomainRepository,
     SqlAlchemyTemplateQueryRepository,
 )
