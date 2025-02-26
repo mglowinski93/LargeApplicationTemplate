@@ -13,7 +13,7 @@ from flask import Flask
 
 from config import config, swagger_template, swagger_config, Config
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
-from modules.common.database import initialize_database
+from modules.common.database import initialize_database_sessions
 from modules.common.domain.events import DomainEvent
 from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.adapters.repositories.sqlalchemy import (
@@ -134,7 +134,7 @@ def create_app(environment_name: Optional[str] = None) -> Flask:
 
     inject.configure(inject_config)
 
-    initialize_database(configuration.database_url)
+    initialize_database_sessions(configuration.database_url)
 
     logging.basicConfig(
         level=logging.getLevelName(app.config["LOG_LEVEL"]),

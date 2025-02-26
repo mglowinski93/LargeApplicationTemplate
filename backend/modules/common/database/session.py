@@ -7,9 +7,9 @@ from sqlalchemy.orm import sessionmaker, Session
 SESSION: Session | None = None  # TODO  zamien wszystkie Optionale na None
 
 
-def initialize_database(
+def initialize_database_sessions(
     database_url: str,
-):  # TODO zmien nazwe na intialize_database_sessions
+):
     global SESSION
 
     # It's important to keep data consistent between transactions and

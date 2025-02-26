@@ -13,13 +13,7 @@ def app():
 
 @pytest.fixture
 def client(app, prepared_database):
-    Base.metadata.create_all(
-        prepared_database
-    )  # Create the schema in the test database.
-
     yield app.test_client()
-
-    Base.metadata.drop_all(prepared_database)  # Drop the schema from the test database.
 
 
 # Mocking Celery worker.

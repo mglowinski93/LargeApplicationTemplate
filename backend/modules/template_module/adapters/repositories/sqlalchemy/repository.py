@@ -4,7 +4,7 @@ from typing import Callable, Optional
 
 from sqlalchemy import String, or_, text
 from sqlalchemy.exc import NoResultFound
-from sqlalchemy.orm import Query
+from sqlalchemy.orm import Query, Session
 from sqlalchemy_utils.functions import cast_if
 
 from .consts import VALUE_NAME_IN_DATABASE
@@ -103,25 +103,23 @@ class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
         ordering: list[Ordering],
         pagination: Optional[Pagination] = None,
     ) -> tuple[list[TemplateEntity], int]:
-        templates, query = _get_templates(
-            filters=filters,
-            ordering=ordering,
-            pagination=pagination,
-            session_factory=self.session_factory,
-        )
-        return templates, query.count()
+        with self.session_factory() as session:
+            templates, query = _get_templates(
+                session=session,
+                filters=filters,
+                ordering=ordering,
+                pagination=pagination,
+            )
+            return templates, query.count()
 
 
 def _get_templates(
+    session: Session,
     filters: ports_dtos.TemplatesFilters,
     ordering: list[Ordering],
-    session_factory: Callable,
     pagination: Optional[Pagination] = None,
 ) -> tuple:
-    with session_factory() as session:
-        query = session.query(TemplateDb)
-
-    query = _filter(query=query, filters=filters)
+    query = _filter(query=session.query(TemplateDb), filters=filters)
 
     for order in ordering:
         query = _order(query=query, order=order)
@@ -216,7 +214,7 @@ def _map_template_db_to_template_entity(
     template_db: TemplateDb,
 ) -> TemplateEntity:
     entity = TemplateEntity(
-        id=template_db.id,
+        id=TemplateId(template_db.id.hex),
         timestamp=template_db.timestamp,
         version=template_db.version,
     )

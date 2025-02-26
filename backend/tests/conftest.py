@@ -103,6 +103,8 @@ def fake_template_unit_of_work_factory() -> Callable:
     def fake_unit_of_work(
         initial_templates: list[TemplateEntity] = None,
     ) -> fakers.FakeTemplateUnitOfWork:
-        return fakers.FakeTemplateUnitOfWork(templates=initial_templates if initial_templates else [])
+        return fakers.FakeTemplateUnitOfWork(
+            templates=initial_templates if initial_templates else []
+        )
 
     return fake_unit_of_work
