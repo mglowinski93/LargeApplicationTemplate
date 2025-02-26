@@ -9,7 +9,7 @@ from werkzeug.datastructures import MultiDict
 from . import api_blueprint
 from . import forms as template_forms
 from ... import services
-from ...domain.commands.template import SetTemplateValue, CreateTemplate, DeleteTemplate
+from ...domain.commands import SetTemplateValue, CreateTemplate, DeleteTemplate
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
 from ....common.message_bus import MessageBus
@@ -35,14 +35,13 @@ def get_template_endpoint(
     logger.debug("Getting data for template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = value_objects.TEMPLATE_ID_TYPE(template_id)  # type: ignore
-        # TODO napraw tak jak Mateo pokazał
+        template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
     except ValueError:
         _handle_invalid_template_id(template_id=template_id)
 
     try:
         template = services.get_template(
-            query_repository=query_repository,
+            templates_query_repository=query_repository,
             template_id=template_id,  # type: ignore
         )
         logger.debug("Template '%s' found.", template_id)
@@ -112,7 +111,7 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplateQueryRepository)
     )
 
     templates, all_templates_count = services.list_templates(
-        query_repository=query_repository,
+        templates_query_repository=query_repository,
         filters=filters,
         ordering=ordering,
         pagination=pagination,
@@ -174,10 +173,10 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     logger.info("Deleting template '%s'.", template_id)
 
     try:
-        template_id_uuid: value_objects.TEMPLATE_ID_TYPE = (
-            value_objects.TEMPLATE_ID_TYPE(template_id)
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
         )
-        message_bus.handle([DeleteTemplate(template_id=template_id_uuid)])
+        message_bus.handle([DeleteTemplate(template_id_uuid)])
         logger.debug("Template '%s' found.", template_id)
     except ValueError:
         _handle_invalid_template_id(template_id=template_id)
@@ -213,7 +212,7 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     template_value = form.value.data
 
     try:
-        template_id_uuid: value_objects.TEMPLATE_ID_TYPE = value_objects.TEMPLATE_ID_TYPE(template_id)  # type: ignore
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
             [SetTemplateValue(template_id=template_id_uuid, value=template_value)]

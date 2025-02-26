@@ -8,6 +8,8 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.services.unit_of_work import SqlAlchemyTemplatesUnitOfWork
 
+from ....unit.factories import TemplateEntityFactory
+
 
 def test_unit_of_work_can_retrieve_template(
     db_session_factory: Callable,
@@ -28,9 +30,9 @@ def test_unit_of_work_can_retrieve_template(
 
 def test_unit_of_work_can_save_template(
     db_session_factory: Callable,
-    template_entity: TemplateEntity,
 ):
     # Given
+    template_entity = TemplateEntityFactory.create()
     template_id = template_entity.id
     unit_of_work = SqlAlchemyTemplatesUnitOfWork(db_session_factory)
 
@@ -44,9 +46,9 @@ def test_unit_of_work_can_save_template(
 
 def test_unit_of_work_rollbacks_when_exception_occur(
     db_session_factory: Callable,
-    template_entity: TemplateEntity,
 ):
     # Given
+    template_entity = TemplateEntityFactory.create()
     unit_of_work = SqlAlchemyTemplatesUnitOfWork(db_session_factory)
 
     # When

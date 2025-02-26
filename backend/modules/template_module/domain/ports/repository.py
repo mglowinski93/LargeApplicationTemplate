@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from ..entities import Template
-from ..value_objects import TEMPLATE_ID_TYPE
+from ..value_objects import TemplateId
 
 
 class AbstractTemplateDomainRepository(ABC):
@@ -25,7 +25,7 @@ class AbstractTemplateDomainRepository(ABC):
         pass
 
     @abstractmethod
-    def delete(self, template_id: TEMPLATE_ID_TYPE):
+    def delete(self, template_id: TemplateId):
         """
         :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to delete.
@@ -35,7 +35,7 @@ class AbstractTemplateDomainRepository(ABC):
         pass
 
     @abstractmethod
-    def get(self, template_id: TEMPLATE_ID_TYPE) -> Template:
+    def get(self, template_id: TemplateId) -> Template:
         """
         :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to retrieve.

@@ -20,15 +20,13 @@ from ...... import fakers
 from ......unit import factories as entity_factories
 
 
-def test_domain_repository_creates_template(
-    db_session: Session
-):
+def test_domain_repository_creates_template(db_session: Session):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
     repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When
-    repository.create()
+    repository.create(template_entity)
     db_session.commit()
 
     # Then
@@ -40,7 +38,9 @@ def test_domain_repository_updates_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
-    template_entity = persistent_template_entity_factory(value=fakers.fake_template_value())
+    template_entity = persistent_template_entity_factory(
+        value=fakers.fake_template_value()
+    )
     repository = SqlAlchemyTemplateDomainRepository(db_session)
     new_template_value = fakers.fake_template_value()
 
@@ -61,7 +61,9 @@ def test_domain_repository_deletes_template(
     db_session: Session, persistent_template_entity_factory: Callable
 ):
     # Given
-    template_entity = persistent_template_entity_factory(value=fakers.fake_template_value())
+    template_entity = persistent_template_entity_factory(
+        value=fakers.fake_template_value()
+    )
     repository = SqlAlchemyTemplateDomainRepository(db_session)
 
     # When

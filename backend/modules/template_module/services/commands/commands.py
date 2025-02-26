@@ -1,20 +1,20 @@
-from .dtos import OutputTemplate
-from ..domain.events.template import (
+from ..queries.dtos import OutputTemplate
+from ..queries.mappers import map_template_entity_to_output_dto
+from ...domain.events import (
     TemplateValueSet,
     TemplateCreated,
     TemplateDeleted,
 )
-from ..domain.commands.template import (
+from ...domain.commands import (
     SetTemplateValue,
     CreateTemplate,
     DeleteTemplate,
 )
-from .mappers import map_template_entity_to_output_dto
-from ...common.message_bus import MessageBus
-from ..domain import entities
-from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
-from ..domain.value_objects import INITIAL_TEMPLATE_VERSION
-from ...common.time import get_current_utc_timestamp
+from ....common.message_bus import MessageBus
+from ....common.time import get_current_utc_timestamp
+from ...domain import entities
+from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
+from ...domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 
 # In this example app, there is no need to care much about history of changes,
@@ -91,7 +91,6 @@ def set_template_value(
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
-        # Moreover, in this example we don't care much about
         message_bus.handle(
             messages=[
                 TemplateValueSet(template_id=template.id, value=command.value),

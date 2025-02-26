@@ -3,14 +3,14 @@ from typing import Optional
 
 from .....common.dtos import Ordering
 from .....common.pagination.dtos import Pagination
-from .....template_module.domain.value_objects import TEMPLATE_ID_TYPE
+from .....template_module.domain.value_objects import TemplateId
 from .....template_module.domain.ports.dtos import TemplatesFilters
 from .....template_module.domain.entities import Template
 
 
 class AbstractTemplateQueryRepository(ABC):
     @abstractmethod
-    def get(self, template_id: TEMPLATE_ID_TYPE) -> Template:
+    def get(self, template_id: TemplateId) -> Template:
         """
         :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to retrieve.

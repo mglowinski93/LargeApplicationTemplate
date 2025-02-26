@@ -19,11 +19,8 @@ from modules.template_module.services import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplateQueryRepository,
 )
-from modules.common.message_bus import MessageBus
-from modules.template_module.services.template_handlers import (
-    EVENT_HANDLERS,
-    COMMAND_HANDLERS,
-)
+from modules.common import message_bus as common_message_bus
+from modules.template_module.services import handlers as template_handlers
 
 
 def get_configuration(environment_name: Optional[str] = None) -> Config:
@@ -39,7 +36,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
         for parameter_name, parameter_value in all_function_parameters.items()
         if parameter_name in bindings
     }
-
+    breakpoint()
     def wrapper(*args, **kwargs):
         try:
             return handler(
@@ -72,10 +69,10 @@ def inject_config(binder):
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
     binder.bind(
         "message_bus",
-        MessageBus(
+        common_message_bus.MessageBus(
             event_handlers=_parse_event_handlers(
                 handlers=[
-                    EVENT_HANDLERS,
+                    template_handlers.EVENT_HANDLERS,
                 ],
                 bindings=binder._bindings,
             ),
@@ -84,7 +81,7 @@ def inject_config(binder):
                     handler=handler, bindings=binder._bindings
                 )
                 for handler_ in [
-                    COMMAND_HANDLERS,
+                    template_handlers.COMMAND_HANDLERS,
                 ]
                 for command, handler in handler_.items()
             },

@@ -9,8 +9,6 @@ from modules.template_module.domain.value_objects import (
 )
 
 
-
-
 class TemplateEntityFactory(factory.Factory):
     class Meta:
         model = TemplateEntity

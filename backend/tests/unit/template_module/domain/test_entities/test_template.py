@@ -6,12 +6,11 @@ from modules.template_module.domain.entities import (
     set_template_value,
 )
 from modules.template_module.domain.value_objects import TemplateValue, TemplateId
-from ... import factories
+from .... import factories
 from ..... import fakers
 
 
-def test_set_template_value_sets_value_when_valid_value(
-):
+def test_set_template_value_sets_value_when_valid_value():
     # Given
     template = factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
@@ -23,8 +22,7 @@ def test_set_template_value_sets_value_when_valid_value(
     assert template.value == value
 
 
-def test_set_template_value_raises_exception_when_invalid_value(
-):
+def test_set_template_value_raises_exception_when_invalid_value():
     template = factories.TemplateEntityFactory.create()
     timestamp_before_setting_value = template.timestamp
 
@@ -34,8 +32,7 @@ def test_set_template_value_raises_exception_when_invalid_value(
     assert timestamp_before_setting_value == template.timestamp
 
 
-def test_set_template_value_method_value_sets_value_when_valid_value(
-):
+def test_set_template_value_method_value_sets_value_when_valid_value():
     # Given
     template = factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
@@ -49,10 +46,9 @@ def test_set_template_value_method_value_sets_value_when_valid_value(
     assert timestamp_before_setting_value < template.timestamp
 
 
-def test_set_template_method_raises_exception_when_invalid_value(
-):
+def test_set_template_method_raises_exception_when_invalid_value():
     template = factories.TemplateEntityFactory.create()
-    timestamp_before_setting_value = template =template.timestamp
+    timestamp_before_setting_value = template.timestamp
 
     with pytest.raises(InvalidTemplateValue):
         set_template_value(template=template, value=TemplateValue(value=""))

@@ -9,9 +9,6 @@ from modules.template_module.domain.ports import (
     AbstractTemplateDomainRepository,
     exceptions,
 )
-from modules.template_module.domain.ports.unit_of_work import (
-    AbstractTemplatesUnitOfWork,
-)
 from modules.template_module.services.queries.ports import (
     AbstractTemplateQueryRepository,
 )
@@ -130,15 +127,3 @@ class FakeTemplateQueryRepository(AbstractTemplateQueryRepository):
     ) -> set[TemplateEntity]:
         start = pagination.offset
         return set(list(templates)[start : start + pagination.records_per_page])
-
-
-class FakeTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
-    def __init__(self, templates: list[TemplateEntity]):
-        self.templates = FakeTemplateRepository(templates=templates)
-        self.committed = False
-
-    def commit(self):
-        self.committed = True
-
-    def rollback(self):
-        pass

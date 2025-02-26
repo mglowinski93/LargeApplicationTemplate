@@ -12,7 +12,5 @@ class TemplateValue:
     value: Optional[str]
 
 
-
 class TemplateId(common_ids.Uuid):
     pass
-

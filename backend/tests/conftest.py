@@ -8,9 +8,8 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from modules.common.database import Base
 from config import config
-from modules.common import message_bus as common_message_bus
-from modules.template_module.domain import commands as template_domain_commands, events as template_domain_events
-from . import factories
+from modules.template_module.domain.entities import Template as TemplateEntity
+from . import fakers
 from .common import annotations
 
 
@@ -79,7 +78,7 @@ def db_session_factory(db_session) -> Callable:
 
 @pytest.fixture
 def fake_main_task_dispatcher_inject():
-    fake_task_dispatcher_instance = factories.FakeTaskDispatcher()
+    fake_task_dispatcher_instance = fakers.FakeTaskDispatcher()
 
     inject.clear_and_configure(
         lambda binder: binder.bind(
@@ -94,17 +93,16 @@ def fake_main_task_dispatcher_inject():
 
 @pytest.fixture
 def message_bus(
-    fake_main_task_dispatcher_inject: factories.FakeTaskDispatcher,
-) -> annotations.YieldFixture[common_message_bus.MessageBus]:
-    yield common_message_bus.MessageBus(
-        event_handlers={
-            template_domain_events.TemplateCreated: [],
-            template_domain_events.TemplateDeleted: [],
-            template_domain_events.TemplateValueSet: [],
-        },
-        command_handlers={
-            template_domain_commands.CreateTemplate: lambda event: None,
-            template_domain_commands.DeleteTemplate: lambda event: None,
-            template_domain_commands.SetTemplateValue: lambda event: None,
-        },
-    )
+    fake_main_task_dispatcher_inject: fakers.FakeTaskDispatcher,
+) -> annotations.YieldFixture[fakers.FakeMessageBus]:
+    yield fakers.FakeMessageBus(fake_main_task_dispatcher_inject)
+
+
+@pytest.fixture
+def fake_template_unit_of_work_factory() -> Callable:
+    def fake_unit_of_work(
+        initial_templates: list[TemplateEntity],
+    ) -> fakers.FakeTemplateUnitOfWork:
+        return fakers.FakeTemplateUnitOfWork(templates=initial_templates)
+
+    return fake_unit_of_work

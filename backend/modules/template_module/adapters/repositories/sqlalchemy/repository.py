@@ -15,7 +15,7 @@ from ....domain.ports import (
     dtos as ports_dtos,
 )
 from ....domain.entities import Template as TemplateEntity
-from ....domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
+from ....domain.value_objects import TemplateId, TemplateValue
 from .....common.database import get_session
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
@@ -58,7 +58,7 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
             if key != "_sa_instance_state":
                 setattr(template_instance, key, value)
 
-    def delete(self, template_id: TEMPLATE_ID_TYPE):
+    def delete(self, template_id: TemplateId):
         try:
             self.session.delete(
                 self.session.query(TemplateDb).filter_by(id=template_id).one()
@@ -68,7 +68,7 @@ class SqlAlchemyTemplateDomainRepository(AbstractTemplateDomainRepository):
                 f"Template with id '{template_id}' doesn't exist."
             ) from err
 
-    def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
+    def get(self, template_id: TemplateId) -> TemplateEntity:
         try:
             return _map_template_db_to_template_entity(
                 self.session.query(TemplateDb)
@@ -86,7 +86,7 @@ class SqlAlchemyTemplateQueryRepository(AbstractTemplateQueryRepository):
     def __init__(self, session_factory: Callable = get_session):
         self.session_factory = session_factory
 
-    def get(self, template_id: TEMPLATE_ID_TYPE) -> TemplateEntity:
+    def get(self, template_id: TemplateId) -> TemplateEntity:
         try:
             with self.session_factory() as session:
                 return _map_template_db_to_template_entity(

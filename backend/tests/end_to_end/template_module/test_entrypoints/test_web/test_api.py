@@ -9,7 +9,7 @@ from freezegun import freeze_time
 
 from modules.common import consts
 from ....utils import get_url
-from .....factories import fake_template_id, fake_template_value
+from .....fakers import fake_template_id, fake_template_value
 
 
 TEMPLATE_ROUTES = {

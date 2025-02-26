@@ -2,12 +2,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from ..domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
+from ...domain.value_objects import TemplateId, TemplateValue
 
 
 @dataclass
 class OutputTemplate:
-    id: TEMPLATE_ID_TYPE
+    id: TemplateId
     value: Optional[TemplateValue]
     timestamp: datetime
 

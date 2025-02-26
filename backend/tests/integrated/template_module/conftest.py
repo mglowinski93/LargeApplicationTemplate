@@ -1,14 +1,9 @@
-from typing import Callable, Optional
-
 import pytest
 
-from .fakers import (
-    FakeTemplateRepository,
-    FakeTemplateQueryRepository,
-    FakeTemplateUnitOfWork,
-    FakeMessageBus,
-)
-from tests.factories import FakeTaskDispatcher
+from typing import Callable, Optional
+from sqlalchemy.orm import Session
+
+from tests.factories import TemplateSqlAlchemyModelFactory
 from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
@@ -17,42 +12,6 @@ from modules.template_module.adapters.repositories.sqlalchemy.repository import 
 )
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.value_objects import TemplateValue
-from .adapters.test_repositories.test_sqlalchemy.factories import (
-    TemplateSqlAlchemyModelFactory,
-)
-from sqlalchemy.orm import Session
-
-
-@pytest.fixture
-def fake_template_repository_factory() -> Callable:
-    def fake_repository(
-        initial_templates: list[TemplateEntity],
-    ) -> FakeTemplateRepository:
-        return FakeTemplateRepository(templates=initial_templates)
-
-    return fake_repository
-
-
-@pytest.fixture
-def fake_template_query_repository_factory() -> Callable:
-    def fake_repository(
-        initial_templates: list[TemplateEntity],
-    ) -> FakeTemplateQueryRepository:
-        return FakeTemplateQueryRepository(templates=initial_templates)
-
-    return fake_repository
-
-
-@pytest.fixture
-def fake_template_unit_of_work_factory() -> Callable:
-    def fake_unit_of_work(
-        initial_templates: list[TemplateEntity],
-    ) -> FakeTemplateUnitOfWork:
-        return FakeTemplateUnitOfWork(templates=initial_templates)
-
-    return fake_unit_of_work
-
-
 
 
 @pytest.fixture

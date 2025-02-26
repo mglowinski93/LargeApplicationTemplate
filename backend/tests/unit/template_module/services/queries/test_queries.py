@@ -2,11 +2,15 @@ from typing import Callable
 
 import pytest
 
-from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
 from modules.template_module.services import get_template, list_templates
-from ... import factories
-from ..... import fakers as common_fakers
+from modules.template_module.services.queries.mappers import (
+    map_template_entity_to_output_detailed_dto,
+    map_template_entity_to_output_dto,
+)
+from .... import factories
+from ..... import fakers
+
 
 def test_get_template_returns_output_dto_when_template_exists(
     fake_template_query_repository_factory: Callable,
@@ -24,9 +28,7 @@ def test_get_template_returns_output_dto_when_template_exists(
     )
 
     # Then
-    assert output_template_dto == map_template_entity_to_output_detailed_dto(
-        template
-    )
+    assert output_template_dto == map_template_entity_to_output_detailed_dto(template)
 
 
 def test_get_template_raises_exception_when_requested_template_doesnt_exist(
@@ -37,7 +39,7 @@ def test_get_template_raises_exception_when_requested_template_doesnt_exist(
             query_repository=fake_template_query_repository_factory(
                 initial_templates=[]
             ),
-            template_id=common_fakers.fake_template_id(),
+            template_id=fakers.fake_template_id(),
         )
 
 

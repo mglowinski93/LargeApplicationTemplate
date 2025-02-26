@@ -4,7 +4,7 @@ import pytest
 
 from modules.common.message_bus import MessageBus
 from modules.template_module.domain.exceptions import InvalidTemplateValue
-from modules.template_module.domain.commands.template import (
+from modules.template_module.domain.commands import (
     CreateTemplate,
     DeleteTemplate,
     SetTemplateValue,
@@ -19,10 +19,8 @@ from modules.template_module.services import (
     delete_template,
     set_template_value,
 )
-from tests.fakers import FakeTaskDispatcher
-from ...utils import TestThread
-from .... import factories, fakers
-from ....unit import factories as entity_factories
+from .... import factories
+from ..... import fakers
 
 
 def test_create_template_creates_template_with_none_value(
@@ -50,7 +48,7 @@ def test_delete_template_deletes_template(
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory.create()
+    template_entity = factories.TemplateEntityFactory.create()
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
@@ -81,12 +79,12 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
 
 
 def test_set_template_value_sets_value_when_valid_value(
-    fake_main_task_dispatcher_inject: FakeTaskDispatcher,
+    fake_main_task_dispatcher_inject: fakers.FakeTaskDispatcher,
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory.create()
+    template_entity = factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
     timestamp_before_setting_value = template_entity.timestamp
     version_before_setting_value = template_entity.version
@@ -111,18 +109,17 @@ def test_set_template_value_sets_value_when_valid_value(
 
 def test_set_template_value_raises_exception_when_invalid_value(
     fake_template_unit_of_work_factory: Callable,
-    fake_message_bus_factory: Callable,
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory.create()
+    template_entity = factories.TemplateEntityFactory.create()
     value = TemplateValue(value="")
     timestamp_before_setting_value = template_entity.timestamp
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
-    message_bus = fake_message_bus_factory()
 
+    # when
     with pytest.raises(InvalidTemplateValue):
         set_template_value(
             templates_unit_of_work=unit_of_work,
@@ -130,6 +127,7 @@ def test_set_template_value_raises_exception_when_invalid_value(
             message_bus=message_bus,
         )
 
+    # Then
     assert timestamp_before_setting_value == template_entity.timestamp
 
 
@@ -138,16 +136,18 @@ def test_set_template_value_raises_exception_when_requested_template_doesnt_exis
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
     unit_of_work = fake_template_unit_of_work_factory(initial_templates=[])
 
+    # When
     with pytest.raises(TemplateDoesNotExist):
         set_template_value(
             templates_unit_of_work=unit_of_work,
-            command=SetTemplateValue(template_id=fakers.fake_template_id(), value=value),
+            command=SetTemplateValue(
+                template_id=fakers.fake_template_id(), value=value
+            ),
             message_bus=message_bus,
         )
 
+    # Then
     assert not unit_of_work.templates._templates
-

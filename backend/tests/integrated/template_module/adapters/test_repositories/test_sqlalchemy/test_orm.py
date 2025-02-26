@@ -44,11 +44,11 @@ def test_orm_creates_default_value_for_template_model_value_data_field(
         ),
         (
             "timestamp",
-            {"id": "fake_template_id()", "version": "INITIAL_TEMPLATE_VERSION"},
+            {"id": "fakers.fake_template_id()", "version": "INITIAL_TEMPLATE_VERSION"},
         ),
         (
             "version",
-            {"id": "fake_template_id()", "timestamp": "get_current_utc_timestamp()"},
+            {"id": "fakers.apfake_template_id()", "timestamp": "get_current_utc_timestamp()"},
         ),
     ],
 )
