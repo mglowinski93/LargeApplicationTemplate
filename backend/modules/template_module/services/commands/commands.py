@@ -86,7 +86,7 @@ def set_template_value(
     with templates_unit_of_work:
         template = templates_unit_of_work.templates.get(command.template_id)
         entities.set_template_value(template=template, value=command.value)
-        templates_unit_of_work.templates.create(template)
+        templates_unit_of_work.templates.update(template)
 
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:

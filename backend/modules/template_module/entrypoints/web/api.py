@@ -37,7 +37,7 @@ def get_template_endpoint(
     try:
         template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
     except ValueError:
-        _handle_invalid_template_id(template_id=template_id)
+        return _handle_invalid_template_id(template_id=template_id)
 
     try:
         template = services.get_template(
@@ -179,7 +179,7 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
         message_bus.handle([DeleteTemplate(template_id_uuid)])
         logger.info("Template '%s' found.", template_id)
     except ValueError:
-        _handle_invalid_template_id(template_id=template_id)
+        return _handle_invalid_template_id(template_id=template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
@@ -215,9 +215,11 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
         template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
-            [SetTemplateValue(template_id=template_id_uuid, value=template_value)]
+            [SetTemplateValue(template_id=template_id_uuid, value=value_objects.TemplateValue(template_value))]
         )
         logger.info("Value '%s' set for template '%s'.", template_value, template_id)
+    except ValueError:
+        return _handle_invalid_template_id(template_id=template_id)
     except domain_exceptions.InvalidTemplateValue:
         logger.warning(
             "Invalid value '%s' for template '%s'.", template_value, template_id

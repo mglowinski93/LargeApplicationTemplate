@@ -35,7 +35,6 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
     }
 
     def wrapper(*args, **kwargs):
-
         try:
             return handler(
                 **dependencies,
@@ -53,7 +52,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
             )
         except IndexError as err:
             raise RuntimeError(
-                "Could not find dependency (or dependencies) to inject into handler function based on it's signature."
+                f"Could not find dependency (or dependencies) to inject into {handler.__name__} based on it's signature."
             ) from err
 
     return wrapper
@@ -65,26 +64,29 @@ def inject_config(binder):
     binder.bind_to_constructor(
         "templates_query_repository", template_adapters.SqlAlchemyTemplatesQueryRepository
     )
+    _message_bus = common_message_bus.MessageBus(
+        event_handlers={},
+        command_handlers={},
+    )
     binder.bind(
         "message_bus",
-        common_message_bus.MessageBus(
-            event_handlers=_parse_event_handlers(
-                handlers=[
-                    template_handlers.EVENT_HANDLERS,
-                ],
-                bindings=binder._bindings,
-            ),
-            command_handlers={
-                command: inject_dependencies_into_handlers(
-                    handler=handler, bindings=binder._bindings
-                )
-                for handler_ in [
-                    template_handlers.COMMAND_HANDLERS,
-                ]
-                for command, handler in handler_.items()
-            },
-        ),
+        _message_bus,
     )
+    _message_bus.event_handlers=_parse_event_handlers(
+            handlers=[
+                template_handlers.EVENT_HANDLERS,
+            ],
+            bindings=binder._bindings,
+        )
+    _message_bus.command_handlers={
+            command: inject_dependencies_into_handlers(
+                handler=handler, bindings=binder._bindings
+            )
+            for handler_ in [
+                template_handlers.COMMAND_HANDLERS,
+            ]
+            for command, handler in handler_.items()
+        }
 
 
 def _parse_event_handlers(
