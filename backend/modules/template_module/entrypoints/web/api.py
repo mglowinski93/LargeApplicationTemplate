@@ -1,7 +1,6 @@
 import logging
 from http import HTTPStatus
 from typing import Optional
-from uuid import UUID
 
 import inject
 from flask import jsonify, make_response, request
@@ -10,9 +9,11 @@ from werkzeug.datastructures import MultiDict
 from . import api_blueprint
 from . import forms as template_forms
 from ... import services
+from ...domain.commands import SetTemplateValue, CreateTemplate, DeleteTemplate
 from ...domain import exceptions as domain_exceptions, value_objects
 from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
-from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
+from ....common.message_bus import MessageBus
+from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplatesQueryRepository
 from ....common import dtos as common_dtos
 from ....common.entrypoints.web import forms as common_forms
 from ....common import consts, docstrings, pagination as pagination_utils
@@ -23,31 +24,29 @@ logger = logging.getLogger(__name__)
 
 @api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitOfWork):
+@inject.params(query_repository="templates_query_repository")
+def get_template_endpoint(
+    template_id: str, query_repository: SqlAlchemyTemplatesQueryRepository
+):
     """
     file: {0}/template_endpoints/get_template.yml
     """
 
-    logger.debug("Getting data for template '%s'.", template_id)
+    logger.info("Getting data for template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
-    except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
         )
+    except ValueError:
+        return _handle_invalid_template_id(template_id)
 
     try:
         template = services.get_template(
-            unit_of_work=unit_of_work,
-            template_id=template_id,  # type: ignore
+            templates_query_repository=query_repository,
+            template_id=template_id_uuid,
         )
-        logger.debug("Template '%s' found.", template_id)
+        logger.info("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
@@ -60,13 +59,13 @@ def get_template_endpoint(template_id: str, unit_of_work: AbstractTemplatesUnitO
 
 @api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
+@inject.params(query_repository="templates_query_repository")
+def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository):
     """
     file: {0}/template_endpoints/list_templates.yml
     """
 
-    logger.debug("Listing all templates.")
+    logger.info("Listing templates...")
 
     query_params = request.args
     logger.debug("Query params are: '%s'.", query_params)
@@ -114,7 +113,7 @@ def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
     )
 
     templates, all_templates_count = services.list_templates(
-        unit_of_work=unit_of_work,
+        templates_query_repository=query_repository,
         filters=filters,
         ordering=ordering,
         pagination=pagination,
@@ -146,8 +145,8 @@ def list_templates_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
 
 @api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def create_template_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
+@inject.params(message_bus="message_bus", unit_of_work="templates_unit_of_work")
+def create_template_endpoint(message_bus: MessageBus, unit_of_work):
     """
     file: {0}/template_endpoints/create_template.yml
     """
@@ -155,8 +154,11 @@ def create_template_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
     logger.info("Creating a new template.")
 
     template = services.create_template(
-        unit_of_work=unit_of_work,
+        templates_unit_of_work=unit_of_work,
+        message_bus=message_bus,
+        command=CreateTemplate(),
     )
+
     logger.info("Template '%s' created.", template.id)
 
     return make_response(jsonify(template.serialize()), HTTPStatus.CREATED)
@@ -164,10 +166,8 @@ def create_template_endpoint(unit_of_work: AbstractTemplatesUnitOfWork):
 
 @api_blueprint.route("/<template_id>", methods=["DELETE"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def delete_template_endpoint(
-    template_id: str, unit_of_work: AbstractTemplatesUnitOfWork
-):
+@inject.params(message_bus="message_bus")
+def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     """
     file: {0}/template_endpoints/delete_template.yml
     """
@@ -175,22 +175,13 @@ def delete_template_endpoint(
     logger.info("Deleting template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
+        )
+        message_bus.handle([DeleteTemplate(template_id_uuid)])
+        logger.info("Template '%s' found.", template_id)
     except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
-        )
-
-    try:
-        services.delete_template(
-            unit_of_work=unit_of_work,
-            template_id=template_id,  # type: ignore
-        )
-        logger.debug("Template '%s' found.", template_id)
+        return _handle_invalid_template_id(template_id=template_id)
     except ports_exceptions.TemplateDoesNotExist:
         logger.warning("Template '%s' does not exist.", template_id)
         return make_response(
@@ -203,26 +194,11 @@ def delete_template_endpoint(
 
 @api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@inject.params(unit_of_work="templates_unit_of_work")
-def set_template_value_endpoint(
-    template_id: str, unit_of_work: AbstractTemplatesUnitOfWork
-):
+@inject.params(message_bus="message_bus")
+def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """
     file: {0}/template_endpoints/set_template_value.yml
     """
-
-    logger.info("Setting value for template '%s'.", template_id)
-
-    try:
-        template_id: value_objects.TEMPLATE_ID_TYPE = UUID(template_id)  # type: ignore
-    except ValueError:
-        logger.warning("Invalid template ID format: '%s'.", template_id)
-        return make_response(
-            jsonify(
-                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
-            ),
-            HTTPStatus.BAD_REQUEST,
-        )
 
     form = template_forms.SetTemplateValueForm(
         formdata=MultiDict(request.get_json(force=True, silent=True)),
@@ -238,13 +214,21 @@ def set_template_value_endpoint(
     template_value = form.value.data
 
     try:
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
+        )
         logger.info("Setting value for template '%s'.", template_id)
-        services.set_template_value(
-            unit_of_work=unit_of_work,
-            template_id=template_id,  # type: ignore
-            value=value_objects.TemplateValue(value=template_value),
+        message_bus.handle(
+            [
+                SetTemplateValue(
+                    template_id=template_id_uuid,
+                    value=value_objects.TemplateValue(template_value),
+                )
+            ]
         )
         logger.info("Value '%s' set for template '%s'.", template_value, template_id)
+    except ValueError:
+        return _handle_invalid_template_id(template_id=template_id)
     except domain_exceptions.InvalidTemplateValue:
         logger.warning(
             "Invalid value '%s' for template '%s'.", template_value, template_id
@@ -261,3 +245,13 @@ def set_template_value_endpoint(
         )
 
     return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
+
+
+def _handle_invalid_template_id(template_id: str):
+    logger.warning("Invalid template ID format: '%s'.", template_id)
+    return make_response(
+        jsonify(
+            {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid template ID format."}
+        ),
+        HTTPStatus.BAD_REQUEST,
+    )

@@ -1,10 +1,10 @@
 from __future__ import annotations
 from datetime import datetime
-from uuid import uuid4
 
 from ..exceptions import InvalidTemplateValue
-from ...domain.value_objects import TEMPLATE_ID_TYPE, TemplateValue
+from ...domain.value_objects import TemplateId, TemplateValue
 from ....common.time import get_current_utc_timestamp
+from ....common.domain.events import DomainEvent
 
 
 def set_template_value(template: Template, value: TemplateValue):
@@ -24,19 +24,20 @@ class Template:
     Allocate here business logic and high-level rules that are related to this entity.
     """
 
-    def __init__(self, id: TEMPLATE_ID_TYPE, timestamp: datetime, version: int):
+    def __init__(self, id: TemplateId, timestamp: datetime, version: int):
         self.id = id
         self._value: TemplateValue = TemplateValue(value=None)
         self.timestamp = timestamp
         self.version = version
+        self.messages: list[DomainEvent] = []
 
     @property
     def value(self) -> TemplateValue:
         return self._value
 
     @staticmethod
-    def generate_id() -> TEMPLATE_ID_TYPE:
-        return uuid4()
+    def generate_id() -> TemplateId:
+        return TemplateId.new()
 
     def set_value(self, value: TemplateValue):
         if isinstance(value.value, str) and len(value.value):

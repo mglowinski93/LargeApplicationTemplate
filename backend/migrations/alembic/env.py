@@ -9,7 +9,7 @@ from alembic import context
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 from modules.common.database import Base  # noqa: E402
-from modules.common.database import initialize_database  # noqa: E402
+from modules.common.database import initialize_database_sessions  # noqa: E402
 from bootstrap import get_configuration  # noqa: E402
 
 # IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
@@ -22,7 +22,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (  # no
 
 configuration = get_configuration()
 
-initialize_database(configuration.database_url)
+initialize_database_sessions(configuration.database_url)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -4,10 +4,11 @@ watchdog==3.0.*
 black==23.7.*
 pytest==7.4.*
 pytest-postgresql==5.0.*
+pytest-mock==3.14.*
 ruff==0.0.284
 mypy==1.14.*
 bandit==1.7.*
 Faker==19.3.*
 factory-boy==3.3.*
-freezegun==1.2.*
+freezegun==1.5.*
 locust==2.16.*

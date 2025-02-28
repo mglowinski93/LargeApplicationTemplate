@@ -1,10 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
-from uuid import UUID
+
+from ...common import ids as common_ids
 
 
-TEMPLATE_ID_TYPE = UUID
 INITIAL_TEMPLATE_VERSION = 1
+
+
+class TemplateId(common_ids.Uuid):
+    pass
 
 
 @dataclass(frozen=True)

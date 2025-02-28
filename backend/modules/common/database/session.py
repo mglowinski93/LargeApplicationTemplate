@@ -1,16 +1,16 @@
-from typing import Optional
-
 from sqlalchemy import (
     create_engine,
 )
 from sqlalchemy.orm import sessionmaker, Session
 
 
-session: Optional[Session] = None
+SESSION: Session | None = None
 
 
-def initialize_database(database_url: str):
-    global session
+def initialize_database_sessions(
+    database_url: str,
+):
+    global SESSION
 
     # It's important to keep data consistent between transactions and
     # avoid race conditions.
@@ -22,7 +22,7 @@ def initialize_database(database_url: str):
     # A few solutions for handling data consistency are described here:
     # https://www.cosmicpython.com/book/chapter_07_aggregate.html.
 
-    session = sessionmaker(
+    SESSION = sessionmaker(
         autocommit=False,
         autoflush=False,
         bind=create_engine(
@@ -36,7 +36,7 @@ def initialize_database(database_url: str):
 
 
 def get_session() -> Session:
-    if session is None:
+    if SESSION is None:
         raise RuntimeError("Database session not initialized.")
 
-    return session
+    return SESSION

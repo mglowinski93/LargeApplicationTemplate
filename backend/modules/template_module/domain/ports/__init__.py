@@ -1,4 +1,4 @@
-from .repository import TemplateRepository
+from .repository import AbstractTemplatesDomainRepository
 
 
-__all__ = ["TemplateRepository"]
+__all__ = ["AbstractTemplatesDomainRepository"]
