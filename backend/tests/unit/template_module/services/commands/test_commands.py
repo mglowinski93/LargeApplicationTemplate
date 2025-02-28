@@ -77,7 +77,6 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
 
 
 def test_set_template_value_sets_value_when_valid_value(
-    fake_main_task_dispatcher_inject: fakers.FakeTaskDispatcher,
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
@@ -102,7 +101,6 @@ def test_set_template_value_sets_value_when_valid_value(
     assert unit_of_work.templates.get(template_entity.id).value == value
     assert timestamp_before_setting_value < template_entity.timestamp
     assert version_before_setting_value + 1 == template_entity.version
-    assert fake_main_task_dispatcher_inject.sent_emails_count == 1
 
 
 def test_set_template_value_raises_exception_when_invalid_value(

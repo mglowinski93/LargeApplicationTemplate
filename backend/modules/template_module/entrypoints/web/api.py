@@ -35,14 +35,16 @@ def get_template_endpoint(
     logger.info("Getting data for template '%s'.", template_id)
 
     try:
-        template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
+        )
     except ValueError:
-        return _handle_invalid_template_id(template_id=template_id)
+        return _handle_invalid_template_id(template_id)
 
     try:
         template = services.get_template(
             templates_query_repository=query_repository,
-            template_id=template_id,  # type: ignore
+            template_id=template_id_uuid,
         )
         logger.info("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
@@ -212,10 +214,17 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     template_value = form.value.data
 
     try:
-        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(template_id)  # type: ignore
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
+        )
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
-            [SetTemplateValue(template_id=template_id_uuid, value=value_objects.TemplateValue(template_value))]
+            [
+                SetTemplateValue(
+                    template_id=template_id_uuid,
+                    value=value_objects.TemplateValue(template_value),
+                )
+            ]
         )
         logger.info("Value '%s' set for template '%s'.", template_value, template_id)
     except ValueError:

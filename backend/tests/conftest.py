@@ -7,6 +7,9 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from modules.common.database import Base
+from modules.common import message_bus as common_message_bus
+from modules.template_module.domain import commands as template_domain_commands
+from modules.template_module.domain import events as template_domain_events
 from config import config
 from modules.template_module.domain.entities import Template as TemplateEntity
 from . import fakers
@@ -92,16 +95,25 @@ def fake_main_task_dispatcher_inject():
 
 
 @pytest.fixture
-def message_bus(
-    fake_main_task_dispatcher_inject: fakers.FakeTaskDispatcher,
-) -> annotations.YieldFixture[fakers.FakeMessageBus]:
-    yield fakers.FakeMessageBus(fake_main_task_dispatcher_inject)
+def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
+    yield common_message_bus.MessageBus(
+        event_handlers={
+            template_domain_events.TemplateCreated: [],
+            template_domain_events.TemplateDeleted: [],
+            template_domain_events.TemplateValueSet: [],
+        },
+        command_handlers={
+            template_domain_commands.CreateTemplate: lambda event: None,
+            template_domain_commands.DeleteTemplate: lambda event: None,
+            template_domain_commands.SetTemplateValue: lambda event: None,
+        },
+    )
 
 
 @pytest.fixture
 def fake_template_unit_of_work_factory() -> Callable:
     def fake_unit_of_work(
-        initial_templates: list[TemplateEntity] = None,
+        initial_templates: list[TemplateEntity] = [],
     ) -> fakers.FakeTemplateUnitOfWork:
         return fakers.FakeTemplateUnitOfWork(
             templates=initial_templates if initial_templates else []

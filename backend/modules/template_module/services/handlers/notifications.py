@@ -1,9 +1,6 @@
-import inject
 import logging
 
 from ...domain.events import (
-    TemplateCreated,
-    TemplateDeleted,
     TemplateValueSet,
 )
 from ....common.domain.ports import TaskDispatcher

@@ -34,6 +34,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
         if parameter_name in bindings
     }
 
+    # fmt: off
     def wrapper(*args, **kwargs):
         try:
             return handler(
@@ -43,7 +44,8 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
                     for index, (parameter_name, parameter_value) in enumerate(
                         {
                             parameter_name: parameter_value
-                            for parameter_name, parameter_value in all_function_parameters.items()
+                            for parameter_name, parameter_value in 
+                            all_function_parameters.items()
                             if parameter_name not in dependencies
                         }.items()
                     )
@@ -52,17 +54,21 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
             )
         except IndexError as err:
             raise RuntimeError(
-                f"Could not find dependency (or dependencies) to inject into {handler.__name__} based on it's signature."
+                f"Could not find dependencies to inject into {handler.__name__}."
             ) from err
+    # fmt: on
 
     return wrapper
 
 
 def inject_config(binder):
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
-    binder.bind_to_constructor("templates_unit_of_work", template_adapters.SqlAlchemyTemplatesUnitOfWork)
     binder.bind_to_constructor(
-        "templates_query_repository", template_adapters.SqlAlchemyTemplatesQueryRepository
+        "templates_unit_of_work", template_adapters.SqlAlchemyTemplatesUnitOfWork
+    )
+    binder.bind_to_constructor(
+        "templates_query_repository",
+        template_adapters.SqlAlchemyTemplatesQueryRepository,
     )
     _message_bus = common_message_bus.MessageBus(
         event_handlers={},
@@ -72,21 +78,21 @@ def inject_config(binder):
         "message_bus",
         _message_bus,
     )
-    _message_bus.event_handlers=_parse_event_handlers(
-            handlers=[
-                template_handlers.EVENT_HANDLERS,
-            ],
-            bindings=binder._bindings,
+    _message_bus.event_handlers = _parse_event_handlers(
+        handlers=[
+            template_handlers.EVENT_HANDLERS,
+        ],
+        bindings=binder._bindings,
+    )
+    _message_bus.command_handlers = {
+        command: inject_dependencies_into_handlers(
+            handler=handler, bindings=binder._bindings
         )
-    _message_bus.command_handlers={
-            command: inject_dependencies_into_handlers(
-                handler=handler, bindings=binder._bindings
-            )
-            for handler_ in [
-                template_handlers.COMMAND_HANDLERS,
-            ]
-            for command, handler in handler_.items()
-        }
+        for handler_ in [
+            template_handlers.COMMAND_HANDLERS,
+        ]
+        for command, handler in handler_.items()
+    }
 
 
 def _parse_event_handlers(

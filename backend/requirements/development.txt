@@ -4,6 +4,7 @@ watchdog==3.0.*
 black==23.7.*
 pytest==7.4.*
 pytest-postgresql==5.0.*
+pytest-mock==3.14.*
 ruff==0.0.284
 mypy==1.14.*
 bandit==1.7.*
