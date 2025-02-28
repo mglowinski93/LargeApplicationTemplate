@@ -221,48 +221,6 @@ def test_list_templates_endpoint_filtering_by_query(client: FlaskClient):
     assert all(item["id"] == template_id for item in results)
 
 
-def test_list_templates_endpoint_filtering_by_value(
-    client: FlaskClient, task_dispatcher: None
-):
-    # Given
-    client.post(
-        get_url(
-            app=client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="create-template",
-        )
-    )
-    template_value = fake_template_value().value
-
-    template_id = client.post(  # type: ignore
-        get_url(
-            app=client.application, routes=TEMPLATE_ROUTES, url_type="create-template"
-        )
-    ).json["id"]
-    client.patch(
-        get_url(
-            app=client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="set-template-value",
-            path_parameters={"template_id": template_id},
-        ),
-        json={"value": template_value},
-    )
-
-    # When
-    response = client.get(
-        get_url(
-            app=client.application, routes=TEMPLATE_ROUTES, url_type="list-templates"
-        ),
-        query_string={"value": template_value},
-    )
-
-    # Then
-    assert response.status_code == HTTPStatus.OK
-    results = response.json[consts.PAGINATION_RESULTS_NAME]  # type: ignore
-    assert all(item["value"] == template_value for item in results)
-
-
 def test_get_template_endpoint_returns_template_data_when_specified_template_exist(
     client: FlaskClient,
 ):

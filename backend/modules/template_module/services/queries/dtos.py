@@ -8,8 +8,19 @@ from ...domain.value_objects import TemplateId, TemplateValue
 @dataclass
 class OutputTemplate:
     id: TemplateId
-    value: Optional[TemplateValue]
     timestamp: datetime
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "value": None,
+            "timestamp": self.timestamp,
+        }
+
+
+@dataclass
+class DetailedOutputTemplate(OutputTemplate):
+    value: Optional[TemplateValue]
 
     def serialize(self):
         return {
@@ -17,8 +28,3 @@ class OutputTemplate:
             "value": self.value.value,
             "timestamp": self.timestamp,
         }
-
-
-@dataclass
-class DetailedOutputTemplate(OutputTemplate):
-    pass
