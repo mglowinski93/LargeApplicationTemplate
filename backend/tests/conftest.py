@@ -47,7 +47,7 @@ def prepared_database(db_engine) -> annotations.YieldFixture[Engine]:
 
 
 @pytest.fixture
-def raw_db_session(  # < - This is the fixture to be used in tests.
+def db_session(
     prepared_database,
 ) -> annotations.YieldFixture[Session]:
     with prepared_database.connect() as db_connection:
@@ -64,14 +64,6 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 
 
 @pytest.fixture
-def db_session(raw_db_session) -> annotations.YieldFixture[Session]:
-    # Add here logic responsible for additional ORM configuration
-    # e.g. mappers setup: https://docs.sqlalchemy.org/en/13/orm/mapping_styles.html#classical-mappings.
-
-    yield raw_db_session
-
-
-@pytest.fixture
 def db_session_factory(db_session) -> Callable:
     def db_session_():
         return db_session
@@ -81,7 +73,7 @@ def db_session_factory(db_session) -> Callable:
 
 @pytest.fixture
 def fake_main_task_dispatcher_inject():
-    fake_task_dispatcher_instance = fakers.FakeTaskDispatcher()
+    fake_task_dispatcher_instance = fakers.TestTaskDispatcher()
 
     inject.clear_and_configure(
         lambda binder: binder.bind(
@@ -114,8 +106,8 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
 def fake_template_unit_of_work_factory() -> Callable:
     def fake_unit_of_work(
         initial_templates: list[TemplateEntity] = [],
-    ) -> fakers.FakeTemplateUnitOfWork:
-        return fakers.FakeTemplateUnitOfWork(
+    ) -> fakers.TestTemplateUnitOfWork:
+        return fakers.TestTemplateUnitOfWork(
             templates=initial_templates if initial_templates else []
         )
 

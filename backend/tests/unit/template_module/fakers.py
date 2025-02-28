@@ -14,7 +14,7 @@ from modules.template_module.services.queries.ports import (
 )
 
 
-class FakeTemplatesRepository(AbstractTemplatesDomainRepository):
+class TestTemplatesRepository(AbstractTemplatesDomainRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 
@@ -42,7 +42,7 @@ class FakeTemplatesRepository(AbstractTemplatesDomainRepository):
         self._templates.add(template)
 
 
-class FakeTemplatesQueryRepository(AbstractTemplatesQueryRepository):
+class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def __init__(self, templates: list[TemplateEntity]):
         self._templates = set(templates)
 

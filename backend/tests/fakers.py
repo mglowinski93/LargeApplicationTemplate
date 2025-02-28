@@ -3,7 +3,7 @@ from faker import Faker
 from modules.template_module.domain.ports.unit_of_work import (
     AbstractTemplatesUnitOfWork,
 )
-from tests.unit.template_module.fakers import FakeTemplatesRepository
+from tests.unit.template_module.fakers import TestTemplatesRepository
 from modules.template_module.domain import value_objects as template_value_objects
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.common.domain import ports as common_ports
@@ -22,16 +22,16 @@ def fake_template_value() -> template_value_objects.TemplateValue:
     )
 
 
-class FakeTaskDispatcher(common_ports.TaskDispatcher):
+class TestTaskDispatcher(common_ports.TaskDispatcher):
     sent_emails_count = 0
 
     def send_email(self, content: str):  # type: ignore
         self.sent_emails_count += 1
 
 
-class FakeTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
+class TestTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
     def __init__(self, templates: list[TemplateEntity]):
-        self.templates = FakeTemplatesRepository(templates=templates)
+        self.templates = TestTemplatesRepository(templates=templates)
         self.committed = False
 
     def commit(self):

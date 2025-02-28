@@ -45,11 +45,10 @@ def create_template(
 
     with templates_unit_of_work:
         templates_unit_of_work.templates.create(template)
-        message_bus.handle(
-            messages=(
-                TemplateCreated(template_id=template.id, timestamp=template.timestamp),
-            )
-        )
+
+    message_bus.handle(
+        [TemplateCreated(template_id=template.id, timestamp=template.timestamp)]
+    )
 
     return output
 
@@ -61,11 +60,8 @@ def delete_template(
 ):
     with templates_unit_of_work:
         templates_unit_of_work.templates.delete(command.template_id)
-        message_bus.handle(
-            messages=[
-                TemplateDeleted(template_id=command.template_id),
-            ]
-        )
+
+    message_bus.handle([TemplateDeleted(template_id=command.template_id)])
 
 
 def set_template_value(
@@ -91,8 +87,7 @@ def set_template_value(
         # In this approach, a service layer is responsible for generating events.
         # More details can be found here:
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
-        message_bus.handle(
-            messages=[
-                TemplateValueSet(template_id=template.id, value=command.value),
-            ]
-        )
+
+    message_bus.handle(
+        [TemplateValueSet(template_id=template.id, value=command.value)],
+    )

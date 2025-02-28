@@ -12,8 +12,9 @@ class AbstractTemplatesQueryRepository(ABC):
     @abstractmethod
     def get(self, template_id: TemplateId) -> Template:
         """
-        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to retrieve.
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
+
         :return: Template with given id.
         """
 
@@ -27,6 +28,9 @@ class AbstractTemplatesQueryRepository(ABC):
         pagination: Optional[Pagination] = None,
     ) -> tuple[list[Template], int]:
         """
+        :param filters: Filters to apply.
+        :param ordering: Ordering to apply.
+        :param pagination: Pagination to apply.
         :return: List of all templates and
                  total count of templates matching given filters.
         """

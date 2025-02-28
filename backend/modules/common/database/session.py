@@ -4,7 +4,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import sessionmaker, Session
 
 
-SESSION: Session | None = None  # TODO  zamien wszystkie Optionale na None
+SESSION: Session | None = None
 
 
 def initialize_database_sessions(

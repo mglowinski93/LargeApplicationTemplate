@@ -9,6 +9,7 @@ class AbstractTemplatesDomainRepository(ABC):
     def create(self, template: Template):
         """
         :param template: Template to save.
+
         :return:
         """
 
@@ -17,8 +18,8 @@ class AbstractTemplatesDomainRepository(ABC):
     @abstractmethod
     def update(self, template: Template):
         """
-        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template: Template to update.
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :return:
         """
 
@@ -27,8 +28,9 @@ class AbstractTemplatesDomainRepository(ABC):
     @abstractmethod
     def delete(self, template_id: TemplateId):
         """
-        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to delete.
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
+
         :return:
         """
 
@@ -37,8 +39,9 @@ class AbstractTemplatesDomainRepository(ABC):
     @abstractmethod
     def get(self, template_id: TemplateId) -> Template:
         """
-        :raises TemplateDoesNotExist: Template with given id doesn't exist.
         :param template_id: ID of template to retrieve.
+        :raises TemplateDoesNotExist: Template with given id doesn't exist.
+
         :return: Template with given id.
         """
 
