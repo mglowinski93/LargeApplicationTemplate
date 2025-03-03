@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Optional
 
 from .....common.dtos import Ordering
 from .....common.pagination.dtos import Pagination
@@ -25,7 +24,7 @@ class AbstractTemplatesQueryRepository(ABC):
         self,
         filters: TemplatesFilters,
         ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
+        pagination: Pagination | None = None,
     ) -> tuple[list[Template], int]:
         """
         :param filters: Filters to apply.

@@ -1,6 +1,5 @@
 import logging
 from http import HTTPStatus
-from typing import Optional
 
 import inject
 from flask import jsonify, make_response, request
@@ -103,7 +102,7 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
         timestamp_to=form.timestamp_to.data,
     )
 
-    ordering: Optional[list[common_dtos.Ordering]] = (
+    ordering: list[common_dtos.Ordering] | None = (
         common_forms.OrderingForm(
             data=request.args,
             meta={"csrf": False},

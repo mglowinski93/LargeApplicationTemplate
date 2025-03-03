@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable
 
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,7 @@ from ...common.database import get_session
 class SqlAlchemyTemplatesUnitOfWork(AbstractTemplatesUnitOfWork):
     def __init__(self, session_factory: Callable = get_session):
         self.session_factory: Callable = session_factory
-        self._session: Optional[Session] = None
+        self._session: Session | None = None
 
     def __enter__(self):
         self._session = self.session_factory()

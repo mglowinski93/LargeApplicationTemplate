@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import List
 
 from modules.common.dtos import Ordering, OrderingEnum
 from modules.common.pagination import Pagination
@@ -60,7 +60,7 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         self,
         filters: TemplatesFilters,
         ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
+        pagination: Pagination | None = None,
     ) -> tuple[list[TemplateEntity], int]:
         templates = self._filter(templates=self._templates, filters=filters)
         templates = self._order(templates=templates, ordering=ordering)

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from ...common import ids as common_ids
 
@@ -13,4 +12,4 @@ class TemplateId(common_ids.Uuid):
 
 @dataclass(frozen=True)
 class TemplateValue:
-    value: Optional[str]
+    value: str | None

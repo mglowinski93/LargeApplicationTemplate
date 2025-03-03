@@ -1,5 +1,3 @@
-from typing import Optional as OptionalType
-
 from wtforms import Form, StringField, validators
 
 from ...dtos import Ordering, OrderingEnum
@@ -8,7 +6,7 @@ from ...dtos import Ordering, OrderingEnum
 class OrderingForm(Form):
     ordering = StringField(validators=[validators.DataRequired()])
 
-    def create_ordering(self) -> OptionalType[list[Ordering]]:
+    def create_ordering(self) -> list[Ordering] | None:
         order = [
             self._get_ordering_for_single_field(field)
             for field in self.ordering.data.split(",")
@@ -19,7 +17,7 @@ class OrderingForm(Form):
 
         return order  # type: ignore
 
-    def _get_ordering_for_single_field(self, field: str) -> OptionalType[Ordering]:
+    def _get_ordering_for_single_field(self, field: str) -> Ordering | None:
         if field.strip() == "":
             return None
 

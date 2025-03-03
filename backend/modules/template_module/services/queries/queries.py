@@ -1,5 +1,3 @@
-from typing import Optional
-
 from .dtos import OutputTemplate, DetailedOutputTemplate
 from .mappers import (
     map_template_entity_to_output_dto,
@@ -23,9 +21,9 @@ def get_template(
 
 def list_templates(
     templates_query_repository: AbstractTemplatesQueryRepository,
-    filters: Optional[TemplatesFilters] = None,
-    ordering: Optional[list[Ordering]] = None,
-    pagination: Optional[Pagination] = None,
+    filters: TemplatesFilters | None = None,
+    ordering: list[Ordering] | None = None,
+    pagination: Pagination | None = None,
 ) -> tuple[list[OutputTemplate], int]:
     if filters is None:
         filters = TemplatesFilters()

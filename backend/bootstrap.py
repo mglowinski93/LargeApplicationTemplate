@@ -4,7 +4,7 @@ import os
 import signal
 import sys
 from collections import defaultdict
-from typing import Callable, Optional
+from typing import Callable
 
 import inject
 from flask import Blueprint
@@ -20,7 +20,7 @@ from modules.template_module import adapters as template_adapters
 from modules.template_module.services import handlers as template_handlers
 
 
-def get_configuration(environment_name: Optional[str] = None) -> Config:
+def get_configuration(environment_name: str | None) -> Config:
     if environment_name is None:
         environment_name = os.environ["ENVIRONMENT"]
     return config[environment_name]()
@@ -126,7 +126,7 @@ def close_app_cleanup():
     pass
 
 
-def create_app(environment_name: Optional[str] = None) -> Flask:
+def create_app(environment_name: str | None) -> Flask:
     """
     Set up here the initial state, configurations, and dependencies of an application.
     """

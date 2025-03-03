@@ -1,6 +1,6 @@
 from datetime import datetime
 import logging
-from typing import Callable, Optional
+from typing import Callable
 
 from sqlalchemy import String, or_, text
 from sqlalchemy.exc import NoResultFound
@@ -101,7 +101,7 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         self,
         filters: ports_dtos.TemplatesFilters,
         ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
+        pagination: Pagination | None = None,
     ) -> tuple[list[TemplateEntity], int]:
         with self.session_factory() as session:
             templates, query = _get_templates(
@@ -117,7 +117,7 @@ def _get_templates(
     session: Session,
     filters: ports_dtos.TemplatesFilters,
     ordering: list[Ordering],
-    pagination: Optional[Pagination] = None,
+    pagination: Pagination | None = None,
 ) -> tuple:
     query = _filter(query=session.query(TemplateDb), filters=filters)
 
@@ -161,7 +161,7 @@ def _filter(query: Query, filters: ports_dtos.TemplatesFilters):
 
 
 def _filter_timestamp(
-    query: Query, timestamp_from: Optional[datetime], timestamp_to: Optional[datetime]
+    query: Query, timestamp_from: datetime | None, timestamp_to: datetime | None
 ):
     if timestamp_from is not None:
         query = query.where(TemplateDb.timestamp >= timestamp_from)
