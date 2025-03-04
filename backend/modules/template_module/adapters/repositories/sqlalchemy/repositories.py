@@ -7,9 +7,10 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Query, Session
 from sqlalchemy_utils.functions import cast_if
 
-from .....common.database import get_session
-from .....common.dtos import Ordering, OrderingEnum
-from .....common.pagination import Pagination
+from modules.common.database import get_session
+from modules.common.dtos import Ordering, OrderingEnum
+from modules.common.pagination import Pagination
+
 from .....template_module.services.queries.ports.repositories import (
     AbstractTemplatesQueryRepository,
 )

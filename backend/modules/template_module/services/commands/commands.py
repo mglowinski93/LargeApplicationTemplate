@@ -1,8 +1,9 @@
-from ....common.message_bus import MessageBus
-from ....common.time import get_current_utc_timestamp
+from modules.common.message_bus import MessageBus
+from modules.common.time import get_current_utc_timestamp
+
+from ...domain import commands as domain_commands
 from ...domain import entities
-from ...domain.commands import CreateTemplate, DeleteTemplate, SetTemplateValue
-from ...domain.events import TemplateCreated, TemplateDeleted, TemplateValueSet
+from ...domain import events as domain_events
 from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ...domain.value_objects import INITIAL_TEMPLATE_VERSION
 from ..queries.dtos import OutputTemplate
@@ -19,7 +20,7 @@ from ..queries.mappers import map_template_entity_to_output_dto
 def create_template(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
-    command: CreateTemplate,
+    command: domain_commands.CreateTemplate,
 ) -> (
     OutputTemplate
 ):  # It's correct to return data from command when no data are queried.
@@ -38,7 +39,11 @@ def create_template(
         templates_unit_of_work.templates.create(template)
 
     message_bus.handle(
-        [TemplateCreated(template_id=template.id, timestamp=template.timestamp)]
+        [
+            domain_events.TemplateCreated(
+                template_id=template.id, timestamp=template.timestamp
+            )
+        ]
     )
 
     return output
@@ -47,18 +52,18 @@ def create_template(
 def delete_template(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
-    command: DeleteTemplate,
+    command: domain_commands.DeleteTemplate,
 ):
     with templates_unit_of_work:
         templates_unit_of_work.templates.delete(command.template_id)
 
-    message_bus.handle([TemplateDeleted(template_id=command.template_id)])
+    message_bus.handle([domain_events.TemplateDeleted(template_id=command.template_id)])
 
 
 def set_template_value(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
-    command: SetTemplateValue,
+    command: domain_commands.SetTemplateValue,
 ):
     """
     Allocate here invokes of business logic related to particular action,
@@ -80,5 +85,5 @@ def set_template_value(
         # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
 
     message_bus.handle(
-        [TemplateValueSet(template_id=template.id, value=command.value)],
+        [domain_events.TemplateValueSet(template_id=template.id, value=command.value)],
     )

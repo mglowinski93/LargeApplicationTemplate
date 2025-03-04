@@ -5,16 +5,17 @@ import inject
 from flask import jsonify, make_response, request
 from werkzeug.datastructures import MultiDict
 
-from ....common import consts, docstrings
-from ....common import dtos as common_dtos
-from ....common import pagination as pagination_utils
-from ....common.entrypoints.web import forms as common_forms
-from ....common.message_bus import MessageBus
+from modules.common import consts, docstrings
+from modules.common import dtos as common_dtos
+from modules.common import pagination as pagination_utils
+from modules.common.entrypoints.web import forms as common_forms
+from modules.common.message_bus import MessageBus
+
 from ... import services
 from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplatesQueryRepository
+from ...domain import commands as domain_commands
 from ...domain import exceptions as domain_exceptions
 from ...domain import value_objects
-from ...domain.commands import CreateTemplate, DeleteTemplate, SetTemplateValue
 from ...domain.ports import dtos as ports_dtos
 from ...domain.ports import exceptions as ports_exceptions
 from . import api_blueprint
@@ -157,7 +158,7 @@ def create_template_endpoint(message_bus: MessageBus, unit_of_work):
     template = services.create_template(
         templates_unit_of_work=unit_of_work,
         message_bus=message_bus,
-        command=CreateTemplate(),
+        command=domain_commands.CreateTemplate(),
     )
 
     logger.info("Template '%s' created.", template.id)
@@ -179,7 +180,7 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
         template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
             template_id
         )
-        message_bus.handle([DeleteTemplate(template_id_uuid)])
+        message_bus.handle([domain_commands.DeleteTemplate(template_id_uuid)])
         logger.info("Template '%s' found.", template_id)
     except ValueError:
         return _handle_invalid_template_id(template_id=template_id)
@@ -221,7 +222,7 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
             [
-                SetTemplateValue(
+                domain_commands.SetTemplateValue(
                     template_id=template_id_uuid,
                     value=value_objects.TemplateValue(template_value),
                 )

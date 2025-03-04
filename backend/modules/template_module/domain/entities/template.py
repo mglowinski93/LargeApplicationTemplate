@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from ....common.domain.events import DomainEvent
-from ....common.time import get_current_utc_timestamp
+from modules.common.domain.events import DomainEvent
+from modules.common.time import get_current_utc_timestamp
+
 from ...domain.value_objects import TemplateId, TemplateValue
 from ..exceptions import InvalidTemplateValue
 

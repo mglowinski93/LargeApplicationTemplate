@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import JSON, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .....common.database import Base
+from modules.common.database import Base
 
 
 class Template(Base):

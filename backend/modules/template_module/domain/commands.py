@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from ...common.domain.commands import DomainCommand
+from modules.common.domain.commands import DomainCommand
+
 from .value_objects import TemplateId, TemplateValue
 
 

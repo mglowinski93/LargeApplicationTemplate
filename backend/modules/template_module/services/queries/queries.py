@@ -1,5 +1,6 @@
-from ....common.dtos import Ordering, OrderingEnum
-from ....common.pagination import Pagination
+from modules.common.dtos import Ordering, OrderingEnum
+from modules.common.pagination import Pagination
+
 from ...domain.ports.dtos import TemplatesFilters
 from ...domain.value_objects import TemplateId
 from .dtos import DetailedOutputTemplate, OutputTemplate

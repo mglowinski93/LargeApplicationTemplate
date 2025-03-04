@@ -2,7 +2,8 @@ from typing import Callable
 
 from sqlalchemy.orm import Session
 
-from ...common.database import get_session
+from modules.common.database import get_session
+
 from ..adapters.repositories.sqlalchemy import SqlAlchemyTemplatesDomainRepository
 from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 
