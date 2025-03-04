@@ -72,7 +72,7 @@ def db_session_factory(db_session) -> Callable:
 
 
 @pytest.fixture
-def fake_main_task_dispatcher_inject():
+def fake_main_task_dispatcher_inject() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
     fake_task_dispatcher_instance = fakers.TestTaskDispatcher()
 
     def configure(binder):
