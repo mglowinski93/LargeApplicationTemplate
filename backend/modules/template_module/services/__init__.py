@@ -1,6 +1,5 @@
-from .queries import get_template, list_templates
 from .commands import create_template, delete_template, set_template_value
-
+from .queries import get_template, list_templates
 
 __all__ = [
     "create_template",

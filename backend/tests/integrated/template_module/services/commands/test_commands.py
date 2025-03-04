@@ -1,16 +1,12 @@
 from typing import Callable
 
-
 from modules.common.message_bus import MessageBus
-from modules.template_module.domain.commands import (
-    SetTemplateValue,
-)
-from modules.template_module.services import (
-    set_template_value,
-)
-from ....utils import TestThread
-from .....unit import factories
+from modules.template_module.domain.commands import SetTemplateValue
+from modules.template_module.services import set_template_value
+
 from ..... import fakers
+from .....unit import factories
+from ....utils import TestThread
 
 
 def test_concurrent_template_updates_are_handled(

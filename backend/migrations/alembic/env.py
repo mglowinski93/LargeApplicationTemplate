@@ -2,21 +2,19 @@ import os
 import sys
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
+from sqlalchemy import engine_from_config, pool
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+from bootstrap import get_configuration  # noqa: E402
 from modules.common.database import Base  # noqa: E402
 from modules.common.database import initialize_database_sessions  # noqa: E402
-from bootstrap import get_configuration  # noqa: E402
-
-# IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
-
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, E501, F401
     Template,
 )
+
+# IMPORT ALL REQUIRED MODELS TO CONSIDER DURING GENERATING MIGRATION
+
 
 # END OF IMPORTS
 

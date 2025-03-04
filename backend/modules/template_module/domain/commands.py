@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from .value_objects import TemplateId, TemplateValue
 from ...common.domain.commands import DomainCommand
+from .value_objects import TemplateId, TemplateValue
 
 
 @dataclass(frozen=True)

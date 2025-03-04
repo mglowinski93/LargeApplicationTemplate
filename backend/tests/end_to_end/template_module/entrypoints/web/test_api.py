@@ -1,16 +1,15 @@
 from datetime import datetime, timedelta
-from dateutil.parser import parse as parse_datetime
 from http import HTTPStatus
 from typing import Any
 
-
+from dateutil.parser import parse as parse_datetime
 from flask.testing import FlaskClient
 from freezegun import freeze_time
 
 from modules.common import consts
-from ....utils import get_url
-from .....fakers import fake_template_id, fake_template_value
 
+from .....fakers import fake_template_id, fake_template_value
+from ....utils import get_url
 
 TEMPLATE_ROUTES = {
     "retrieve-template": "api.template-api.get_template_endpoint",

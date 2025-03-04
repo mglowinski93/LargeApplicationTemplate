@@ -9,6 +9,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
 from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
+
 from ...... import fakers
 
 

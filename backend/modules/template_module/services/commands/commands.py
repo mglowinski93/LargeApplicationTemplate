@@ -1,21 +1,12 @@
-from ..queries.dtos import OutputTemplate
-from ..queries.mappers import map_template_entity_to_output_dto
-from ...domain.events import (
-    TemplateValueSet,
-    TemplateCreated,
-    TemplateDeleted,
-)
-from ...domain.commands import (
-    SetTemplateValue,
-    CreateTemplate,
-    DeleteTemplate,
-)
 from ....common.message_bus import MessageBus
 from ....common.time import get_current_utc_timestamp
 from ...domain import entities
+from ...domain.commands import CreateTemplate, DeleteTemplate, SetTemplateValue
+from ...domain.events import TemplateCreated, TemplateDeleted, TemplateValueSet
 from ...domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 from ...domain.value_objects import INITIAL_TEMPLATE_VERSION
-
+from ..queries.dtos import OutputTemplate
+from ..queries.mappers import map_template_entity_to_output_dto
 
 # In this example app, there is no need to care much about history of changes,
 # and rather focus on separating business logic from infrastructure and data integrity.

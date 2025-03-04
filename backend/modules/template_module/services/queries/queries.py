@@ -1,13 +1,13 @@
-from .dtos import OutputTemplate, DetailedOutputTemplate
-from .mappers import (
-    map_template_entity_to_output_dto,
-    map_template_entity_to_output_detailed_dto,
-)
-from .ports import AbstractTemplatesQueryRepository
-from ...domain.ports.dtos import TemplatesFilters
-from ...domain.value_objects import TemplateId
 from ....common.dtos import Ordering, OrderingEnum
 from ....common.pagination import Pagination
+from ...domain.ports.dtos import TemplatesFilters
+from ...domain.value_objects import TemplateId
+from .dtos import DetailedOutputTemplate, OutputTemplate
+from .mappers import (
+    map_template_entity_to_output_detailed_dto,
+    map_template_entity_to_output_dto,
+)
+from .ports import AbstractTemplatesQueryRepository
 
 
 def get_template(

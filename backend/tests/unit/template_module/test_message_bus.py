@@ -2,10 +2,8 @@ import pytest
 from pytest_mock import MockFixture
 
 from modules.common import message_bus as common_message_bus
-from modules.common.domain import (
-    events as common_domain_events,
-    commands as common_domain_commands,
-)
+from modules.common.domain import commands as common_domain_commands
+from modules.common.domain import events as common_domain_events
 
 
 def test_message_bus_has_empty_queue_for_new_instance(

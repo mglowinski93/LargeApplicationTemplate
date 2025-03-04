@@ -5,18 +5,20 @@ import inject
 from flask import jsonify, make_response, request
 from werkzeug.datastructures import MultiDict
 
+from ....common import consts, docstrings
+from ....common import dtos as common_dtos
+from ....common import pagination as pagination_utils
+from ....common.entrypoints.web import forms as common_forms
+from ....common.message_bus import MessageBus
+from ... import services
+from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplatesQueryRepository
+from ...domain import exceptions as domain_exceptions
+from ...domain import value_objects
+from ...domain.commands import CreateTemplate, DeleteTemplate, SetTemplateValue
+from ...domain.ports import dtos as ports_dtos
+from ...domain.ports import exceptions as ports_exceptions
 from . import api_blueprint
 from . import forms as template_forms
-from ... import services
-from ...domain.commands import SetTemplateValue, CreateTemplate, DeleteTemplate
-from ...domain import exceptions as domain_exceptions, value_objects
-from ...domain.ports import exceptions as ports_exceptions, dtos as ports_dtos
-from ....common.message_bus import MessageBus
-from ...adapters.repositories.sqlalchemy import SqlAlchemyTemplatesQueryRepository
-from ....common import dtos as common_dtos
-from ....common.entrypoints.web import forms as common_forms
-from ....common import consts, docstrings, pagination as pagination_utils
-
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,5 @@
-from sqlalchemy import (
-    create_engine,
-)
-from sqlalchemy.orm import sessionmaker, Session
-
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 SESSION: Session | None = None
 

@@ -1,10 +1,9 @@
-import os
 import logging
+import os
 
 from celery import Celery
 
 from ...domain.ports import TaskDispatcher
-
 
 logger = logging.getLogger(__name__)
 

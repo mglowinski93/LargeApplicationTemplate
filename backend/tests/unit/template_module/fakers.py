@@ -3,12 +3,12 @@ from typing import List
 from modules.common.dtos import Ordering, OrderingEnum
 from modules.common.pagination import Pagination
 from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.ports.dtos import TemplatesFilters
-from modules.template_module.domain.value_objects import TemplateId
 from modules.template_module.domain.ports import (
     AbstractTemplatesDomainRepository,
     exceptions,
 )
+from modules.template_module.domain.ports.dtos import TemplatesFilters
+from modules.template_module.domain.value_objects import TemplateId
 from modules.template_module.services.queries.ports import (
     AbstractTemplatesQueryRepository,
 )

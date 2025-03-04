@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from datetime import datetime
 
-from ..exceptions import InvalidTemplateValue
-from ...domain.value_objects import TemplateId, TemplateValue
-from ....common.time import get_current_utc_timestamp
 from ....common.domain.events import DomainEvent
+from ....common.time import get_current_utc_timestamp
+from ...domain.value_objects import TemplateId, TemplateValue
+from ..exceptions import InvalidTemplateValue
 
 
 def set_template_value(template: Template, value: TemplateValue):

@@ -1,9 +1,8 @@
-import pytest
-
 from typing import Callable
+
+import pytest
 from sqlalchemy.orm import Session
 
-from tests.factories import TemplateSqlAlchemyModelFactory
 from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
@@ -12,6 +11,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.repositories impor
 )
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.value_objects import TemplateValue
+from tests.factories import TemplateSqlAlchemyModelFactory
 
 
 @pytest.fixture

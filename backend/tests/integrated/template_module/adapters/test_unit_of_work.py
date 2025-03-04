@@ -5,9 +5,8 @@ import pytest
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
-from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.adapters.unit_of_work import SqlAlchemyTemplatesUnitOfWork
-
+from modules.template_module.domain.entities import Template as TemplateEntity
 from tests.unit.factories import TemplateEntityFactory
 
 

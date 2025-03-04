@@ -1,5 +1,5 @@
-from .dtos import OutputTemplate, DetailedOutputTemplate
 from ...domain.entities import Template
+from .dtos import DetailedOutputTemplate, OutputTemplate
 
 
 def map_template_entity_to_output_dto(template: Template) -> OutputTemplate:

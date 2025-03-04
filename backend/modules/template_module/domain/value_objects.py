@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 from ...common import ids as common_ids
 
-
 INITIAL_TEMPLATE_VERSION = 1
 
 

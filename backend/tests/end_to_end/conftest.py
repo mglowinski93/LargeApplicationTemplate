@@ -1,8 +1,8 @@
 import celery
 import pytest
 
+from bootstrap import close_app_cleanup, create_app
 from modules.common.database import Base
-from bootstrap import create_app, close_app_cleanup
 
 
 @pytest.fixture(scope="module")

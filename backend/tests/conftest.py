@@ -6,15 +6,15 @@ from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from modules.common.database import Base
+from config import config
 from modules.common import message_bus as common_message_bus
+from modules.common.database import Base
 from modules.template_module.domain import commands as template_domain_commands
 from modules.template_module.domain import events as template_domain_events
-from config import config
 from modules.template_module.domain.entities import Template as TemplateEntity
+
 from . import fakers
 from .common import annotations
-
 
 configuration = config["test"]()
 
@@ -75,11 +75,11 @@ def db_session_factory(db_session) -> Callable:
 def fake_main_task_dispatcher_inject():
     fake_task_dispatcher_instance = fakers.TestTaskDispatcher()
 
-    inject.clear_and_configure(
-        lambda binder: binder.bind(
-            "main_task_dispatcher", fake_task_dispatcher_instance
-        )
-    )
+    def configure(binder):
+        binder.bind("main_task_dispatcher", fake_task_dispatcher_instance)
+        return None
+
+    inject.clear_and_configure(configure)
 
     yield fake_task_dispatcher_instance
 

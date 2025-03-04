@@ -3,24 +3,25 @@ from typing import Callable
 import pytest
 
 from modules.common.message_bus import MessageBus
-from modules.template_module.domain.exceptions import InvalidTemplateValue
 from modules.template_module.domain.commands import (
     CreateTemplate,
     DeleteTemplate,
     SetTemplateValue,
 )
-from modules.template_module.domain.value_objects import (
-    TemplateValue,
-    INITIAL_TEMPLATE_VERSION,
-)
+from modules.template_module.domain.exceptions import InvalidTemplateValue
 from modules.template_module.domain.ports.exceptions import TemplateDoesNotExist
+from modules.template_module.domain.value_objects import (
+    INITIAL_TEMPLATE_VERSION,
+    TemplateValue,
+)
 from modules.template_module.services import (
     create_template,
     delete_template,
     set_template_value,
 )
-from .... import factories
+
 from ..... import fakers
+from .... import factories
 
 
 def test_create_template_creates_template_with_none_value(

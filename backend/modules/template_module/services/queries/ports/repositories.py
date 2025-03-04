@@ -2,9 +2,9 @@ from abc import ABC, abstractmethod
 
 from .....common.dtos import Ordering
 from .....common.pagination.dtos import Pagination
-from .....template_module.domain.value_objects import TemplateId
-from .....template_module.domain.ports.dtos import TemplatesFilters
 from .....template_module.domain.entities import Template
+from .....template_module.domain.ports.dtos import TemplatesFilters
+from .....template_module.domain.value_objects import TemplateId
 
 
 class AbstractTemplatesQueryRepository(ABC):

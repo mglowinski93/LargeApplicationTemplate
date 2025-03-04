@@ -1,20 +1,11 @@
 from typing import Callable
 
-from ....common.domain.events import DomainEvent
 from ....common.domain.commands import DomainCommand
-from ...domain.commands import (
-    SetTemplateValue,
-    CreateTemplate,
-    DeleteTemplate,
-)
-from ...domain.events import TemplateValueSet, TemplateCreated, TemplateDeleted
-from ...services.commands import (
-    set_template_value,
-    create_template,
-    delete_template,
-)
+from ....common.domain.events import DomainEvent
+from ...domain.commands import CreateTemplate, DeleteTemplate, SetTemplateValue
+from ...domain.events import TemplateCreated, TemplateDeleted, TemplateValueSet
+from ...services.commands import create_template, delete_template, set_template_value
 from .notifications import send_template_value_set_notification
-
 
 EVENT_HANDLERS: dict[type[DomainEvent], list[Callable]] = {
     TemplateValueSet: [send_template_value_set_notification],

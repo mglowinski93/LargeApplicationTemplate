@@ -1,5 +1,5 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 from typing import Callable
 
 from sqlalchemy import String, or_, text
@@ -7,21 +7,19 @@ from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Query, Session
 from sqlalchemy_utils.functions import cast_if
 
-from .consts import VALUE_NAME_IN_DATABASE
-from .orm import Template as TemplateDb
-from ....domain.ports import (
-    AbstractTemplatesDomainRepository,
-    exceptions,
-    dtos as ports_dtos,
-)
-from ....domain.entities import Template as TemplateEntity
-from ....domain.value_objects import TemplateId, TemplateValue
 from .....common.database import get_session
 from .....common.dtos import Ordering, OrderingEnum
 from .....common.pagination import Pagination
 from .....template_module.services.queries.ports.repositories import (
     AbstractTemplatesQueryRepository,
 )
+from ....domain.entities import Template as TemplateEntity
+from ....domain.ports import AbstractTemplatesDomainRepository
+from ....domain.ports import dtos as ports_dtos
+from ....domain.ports import exceptions
+from ....domain.value_objects import TemplateId, TemplateValue
+from .consts import VALUE_NAME_IN_DATABASE
+from .orm import Template as TemplateDb
 
 logger = logging.getLogger(__name__)
 

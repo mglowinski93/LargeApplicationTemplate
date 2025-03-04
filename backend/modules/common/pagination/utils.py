@@ -1,5 +1,4 @@
 import urllib.parse as urlparse
-
 from urllib.parse import urlencode
 
 

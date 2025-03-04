@@ -1,6 +1,5 @@
 from flask import Blueprint
 
-
 api_blueprint = Blueprint("template-api", __name__)
 
 # Ensure that the views file was imported
