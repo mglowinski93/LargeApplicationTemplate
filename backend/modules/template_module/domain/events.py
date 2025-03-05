@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from modules.common.domain.events import DomainEvent
+
 from .value_objects import TemplateId, TemplateValue
-from ...common.domain.events import DomainEvent
 
 
 @dataclass(frozen=True)

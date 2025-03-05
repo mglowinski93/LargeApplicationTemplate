@@ -58,6 +58,10 @@ jobs:
         run: make black_check
         working-directory: backend
 
+      - name: Run isort
+        run: make isort_check
+        working-directory: backend
+
       - name: Lint code
         run: make ruff_check
         working-directory: backend

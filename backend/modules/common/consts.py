@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-
 SWAGGER_FILES = os.path.join(Path(__file__).parent.parent.parent, "swagger_files")
 
 PAGINATION_LIMIT_QUERY_PARAMETER_NAME = "limit"

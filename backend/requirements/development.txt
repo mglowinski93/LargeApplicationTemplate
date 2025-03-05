@@ -12,3 +12,4 @@ Faker==19.3.*
 factory-boy==3.3.*
 freezegun==1.5.*
 locust==2.16.*
+isort==6.0.*

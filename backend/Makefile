@@ -1,10 +1,15 @@
-all: black_check ruff_check mypy_check bandit_check tests
+all: black_check isort_check ruff_check mypy_check bandit_check tests
 	echo "All checks passed!"
 
 black_check:
 	echo "Checking black..."
 	black --check ./
 	echo "Black passed."
+
+isort_check:
+	echo "Checking isort..."
+	isort --settings-path .isort.cfg --check-only .
+	echo "Isort passed."
 
 ruff_check:
 	echo "Checking ruff..."

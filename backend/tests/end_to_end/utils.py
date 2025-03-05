@@ -1,5 +1,3 @@
-from typing import Optional
-
 from flask import Flask, url_for
 
 
@@ -7,8 +5,8 @@ def get_url(
     app: Flask,
     routes: dict,
     url_type: str,
-    path_parameters: Optional[dict] = None,
-    query_parameters: Optional[dict] = None,
+    path_parameters: dict | None = None,
+    query_parameters: dict | None = None,
 ) -> str:
     _path_parameters: dict = path_parameters or {}
     _query_parameters: dict = query_parameters or {}

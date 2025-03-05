@@ -1,15 +1,14 @@
-from typing import Optional
+from modules.common.dtos import Ordering, OrderingEnum
+from modules.common.pagination import Pagination
 
-from .dtos import OutputTemplate, DetailedOutputTemplate
-from .mappers import (
-    map_template_entity_to_output_dto,
-    map_template_entity_to_output_detailed_dto,
-)
-from .ports import AbstractTemplatesQueryRepository
 from ...domain.ports.dtos import TemplatesFilters
 from ...domain.value_objects import TemplateId
-from ....common.dtos import Ordering, OrderingEnum
-from ....common.pagination import Pagination
+from .dtos import DetailedOutputTemplate, OutputTemplate
+from .mappers import (
+    map_template_entity_to_output_detailed_dto,
+    map_template_entity_to_output_dto,
+)
+from .ports import AbstractTemplatesQueryRepository
 
 
 def get_template(
@@ -23,9 +22,9 @@ def get_template(
 
 def list_templates(
     templates_query_repository: AbstractTemplatesQueryRepository,
-    filters: Optional[TemplatesFilters] = None,
-    ordering: Optional[list[Ordering]] = None,
-    pagination: Optional[Pagination] = None,
+    filters: TemplatesFilters | None = None,
+    ordering: list[Ordering | None] | None = None,
+    pagination: Pagination | None = None,
 ) -> tuple[list[OutputTemplate], int]:
     if filters is None:
         filters = TemplatesFilters()

@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from ...domain.value_objects import TemplateId, TemplateValue
 
@@ -20,7 +19,7 @@ class OutputTemplate:
 
 @dataclass
 class DetailedOutputTemplate(OutputTemplate):
-    value: Optional[TemplateValue]
+    value: TemplateValue | None
 
     def serialize(self):
         return {

@@ -1,13 +1,12 @@
 import pytest
 
+from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template_module.domain.entities import set_template_value
 from modules.template_module.domain.exceptions import InvalidTemplateValue
-from modules.template_module.domain.entities import (
-    Template as TemplateEntity,
-    set_template_value,
-)
-from modules.template_module.domain.value_objects import TemplateValue, TemplateId
-from .... import factories
+from modules.template_module.domain.value_objects import TemplateId, TemplateValue
+
 from ..... import fakers
+from .... import factories
 
 
 def test_set_template_value_sets_value_when_valid_value():

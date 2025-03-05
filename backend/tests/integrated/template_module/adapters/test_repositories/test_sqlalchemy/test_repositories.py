@@ -1,21 +1,22 @@
-import pytest
 from typing import Callable
 
+import pytest
 from sqlalchemy.orm import Session
 
+from modules.template_module.adapters.repositories.sqlalchemy import (
+    SqlAlchemyTemplatesDomainRepository,
+    SqlAlchemyTemplatesQueryRepository,
+)
 from modules.template_module.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
-from modules.template_module.adapters.repositories.sqlalchemy import (
-    SqlAlchemyTemplatesDomainRepository,
-    SqlAlchemyTemplatesQueryRepository,
-)
 from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.ports.dtos import TemplatesFilters
 from modules.template_module.domain.ports import exceptions
+from modules.template_module.domain.ports.dtos import TemplatesFilters
+
 from ...... import fakers
 from ......unit import factories as entity_factories
 

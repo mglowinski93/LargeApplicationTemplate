@@ -4,9 +4,7 @@ import factory
 
 from modules.common import time
 from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.value_objects import (
-    INITIAL_TEMPLATE_VERSION,
-)
+from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 
 class TemplateEntityFactory(factory.Factory):

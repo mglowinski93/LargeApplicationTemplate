@@ -1,14 +1,14 @@
-from typing import Optional, List
+from typing import List
 
 from modules.common.dtos import Ordering, OrderingEnum
 from modules.common.pagination import Pagination
 from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.ports.dtos import TemplatesFilters
-from modules.template_module.domain.value_objects import TemplateId
 from modules.template_module.domain.ports import (
     AbstractTemplatesDomainRepository,
     exceptions,
 )
+from modules.template_module.domain.ports.dtos import TemplatesFilters
+from modules.template_module.domain.value_objects import TemplateId
 from modules.template_module.services.queries.ports import (
     AbstractTemplatesQueryRepository,
 )
@@ -59,8 +59,8 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def list(
         self,
         filters: TemplatesFilters,
-        ordering: list[Ordering],
-        pagination: Optional[Pagination] = None,
+        ordering: list[Ordering | None],
+        pagination: Pagination | None = None,
     ) -> tuple[list[TemplateEntity], int]:
         templates = self._filter(templates=self._templates, filters=filters)
         templates = self._order(templates=templates, ordering=ordering)
@@ -103,9 +103,11 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
 
     @staticmethod
     def _order(
-        templates: set[TemplateEntity], ordering: List[Ordering]
+        templates: set[TemplateEntity], ordering: List[Ordering | None]
     ) -> set[TemplateEntity]:
         for order in ordering:
+            if order is None:
+                continue
             if order.field == "timestamp":
                 sorted(
                     templates,

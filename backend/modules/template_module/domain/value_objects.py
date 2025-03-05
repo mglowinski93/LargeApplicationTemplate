@@ -1,8 +1,6 @@
 from dataclasses import dataclass
-from typing import Optional
 
-from ...common import ids as common_ids
-
+from modules.common import ids as common_ids
 
 INITIAL_TEMPLATE_VERSION = 1
 
@@ -13,4 +11,4 @@ class TemplateId(common_ids.Uuid):
 
 @dataclass(frozen=True)
 class TemplateValue:
-    value: Optional[str]
+    value: str | None

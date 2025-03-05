@@ -8,8 +8,9 @@ from modules.template_module.services.queries.mappers import (
     map_template_entity_to_output_detailed_dto,
     map_template_entity_to_output_dto,
 )
-from .... import factories
+
 from ..... import fakers
+from .... import factories
 
 
 def test_get_template_returns_output_dto_when_template_exists(

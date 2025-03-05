@@ -1,10 +1,8 @@
 import logging
 
-from ...domain.events import (
-    TemplateValueSet,
-)
-from ....common.domain.ports import TaskDispatcher
+from modules.common.domain.ports import TaskDispatcher
 
+from ...domain.events import TemplateValueSet
 
 logger = logging.getLogger(__name__)
 

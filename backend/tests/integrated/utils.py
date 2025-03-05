@@ -1,6 +1,5 @@
 import threading
 
-
 from sqlalchemy.orm import session
 
 

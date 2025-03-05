@@ -1,9 +1,10 @@
-import pytest
 from typing import Callable
 
-from .fakers import TestTemplatesQueryRepository, TestTemplatesRepository
+import pytest
 
 from modules.template_module.domain.entities import Template as TemplateEntity
+
+from .fakers import TestTemplatesQueryRepository, TestTemplatesRepository
 
 
 @pytest.fixture
