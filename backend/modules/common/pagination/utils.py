@@ -9,10 +9,10 @@ def get_next_pagination_link(
     if all_records_count - records_per_page > offset:
         # More about adding query params to url:
         # https://stackoverflow.com/questions/2506379/add-params-to-given-url-in-python.
-        params = {"offset": offset + records_per_page}
+        params = {"offset": str(offset + records_per_page)}
         url_parts = list(urlparse.urlparse(url))
         query = dict(urlparse.parse_qsl(url_parts[4]))
-        query.update(params)  # type: ignore
+        query.update(params)
         url_parts[4] = urlencode(query)
         link = urlparse.urlunparse(url_parts)
 

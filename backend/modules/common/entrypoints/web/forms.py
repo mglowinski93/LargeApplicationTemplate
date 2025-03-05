@@ -6,8 +6,8 @@ from ...dtos import Ordering, OrderingEnum
 class OrderingForm(Form):
     ordering = StringField(validators=[validators.DataRequired()])
 
-    def create_ordering(self) -> list[Ordering] | None:
-        order = [
+    def create_ordering(self) -> list[Ordering | None] | None:
+        order: list[Ordering | None] = [
             self._get_ordering_for_single_field(field)
             for field in self.ordering.data.split(",")
         ]
@@ -15,7 +15,7 @@ class OrderingForm(Form):
         if order[0] is None:
             return None
 
-        return order  # type: ignore
+        return order
 
     def _get_ordering_for_single_field(self, field: str) -> Ordering | None:
         if field.strip() == "":

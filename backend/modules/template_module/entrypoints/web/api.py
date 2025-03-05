@@ -105,7 +105,7 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
         timestamp_to=form.timestamp_to.data,
     )
 
-    ordering: list[common_dtos.Ordering] | None = (
+    ordering: list[common_dtos.Ordering | None] | None = (
         common_forms.OrderingForm(
             data=request.args,
             meta={"csrf": False},

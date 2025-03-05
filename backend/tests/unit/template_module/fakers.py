@@ -59,7 +59,7 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def list(
         self,
         filters: TemplatesFilters,
-        ordering: list[Ordering],
+        ordering: list[Ordering | None],
         pagination: Pagination | None = None,
     ) -> tuple[list[TemplateEntity], int]:
         templates = self._filter(templates=self._templates, filters=filters)
@@ -103,9 +103,11 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
 
     @staticmethod
     def _order(
-        templates: set[TemplateEntity], ordering: List[Ordering]
+        templates: set[TemplateEntity], ordering: List[Ordering | None]
     ) -> set[TemplateEntity]:
         for order in ordering:
+            if order is None:
+                continue
             if order.field == "timestamp":
                 sorted(
                     templates,

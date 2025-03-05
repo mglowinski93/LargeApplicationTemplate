@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 import factory
+from sqlalchemy.orm import Session
 
 from modules.common.time import get_current_utc_timestamp
 from modules.template_module.adapters.repositories.sqlalchemy.consts import (
@@ -15,6 +16,7 @@ from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSIO
 class TemplateSqlAlchemyModelFactory(factory.alchemy.SQLAlchemyModelFactory):
     class Meta:
         model = SqlAlchemyTemplateDb
+        sqlalchemy_session: Session | None = None
 
     id = factory.LazyFunction(uuid4)
     value_data = factory.LazyFunction(lambda: {VALUE_NAME_IN_DATABASE: None})

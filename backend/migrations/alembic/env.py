@@ -1,6 +1,7 @@
 import os
 import sys
 from logging.config import fileConfig
+from typing import Dict
 
 from alembic import context
 from sqlalchemy import engine_from_config, pool
@@ -75,10 +76,13 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    config_values = config.get_section(config.config_ini_section)
-    config_values["sqlalchemy.url"] = configuration.database_url  # type: ignore
+    config_values: Dict[str, str] | None = config.get_section(config.config_ini_section)
+    if config_values is None:
+        raise ValueError("Config section not found")
+
+    config_values["sqlalchemy.url"] = str(configuration.database_url)
     connectable = engine_from_config(
-        config_values,  # type: ignore
+        config_values,
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
     )

@@ -23,7 +23,7 @@ class AbstractTemplatesQueryRepository(ABC):
     def list(
         self,
         filters: TemplatesFilters,
-        ordering: list[Ordering],
+        ordering: list[Ordering | None],
         pagination: Pagination | None = None,
     ) -> tuple[list[Template], int]:
         """
