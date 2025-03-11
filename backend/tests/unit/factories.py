@@ -6,11 +6,13 @@ from modules.template_module.domain.value_objects import (
     INITIAL_TEMPLATE_VERSION,
 )
 
+from ..fakers import fake_template_id
+
 
 class TemplateEntityFactory(factory.Factory):
     class Meta:
         model = TemplateEntity
 
-    id = factory.LazyFunction(TemplateEntity.generate_id)
+    id = factory.LazyFunction(fake_template_id)
     timestamp = factory.LazyFunction(time.get_current_utc_timestamp)
     version = INITIAL_TEMPLATE_VERSION
