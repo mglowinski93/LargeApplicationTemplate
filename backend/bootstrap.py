@@ -12,6 +12,7 @@ from flask import Blueprint, Flask
 
 from config import Config, config, swagger_config, swagger_template
 from modules.common import message_bus as common_message_bus
+from modules.common.adapters.notifications import DummyEmailNotificator
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database_sessions
 from modules.common.domain.events import DomainEvent
@@ -62,6 +63,7 @@ def inject_dependencies_into_handlers(handler: Callable, bindings: dict) -> Call
 
 def inject_config(binder):
     binder.bind_to_constructor("main_task_dispatcher", CeleryTaskDispatcher)
+    binder.bind_to_constructor("email_notificator", DummyEmailNotificator)
     binder.bind_to_constructor(
         "templates_unit_of_work", template_adapters.SqlAlchemyTemplatesUnitOfWork
     )

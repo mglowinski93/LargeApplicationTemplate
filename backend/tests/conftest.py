@@ -1,6 +1,5 @@
 from typing import Callable
 
-import inject
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy import Engine, create_engine
@@ -8,6 +7,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from config import config
 from modules.common import message_bus as common_message_bus
+from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
 from modules.template_module.domain import commands as template_domain_commands
 from modules.template_module.domain import events as template_domain_events
@@ -72,20 +72,15 @@ def db_session_factory(db_session) -> Callable:
 
 
 @pytest.fixture
-def fake_main_task_dispatcher_inject() -> (
-    annotations.YieldFixture[fakers.TestTaskDispatcher]
-):
-    fake_task_dispatcher_instance = fakers.TestTaskDispatcher()
+def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
+    yield fakers.TestTaskDispatcher()
 
-    def configure(binder):
-        binder.bind("main_task_dispatcher", fake_task_dispatcher_instance)
-        return None
 
-    inject.clear_and_configure(configure)
-
-    yield fake_task_dispatcher_instance
-
-    inject.clear()
+@pytest.fixture(autouse=True)
+def reset_dummy_email_notificator():
+    DummyEmailNotificator.total_emails_sent = 0
+    yield
+    DummyEmailNotificator.total_emails_sent = 0
 
 
 @pytest.fixture

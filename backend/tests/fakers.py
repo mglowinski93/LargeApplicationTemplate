@@ -21,11 +21,10 @@ def fake_template_value() -> template_value_objects.TemplateValue:
     )
 
 
-class TestTaskDispatcher(common_ports.TaskDispatcher):
-    sent_emails_count = 0
-
-    def send_email(self, content: str):  # type: ignore
-        self.sent_emails_count += 1
+class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):
+    @staticmethod
+    def dispatch(func, *args, **kwargs):
+        return func(*args, **kwargs)
 
 
 class TestTemplateUnitOfWork(AbstractTemplatesUnitOfWork):

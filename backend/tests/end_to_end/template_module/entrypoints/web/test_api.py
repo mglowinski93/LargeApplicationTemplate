@@ -6,6 +6,7 @@ from flask.testing import FlaskClient
 from freezegun import freeze_time
 
 from modules.common import consts
+from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 
 from .....fakers import fake_template_id, fake_template_value
 from ....utils import get_url
@@ -166,10 +167,11 @@ def get_template_id(client: FlaskClient) -> str:
 
 
 def test_list_templates_endpoint_ordering_value(
-    client: FlaskClient, task_dispatcher: None
+    client: FlaskClient,
 ):
     templates = []
-    for template_value in ("a", "b"):
+    values = ["a", "b"]
+    for template_value in values:
         template_id = get_template_id(client)
         client.patch(
             get_url(
@@ -181,6 +183,8 @@ def test_list_templates_endpoint_ordering_value(
             json={"value": template_value},
         )
         templates.append(template_id)
+
+    assert DummyEmailNotificator.total_emails_sent == values.__len__()
 
     response = client.get(
         get_url(
@@ -370,7 +374,6 @@ def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exi
 
 def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_when_specified_template_exists(  # noqa: E501
     client: FlaskClient,
-    task_dispatcher: None,
 ):
     # Given
     template_id = get_template_id(client)
@@ -397,6 +400,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
             path_parameters={"template_id": template_id},
         )
     )
+    assert DummyEmailNotificator.total_emails_sent == 1
     assert response.status_code == HTTPStatus.OK
     assert response.json is not None
     assert response.json["value"] == template_value
@@ -404,7 +408,6 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 
 def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(
     client: FlaskClient,
-    task_dispatcher: None,
 ):
     # Given
     template_id = fake_template_id()
@@ -422,6 +425,7 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_
     )
 
     # Then
+    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json
@@ -429,7 +433,6 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_
 
 def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_format(
     client: FlaskClient,
-    task_dispatcher: None,
 ):
     # Given
     template_id = "invalid-format-template-id"
@@ -447,6 +450,7 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
     )
 
     # Then
+    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.BAD_REQUEST
     json_response = response.json
     assert json_response is not None
@@ -455,7 +459,6 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
 
 def test_set_template_value_endpoint_returns_400_when_missing_parameters(
     client: FlaskClient,
-    task_dispatcher: None,
 ):
     # Given
     template_id = fake_template_id()
@@ -472,6 +475,7 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
     )
 
     # Then
+    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.BAD_REQUEST
     json_response = response.json
     assert json_response is not None
