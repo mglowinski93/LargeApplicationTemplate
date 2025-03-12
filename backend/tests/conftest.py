@@ -9,6 +9,7 @@ from config import config
 from modules.common import message_bus as common_message_bus
 from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
+from modules.common.domain.ports import AbstractTaskDispatcher
 from modules.template_module.domain import commands as template_domain_commands
 from modules.template_module.domain import events as template_domain_events
 from modules.template_module.domain.entities import Template as TemplateEntity
@@ -72,7 +73,7 @@ def db_session_factory(db_session) -> Callable:
 
 
 @pytest.fixture
-def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
+def task_dispatcher() -> annotations.YieldFixture[AbstractTaskDispatcher]:
     yield fakers.TestTaskDispatcher()
 
 
