@@ -13,28 +13,20 @@ from modules.template_module.adapters.repositories.sqlalchemy.consts import (
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
+from modules.template_module.adapters.repositories.sqlalchemy.repositories import (
+    _map_template_db_to_template_entity,
+)
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports import exceptions
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 
+from ...... import factories as entity_factories
 from ...... import fakers
-from ......unit import factories as entity_factories
-
-
-def prepare_template_entity(
-    repository: SqlAlchemyTemplatesDomainRepository,
-    db_session: Session,
-) -> TemplateEntity:
-    template_entity = entity_factories.TemplateEntityFactory.create()
-    template_entity.set_value(value=fakers.fake_template_value())
-    repository.create(template_entity)
-    db_session.commit()
-    return template_entity
 
 
 def test_domain_repository_creates_template(db_session: Session):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory.create()
+    template_entity = entity_factories.TemplateEntityFactory().create()
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
 
     # When
@@ -51,8 +43,10 @@ def test_domain_repository_updates_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(
-        repository=repository, db_session=db_session
+    template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplateEntityFactory(
+            session=db_session, persistence="commit"
+        ).create()
     )
 
     new_template_value = fakers.fake_template_value()
@@ -75,8 +69,10 @@ def test_domain_repository_deletes_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(
-        repository=repository, db_session=db_session
+    template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplateEntityFactory(
+            session=db_session, persistence="commit"
+        ).create()
     )
 
     # When
@@ -93,8 +89,10 @@ def test_domain_repository_can_retrieve_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(
-        repository=repository, db_session=db_session
+    template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplateEntityFactory(
+            session=db_session, persistence="commit"
+        ).create()
     )
 
     # When
@@ -109,9 +107,10 @@ def test_query_repository_can_retrieve_template(
     db_session: Session,
 ):
     # Given
-    repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(
-        repository=repository, db_session=db_session
+    template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplateEntityFactory(
+            session=db_session, persistence="commit"
+        ).create()
     )
 
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
@@ -140,10 +139,13 @@ def test_query_repository_lists_templates(
     db_session: Session,
 ):
     # Given
-    repository = SqlAlchemyTemplatesDomainRepository(db_session)
     number_of_templates = 3
     template_entities = [
-        prepare_template_entity(repository=repository, db_session=db_session)
+        _map_template_db_to_template_entity(
+            entity_factories.TemplateEntityFactory(
+                session=db_session, persistence="commit"
+            ).create()
+        )
         for _ in range(number_of_templates)
     ]
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)

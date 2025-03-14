@@ -7,14 +7,15 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
 )
 from modules.template_module.adapters.unit_of_work import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.domain.entities import Template as TemplateEntity
-from tests.unit.factories import TemplateEntityFactory
+
+from ....factories import TemplateEntityFactory
 
 
 def test_unit_of_work_can_save_template(
     db_session_factory: Callable,
 ):
     # Given
-    template_entity = TemplateEntityFactory.create()
+    template_entity = TemplateEntityFactory().create()
     template_id = template_entity.id
     unit_of_work = SqlAlchemyTemplatesUnitOfWork(db_session_factory)
 
@@ -30,7 +31,7 @@ def test_unit_of_work_can_retrieve_template(
     db_session_factory: Callable,
 ):
     # Given
-    template_entity = TemplateEntityFactory.create()
+    template_entity = TemplateEntityFactory().create()
     unit_of_work = SqlAlchemyTemplatesUnitOfWork(db_session_factory)
 
     # When
@@ -49,7 +50,7 @@ def test_unit_of_work_rollbacks_when_exception_occur(
     db_session_factory: Callable,
 ):
     # Given
-    template_entity = TemplateEntityFactory.create()
+    template_entity = TemplateEntityFactory().create()
     unit_of_work = SqlAlchemyTemplatesUnitOfWork(db_session_factory)
 
     # When
