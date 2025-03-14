@@ -51,7 +51,9 @@ def test_domain_repository_updates_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(repository, db_session)
+    template_entity = prepare_template_entity(
+        repository=repository, db_session=db_session
+    )
 
     new_template_value = fakers.fake_template_value()
 
@@ -73,7 +75,9 @@ def test_domain_repository_deletes_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(repository, db_session)
+    template_entity = prepare_template_entity(
+        repository=repository, db_session=db_session
+    )
 
     # When
     repository.delete(template_entity.id)
@@ -89,11 +93,12 @@ def test_domain_repository_can_retrieve_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(repository, db_session)
+    template_entity = prepare_template_entity(
+        repository=repository, db_session=db_session
+    )
 
     # When
     result = repository.get(template_entity.id)
-
     # Then
     assert isinstance(result, TemplateEntity)
     assert result == template_entity
@@ -105,7 +110,9 @@ def test_query_repository_can_retrieve_template(
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = prepare_template_entity(repository, db_session)
+    template_entity = prepare_template_entity(
+        repository=repository, db_session=db_session
+    )
 
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
 
@@ -136,7 +143,7 @@ def test_query_repository_lists_templates(
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
     number_of_templates = 3
     template_entities = [
-        prepare_template_entity(repository, db_session)
+        prepare_template_entity(repository=repository, db_session=db_session)
         for _ in range(number_of_templates)
     ]
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)

@@ -1,12 +1,12 @@
 import celery
 import pytest
 from flask import Flask
-from flask.testing import FlaskClient
 
 from bootstrap import close_app_cleanup, create_app
 from modules.common.database import Base
 
 from ..common.annotations import YieldFixture
+from ..dtos import APIClientData
 
 
 @pytest.fixture(scope="module")
@@ -16,9 +16,10 @@ def app() -> YieldFixture[Flask]:
 
 
 @pytest.fixture
-def client(app, prepared_database) -> YieldFixture[FlaskClient]:
+def client(app, prepared_database) -> YieldFixture[APIClientData]:
     Base.metadata.create_all(prepared_database)
-    yield app.test_client()
+
+    yield APIClientData(app.test_client())
     Base.metadata.drop_all(prepared_database)
 
 
