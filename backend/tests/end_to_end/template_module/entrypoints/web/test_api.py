@@ -20,6 +20,14 @@ TEMPLATE_ROUTES = {
 }
 
 
+def check_if_repsonse_has_tzinfo(json_response):
+    timestamp = parse_datetime(json_response["timestamp"])
+    assert (
+        timestamp.tzinfo is not None
+        and timestamp.tzinfo.utcoffset(timestamp) is not None
+    )
+
+
 def test_list_templates_endpoint_returns_empty_list_when_no_template_exists(
     client: APIClientData,
 ):
@@ -277,6 +285,7 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
     json_response = response.json
     assert json_response is not None
     assert json_response["id"] == template_id
+    check_if_repsonse_has_tzinfo(json_response)
 
 
 def test_get_template_endpoint_returns_404_when_specified_template_doesnt_exist(
@@ -344,6 +353,7 @@ def test_create_template_endpoint_creates_template_and_returns_data(
     assert "id" in json_response
     assert "value" in json_response
     assert json_response["value"] is None
+    check_if_repsonse_has_tzinfo(json_response)
 
 
 def test_delete_template_endpoint_deletes_template(
@@ -418,10 +428,12 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
             path_parameters={"template_id": template_id},
         )
     )
-    assert DummyEmailNotificator.total_emails_sent == 1
     assert response.status_code == HTTPStatus.OK
-    assert response.json is not None
-    assert response.json["value"] == template_value
+    assert DummyEmailNotificator.total_emails_sent == 1
+    json_response = response.json
+    assert json_response is not None
+    assert json_response["value"] == template_value
+    check_if_repsonse_has_tzinfo(json_response)
 
 
 def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(

@@ -29,7 +29,7 @@ def TemplateEntityFactory(
         value_data = factory.LazyFunction(
             lambda: {VALUE_NAME_IN_DATABASE: fake_template_value().value}
         )
-        timestamp = factory.LazyFunction(time.get_current_utc_timestamp)
+        timestamp = factory.LazyFunction(time.get_current_timestamp)
         version = INITIAL_TEMPLATE_VERSION
 
     class _TemplateEntityFactory(factory.Factory):
@@ -37,7 +37,7 @@ def TemplateEntityFactory(
             model = TemplateEntity
 
         id = factory.LazyFunction(fake_template_id)
-        timestamp = factory.LazyFunction(time.get_current_utc_timestamp)
+        timestamp = factory.LazyFunction(time.get_current_timestamp)
         version = INITIAL_TEMPLATE_VERSION
 
     return _TemplatePersistentEntityFactory if session else _TemplateEntityFactory

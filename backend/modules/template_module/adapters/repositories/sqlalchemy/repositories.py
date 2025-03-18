@@ -10,6 +10,10 @@ from sqlalchemy_utils.functions import cast_if
 from modules.common.database import get_session
 from modules.common.dtos import Ordering, OrderingEnum
 from modules.common.pagination import Pagination
+from modules.common.time import (
+    convert_to_local_timezone,
+    convert_to_utc_timezone,
+)
 
 from .....template_module.services.queries.ports.repositories import (
     AbstractTemplatesQueryRepository,
@@ -206,7 +210,7 @@ def _map_template_entity_to_template_db(
     return TemplateDb(
         id=template_entity.id,
         value_data=_map_template_value_dto_to_dict(template_entity.value),
-        timestamp=template_entity.timestamp,
+        timestamp=convert_to_utc_timezone(template_entity.timestamp),
         version=template_entity.version,
     )
 
@@ -216,7 +220,7 @@ def _map_template_db_to_template_entity(
 ) -> TemplateEntity:
     entity = TemplateEntity(
         id=TemplateId(template_db.id.hex),
-        timestamp=template_db.timestamp,
+        timestamp=convert_to_local_timezone(template_db.timestamp),
         version=template_db.version,
     )
     # The Assumption is that data in a database are always correct and
