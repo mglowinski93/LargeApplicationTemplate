@@ -13,7 +13,7 @@ def test_concurrent_template_updates_are_handled(
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = factories.TemplateEntityFactory().create()
+    template_entity = factories.TemplateEntityFactory.create()
     final_template_value = fakers.fake_template_value()
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]

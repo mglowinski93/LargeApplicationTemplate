@@ -16,7 +16,7 @@ def test_get_template_returns_output_dto_when_template_exists(
     fake_template_query_repository_factory: Callable,
 ):
     # Given
-    template = factories.TemplateEntityFactory().create()
+    template = factories.TemplateEntityFactory.create()
     query_repository = fake_template_query_repository_factory(
         initial_templates=[template]
     )
@@ -49,7 +49,7 @@ def test_list_templates_lists_all_templates(
     fake_template_query_repository_factory: Callable,
 ):
     # Given
-    templates = [factories.TemplateEntityFactory().create()]
+    templates = [factories.TemplateEntityFactory.create()]
     query_repository = fake_template_query_repository_factory(
         initial_templates=templates
     )

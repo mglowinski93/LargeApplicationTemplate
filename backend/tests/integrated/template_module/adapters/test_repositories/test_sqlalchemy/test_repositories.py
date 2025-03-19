@@ -26,7 +26,7 @@ from ...... import fakers
 
 def test_domain_repository_creates_template(db_session: Session):
     # Given
-    template_entity = entity_factories.TemplateEntityFactory().create()
+    template_entity = entity_factories.TemplateEntityFactory.create()
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
 
     # When
@@ -39,88 +39,87 @@ def test_domain_repository_creates_template(db_session: Session):
 
 
 def test_domain_repository_updates_template(
+    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = _map_template_db_to_template_entity(
-        entity_factories.TemplateEntityFactory(
-            session=db_session, persistence="commit"
-        ).create()
+    persistent_template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplatePersistentEntityFactory.create()
     )
 
     new_template_value = fakers.fake_template_value()
 
     # When
-    template_entity.set_value(value=new_template_value)
-    repository.update(template_entity)
+    persistent_template_entity.set_value(value=new_template_value)
+    repository.update(persistent_template_entity)
     db_session.commit()
 
     # Then
     result = (
-        db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
+        db_session.query(TemplateDb).filter_by(id=persistent_template_entity.id).one()
     )  # Exactly one result must be present in a database. Otherwise, error is raised.
     db_session.refresh(result)
     assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
 
 
 def test_domain_repository_deletes_template(
+    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = _map_template_db_to_template_entity(
-        entity_factories.TemplateEntityFactory(
-            session=db_session, persistence="commit"
-        ).create()
+    persistent_template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplatePersistentEntityFactory.create()
     )
 
     # When
-    repository.delete(template_entity.id)
+    repository.delete(persistent_template_entity.id)
     db_session.commit()
 
     # Then
-    result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one_or_none()
+    result = (
+        db_session.query(TemplateDb)
+        .filter_by(id=persistent_template_entity.id)
+        .one_or_none()
+    )
     assert result is None
 
 
 def test_domain_repository_can_retrieve_template(
+    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
-    template_entity = _map_template_db_to_template_entity(
-        entity_factories.TemplateEntityFactory(
-            session=db_session, persistence="commit"
-        ).create()
+    persistent_template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplatePersistentEntityFactory.create()
     )
 
     # When
-    result = repository.get(template_entity.id)
+    result = repository.get(persistent_template_entity.id)
     # Then
     assert isinstance(result, TemplateEntity)
-    assert result == template_entity
+    assert result == persistent_template_entity
 
 
 def test_query_repository_can_retrieve_template(
+    configure_persistent_template_factory,
     db_session_factory: Callable,
-    db_session: Session,
 ):
     # Given
-    template_entity = _map_template_db_to_template_entity(
-        entity_factories.TemplateEntityFactory(
-            session=db_session, persistence="commit"
-        ).create()
+    persistent_template_entity = _map_template_db_to_template_entity(
+        entity_factories.TemplatePersistentEntityFactory.create()
     )
 
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
 
     # When
-    result = query_repository.get(template_entity.id)
+    result = query_repository.get(persistent_template_entity.id)
 
     # Then
     assert isinstance(result, TemplateEntity)
-    assert result == template_entity
+    assert result == persistent_template_entity
 
 
 def test_query_repository_raises_exception_when_template_does_not_exist(
@@ -135,18 +134,16 @@ def test_query_repository_raises_exception_when_template_does_not_exist(
 
 
 def test_query_repository_lists_templates(
+    configure_persistent_template_factory,
     db_session_factory: Callable,
-    db_session: Session,
 ):
     # Given
     number_of_templates = 3
-    template_entities = [
-        _map_template_db_to_template_entity(
-            entity_factories.TemplateEntityFactory(
-                session=db_session, persistence="commit"
-            ).create()
+    persistent_template_entities = [
+        _map_template_db_to_template_entity(template)
+        for template in entity_factories.TemplatePersistentEntityFactory.create_batch(
+            number_of_templates
         )
-        for _ in range(number_of_templates)
     ]
     query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
 
@@ -160,5 +157,5 @@ def test_query_repository_lists_templates(
     # Then
     assert isinstance(results, list)
     assert all(isinstance(result, TemplateEntity) for result in results)
-    assert set(results) == set(template_entities)
+    assert set(results) == set(persistent_template_entities)
     assert total_number_of_results == number_of_templates

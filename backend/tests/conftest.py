@@ -15,6 +15,7 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 
 from . import fakers
 from .common import annotations
+from .factories import TemplatePersistentEntityFactory as EntityFactory
 
 configuration = config["test"]()
 
@@ -72,12 +73,19 @@ def db_session_factory(db_session) -> Callable:
 
 
 @pytest.fixture
+def configure_persistent_template_factory(db_session) -> annotations.YieldFixture:
+    EntityFactory._meta.sqlalchemy_session = db_session  # type: ignore[attr-defined]
+    yield
+    EntityFactory._meta.sqlalchemy_session = None  # type: ignore[attr-defined]
+
+
+@pytest.fixture
 def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
     yield fakers.TestTaskDispatcher()
 
 
 @pytest.fixture(autouse=True)
-def reset_dummy_email_notificator():
+def reset_dummy_email_notificator() -> annotations.YieldFixture:
     DummyEmailNotificator.total_emails_sent = 0
     yield
     DummyEmailNotificator.total_emails_sent = 0

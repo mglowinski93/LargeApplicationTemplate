@@ -10,7 +10,7 @@ from ..... import factories, fakers
 
 def test_set_template_value_sets_value_when_valid_value():
     # Given
-    template = factories.TemplateEntityFactory().create()
+    template = factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
 
     # When
@@ -21,7 +21,7 @@ def test_set_template_value_sets_value_when_valid_value():
 
 
 def test_set_template_value_raises_exception_when_invalid_value():
-    template = factories.TemplateEntityFactory().create()
+    template = factories.TemplateEntityFactory.create()
     timestamp_before_setting_value = template.timestamp
 
     with pytest.raises(InvalidTemplateValue):
@@ -32,7 +32,7 @@ def test_set_template_value_raises_exception_when_invalid_value():
 
 def test_set_template_value_method_value_sets_value_when_valid_value():
     # Given
-    template = factories.TemplateEntityFactory().create()
+    template = factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
     timestamp_before_setting_value = template.timestamp
 
@@ -45,7 +45,7 @@ def test_set_template_value_method_value_sets_value_when_valid_value():
 
 
 def test_set_template_method_raises_exception_when_invalid_value():
-    template = factories.TemplateEntityFactory().create()
+    template = factories.TemplateEntityFactory.create()
     timestamp_before_setting_value = template.timestamp
 
     with pytest.raises(InvalidTemplateValue):
