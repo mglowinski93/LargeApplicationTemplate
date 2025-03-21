@@ -6,6 +6,7 @@ from freezegun import freeze_time
 
 from modules.common import consts
 from modules.common.adapters.notifications.notificators import DummyEmailNotificator
+from modules.template_module.domain.value_objects import TemplateId
 
 from .....dtos import APIClientData
 from .....fakers import fake_template_id, fake_template_value
@@ -20,9 +21,9 @@ TEMPLATE_ROUTES = {
 }
 
 
-def check_if_repsonse_has_tzinfo(json_response):
+def timestamp_has_timezone_information(json_response) -> bool:
     timestamp = parse_datetime(json_response["timestamp"])
-    assert (
+    return (
         timestamp.tzinfo is not None
         and timestamp.tzinfo.utcoffset(timestamp) is not None
     )
@@ -31,10 +32,12 @@ def check_if_repsonse_has_tzinfo(json_response):
 def test_list_templates_endpoint_returns_empty_list_when_no_template_exists(
     client: APIClientData,
 ):
+    # Given
+    api_client = client.client
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         )
@@ -54,20 +57,21 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     number_of_templates = 3
     for _ in range(number_of_templates):
-        client.client.post(
+        api_client.post(
             get_url(
-                app=client.client.application,
+                app=api_client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
             )
         )
 
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         )
@@ -84,22 +88,23 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
 
 def test_list_templates_endpoint_pagination(client: APIClientData):
     # Given
+    api_client = client.client
     number_of_templates = 20
     pagination_offset = 1
     pagination_limit = 5
     for _ in range(number_of_templates):
-        client.client.post(
+        api_client.post(
             get_url(
-                app=client.client.application,
+                app=api_client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
             )
         )
 
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
@@ -121,30 +126,36 @@ def test_list_templates_endpoint_pagination(client: APIClientData):
 
 
 def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
+    # Given
+    api_client = client.client
+
+    # When
     with freeze_time(datetime.now() - timedelta(days=1)):
-        client.client.post(
+        api_client.post(
             get_url(
                 app=client.client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="create-template",
             )
         )
-    client.client.post(
+    api_client.post(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
         )
     )
 
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-timestamp"},
     )
+
+    # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
@@ -153,14 +164,16 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
         results[1]["timestamp"]
     )
 
-    response = client.client.get(
+    # When
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "timestamp"},
     )
+    # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
@@ -170,30 +183,36 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
     )
 
 
-def get_template_id(client: APIClientData) -> str:
-    response = client.client.post(
+def get_template_id(client: APIClientData) -> TemplateId:
+    # Given
+    api_client = client.client
+    # When
+    response = api_client.post(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
         )
     )
+    # Then
     assert response.status_code == HTTPStatus.CREATED
     json_response = response.json
     assert json_response is not None and "id" in json_response
-    return json_response["id"]
+    return TemplateId(json_response["id"])
 
 
 def test_list_templates_endpoint_ordering_value(
     client: APIClientData,
 ):
+    # Given
+    api_client = client.client
     templates = []
     values = ["a", "b"]
     for template_value in values:
         template_id = get_template_id(client)
-        client.client.patch(
+        api_client.patch(
             get_url(
-                app=client.client.application,
+                app=api_client.application,
                 routes=TEMPLATE_ROUTES,
                 url_type="set-template-value",
                 path_parameters={"template_id": template_id},
@@ -204,42 +223,48 @@ def test_list_templates_endpoint_ordering_value(
 
     assert DummyEmailNotificator.total_emails_sent == values.__len__()
 
-    response = client.client.get(
+    # When
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-value"},
     )
+    # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert results[0]["id"] == templates[1]
-    assert results[1]["id"] == templates[0]
+    assert TemplateId.from_hex(results[0]["id"]) == templates[1]
+    assert TemplateId.from_hex(results[1]["id"]) == templates[0]
 
-    response = client.client.get(
+    # When
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "value"},
     )
+
+    # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert results[0]["id"] == templates[0]
-    assert results[1]["id"] == templates[1]
+    assert TemplateId.from_hex(results[0]["id"]) == templates[0]
+    assert TemplateId.from_hex(results[1]["id"]) == templates[1]
 
 
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     # Given
-    client.client.post(
+    api_client = client.client
+    api_client.post(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
         )
@@ -247,9 +272,9 @@ def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     template_id = get_template_id(client)
 
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="list-templates",
         ),
@@ -261,19 +286,20 @@ def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert all(item["id"] == template_id for item in results)
+    assert all(TemplateId.from_hex(item["id"]) == template_id for item in results)
 
 
 def test_get_template_endpoint_returns_template_data_when_specified_template_exist(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = get_template_id(client)
 
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
             path_parameters={"template_id": template_id},
@@ -284,20 +310,21 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
-    assert json_response["id"] == template_id
-    check_if_repsonse_has_tzinfo(json_response)
+    assert TemplateId.from_hex(json_response["id"]) == template_id
+    assert timestamp_has_timezone_information(json_response)
 
 
 def test_get_template_endpoint_returns_404_when_specified_template_doesnt_exist(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = fake_template_id()
 
     # When
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
             path_parameters={"template_id": template_id},
@@ -315,12 +342,13 @@ def test_get_template_endpoint_returns_400_when_template_id_has_invalid_format(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = "invalid-format-template-id"
 
-    # Whenclient.
-    response = client.client.get(
+    # When
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
             path_parameters={"template_id": template_id},
@@ -337,10 +365,13 @@ def test_get_template_endpoint_returns_400_when_template_id_has_invalid_format(
 def test_create_template_endpoint_creates_template_and_returns_data(
     client: APIClientData,
 ):
+    # Given
+    api_client = client.client
+
     # When
-    response = client.client.post(
+    response = api_client.post(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="create-template",
         )
@@ -353,19 +384,20 @@ def test_create_template_endpoint_creates_template_and_returns_data(
     assert "id" in json_response
     assert "value" in json_response
     assert json_response["value"] is None
-    check_if_repsonse_has_tzinfo(json_response)
+    assert timestamp_has_timezone_information(json_response)
 
 
 def test_delete_template_endpoint_deletes_template(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = get_template_id(client)
 
     # When
-    response = client.client.delete(
+    response = api_client.delete(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="delete-template",
             path_parameters={"template_id": template_id},
@@ -381,12 +413,13 @@ def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exi
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = fake_template_id()
 
     # When
-    response = client.client.delete(
+    response = api_client.delete(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="delete-template",
             path_parameters={"template_id": template_id},
@@ -404,13 +437,14 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = get_template_id(client)
     template_value = fake_template_value().value
 
     # When
-    response = client.client.patch(
+    response = api_client.patch(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
             path_parameters={"template_id": template_id},
@@ -420,9 +454,9 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 
     # Then
     assert response.status_code == HTTPStatus.OK
-    response = client.client.get(
+    response = api_client.get(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="retrieve-template",
             path_parameters={"template_id": template_id},
@@ -433,20 +467,21 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     json_response = response.json
     assert json_response is not None
     assert json_response["value"] == template_value
-    check_if_repsonse_has_tzinfo(json_response)
+    assert timestamp_has_timezone_information(json_response)
 
 
 def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = fake_template_id()
     template_value = fake_template_value().value
 
     # When
-    response = client.client.patch(
+    response = api_client.patch(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
             path_parameters={"template_id": template_id},
@@ -465,13 +500,14 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = "invalid-format-template-id"
     template_value = fake_template_value().value
 
     # When
-    response = client.client.patch(
+    response = api_client.patch(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
             path_parameters={"template_id": template_id},
@@ -491,12 +527,13 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
     client: APIClientData,
 ):
     # Given
+    api_client = client.client
     template_id = fake_template_id()
 
     # When
-    response = client.client.patch(
+    response = api_client.patch(
         get_url(
-            app=client.client.application,
+            app=api_client.application,
             routes=TEMPLATE_ROUTES,
             url_type="set-template-value",
             path_parameters={"template_id": template_id},

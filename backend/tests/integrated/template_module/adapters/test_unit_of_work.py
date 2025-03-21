@@ -8,7 +8,7 @@ from modules.template_module.adapters.repositories.sqlalchemy.orm import (
 from modules.template_module.adapters.unit_of_work import SqlAlchemyTemplatesUnitOfWork
 from modules.template_module.domain.entities import Template as TemplateEntity
 
-from ....factories import TemplateEntityFactory
+from ....entity_factories import TemplateEntityFactory
 
 
 def test_unit_of_work_can_save_template(

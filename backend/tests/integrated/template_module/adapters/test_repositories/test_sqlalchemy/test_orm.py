@@ -4,17 +4,13 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from modules.common.time import convert_to_utc_timezone, get_current_timestamp
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
 from modules.template_module.domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 from ...... import fakers
-
-
-def get_current_utc_timestamp():
-    return convert_to_utc_timezone(get_current_timestamp())
+from .....utils import get_current_utc_timestamp
 
 
 def test_orm_creates_default_value_for_template_model_value_data_field(

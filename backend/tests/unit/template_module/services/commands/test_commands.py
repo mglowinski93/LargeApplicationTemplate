@@ -20,7 +20,7 @@ from modules.template_module.services import (
     set_template_value,
 )
 
-from ..... import factories, fakers
+from ..... import entity_factories, fakers
 
 
 def test_create_template_creates_template_with_none_value(
@@ -48,7 +48,7 @@ def test_delete_template_deletes_template(
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = factories.TemplateEntityFactory.create()
+    template_entity = entity_factories.TemplateEntityFactory.create()
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
@@ -81,7 +81,7 @@ def test_set_template_value_sets_value_when_valid_value(
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = factories.TemplateEntityFactory.create()
+    template_entity = entity_factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
     timestamp_before_setting_value = template_entity.timestamp
     version_before_setting_value = template_entity.version
@@ -108,7 +108,7 @@ def test_set_template_value_raises_exception_when_invalid_value(
     message_bus: MessageBus,
 ):
     # Given
-    template_entity = factories.TemplateEntityFactory.create()
+    template_entity = entity_factories.TemplateEntityFactory.create()
     value = TemplateValue(value="")
     timestamp_before_setting_value = template_entity.timestamp
     unit_of_work = fake_template_unit_of_work_factory(

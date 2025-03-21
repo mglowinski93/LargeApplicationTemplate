@@ -2,6 +2,15 @@ import threading
 
 from sqlalchemy.orm import session
 
+from modules.common.time import (
+    convert_timestamp_to_utc_timestamp,
+    get_current_timestamp,
+)
+
+
+def get_current_utc_timestamp():
+    return convert_timestamp_to_utc_timestamp(get_current_timestamp())
+
 
 class TestThread(threading.Thread):
     __test__ = False

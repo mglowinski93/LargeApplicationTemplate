@@ -1,15 +1,18 @@
 from datetime import datetime, timezone
+from os import environ
 
-from tzlocal import get_localzone
+from dateutil import tz
+
+TIME_ZONE = environ["TZ"]
 
 
 def get_current_timestamp() -> datetime:
-    return datetime.now(tz=get_localzone())
+    return datetime.now(tz=tz.gettz(TIME_ZONE))
 
 
-def convert_to_local_timezone(timestamp: datetime) -> datetime:
-    return timestamp.astimezone(tz=get_localzone())
+def convert_timestamp_to_local_timestamp(timestamp: datetime) -> datetime:
+    return timestamp.astimezone(tz=tz.gettz(TIME_ZONE))
 
 
-def convert_to_utc_timezone(timestamp: datetime) -> datetime:
+def convert_timestamp_to_utc_timestamp(timestamp: datetime) -> datetime:
     return timestamp.astimezone(timezone.utc)
