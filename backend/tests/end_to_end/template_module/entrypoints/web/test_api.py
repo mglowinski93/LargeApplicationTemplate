@@ -237,8 +237,10 @@ def test_list_templates_endpoint_ordering_value(
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert TemplateId.from_hex(results[0]["id"]) == templates[1]
-    assert TemplateId.from_hex(results[1]["id"]) == templates[0]
+    for i, val in enumerate(templates):
+        assert (
+            TemplateId.from_hex(results[i]["id"]) == templates[len(templates) - 1 - i]
+        )
 
     # When
     response = api_client.get(

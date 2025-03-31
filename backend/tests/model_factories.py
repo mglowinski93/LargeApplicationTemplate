@@ -32,3 +32,6 @@ class TemplateFactory(AbstractSQLAlchemyModelFactory):
     )
     timestamp = factory.LazyFunction(time.get_current_timestamp)
     version = INITIAL_TEMPLATE_VERSION
+
+
+model_factories = [TemplateFactory]

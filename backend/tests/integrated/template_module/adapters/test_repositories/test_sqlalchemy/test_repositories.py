@@ -1,8 +1,11 @@
+from datetime import timezone
 from typing import Callable
 
 import pytest
+from dateutil import tz
 from sqlalchemy.orm import Session
 
+from modules.common.time import TIME_ZONE
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplatesDomainRepository,
     SqlAlchemyTemplatesQueryRepository,
@@ -35,10 +38,13 @@ def test_domain_repository_creates_template(db_session: Session):
     # Then
     result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
     assert result.id == template_entity.id
+    timestamp = result.timestamp
+    # Check if the timestamp is in UTC format
+    assert timestamp.tzinfo is not None
+    assert timestamp.tzinfo == timezone.utc
 
 
 def test_domain_repository_updates_template(
-    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
@@ -63,7 +69,6 @@ def test_domain_repository_updates_template(
 
 
 def test_domain_repository_deletes_template(
-    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
@@ -82,7 +87,6 @@ def test_domain_repository_deletes_template(
 
 
 def test_domain_repository_can_retrieve_template(
-    configure_persistent_template_factory,
     db_session: Session,
 ):
     # Given
@@ -96,10 +100,10 @@ def test_domain_repository_can_retrieve_template(
     # Then
     assert isinstance(result, TemplateEntity)
     assert result == template_entity
+    assert result.timestamp.tzinfo == tz.gettz(TIME_ZONE)
 
 
 def test_query_repository_can_retrieve_template(
-    configure_persistent_template_factory,
     db_session_factory: Callable,
 ):
     # Given
@@ -129,12 +133,11 @@ def test_query_repository_raises_exception_when_template_does_not_exist(
 
 
 def test_query_repository_lists_templates(
-    configure_persistent_template_factory,
     db_session_factory: Callable,
 ):
     # Given
     number_of_templates = 3
-    persistent_template_entities = [
+    template_entites = [
         _map_template_db_to_template_entity(template)
         for template in model_factories.TemplateFactory.create_batch(
             number_of_templates
@@ -152,5 +155,5 @@ def test_query_repository_lists_templates(
     # Then
     assert isinstance(results, list)
     assert all(isinstance(result, TemplateEntity) for result in results)
-    assert set(results) == set(persistent_template_entities)
+    assert set(results) == set(template_entites)
     assert total_number_of_results == number_of_templates
