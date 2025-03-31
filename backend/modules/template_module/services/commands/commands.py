@@ -1,5 +1,5 @@
 from modules.common.message_bus import MessageBus
-from modules.common.time import get_current_utc_timestamp
+from modules.common.time import get_current_timestamp
 
 from ...domain import commands as domain_commands
 from ...domain import entities
@@ -30,7 +30,7 @@ def create_template(
 
     template = entities.Template(
         id=entities.Template.generate_id(),
-        timestamp=get_current_utc_timestamp(),
+        timestamp=get_current_timestamp(),
         version=INITIAL_TEMPLATE_VERSION,
     )
     output = map_template_entity_to_output_dto(template)

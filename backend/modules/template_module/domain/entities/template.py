@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 
 from modules.common.domain.events import DomainEvent
-from modules.common.time import get_current_utc_timestamp
+from modules.common.time import get_current_timestamp
 
 from ...domain.value_objects import TemplateId, TemplateValue
 from ..exceptions import InvalidTemplateValue
@@ -18,7 +18,7 @@ def set_template_value(template: Template, value: TemplateValue):
     """
 
     template.set_value(value)
-    template.timestamp = get_current_utc_timestamp()
+    template.timestamp = get_current_timestamp()
 
 
 class Template:

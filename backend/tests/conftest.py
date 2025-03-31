@@ -15,6 +15,7 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 
 from . import fakers
 from .common import annotations
+from .model_factories import get_model_factories
 
 configuration = config["test"]()
 
@@ -24,6 +25,7 @@ def db_engine() -> annotations.YieldFixture[Engine]:
     engine = create_engine(
         url=configuration.database_url,
         pool_pre_ping=True,
+        connect_args={"options": "-c timezone=utc"},
     )
     yield engine
     engine.dispose()
@@ -71,13 +73,19 @@ def db_session_factory(db_session) -> Callable:
     return db_session_
 
 
+@pytest.fixture(autouse=True)
+def set_session_to_model_factories(db_session):
+    for factory in get_model_factories():
+        factory._meta.sqlalchemy_session = db_session
+
+
 @pytest.fixture
 def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
     yield fakers.TestTaskDispatcher()
 
 
 @pytest.fixture(autouse=True)
-def reset_dummy_email_notificator():
+def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
     DummyEmailNotificator.total_emails_sent = 0
     yield
     DummyEmailNotificator.total_emails_sent = 0

@@ -1,8 +1,11 @@
+from datetime import timezone
 from typing import Callable
 
 import pytest
+from dateutil import tz
 from sqlalchemy.orm import Session
 
+from modules.common.time import TIME_ZONE
 from modules.template_module.adapters.repositories.sqlalchemy import (
     SqlAlchemyTemplatesDomainRepository,
     SqlAlchemyTemplatesQueryRepository,
@@ -13,12 +16,14 @@ from modules.template_module.adapters.repositories.sqlalchemy.consts import (
 from modules.template_module.adapters.repositories.sqlalchemy.orm import (
     Template as TemplateDb,
 )
+from modules.template_module.adapters.repositories.sqlalchemy.repositories import (
+    _map_template_db_to_template_entity,
+)
 from modules.template_module.domain.entities import Template as TemplateEntity
 from modules.template_module.domain.ports import exceptions
 from modules.template_module.domain.ports.dtos import TemplatesFilters
 
-from ...... import fakers
-from ......unit import factories as entity_factories
+from ...... import entity_factories, fakers, model_factories
 
 
 def test_domain_repository_creates_template(db_session: Session):
@@ -33,16 +38,20 @@ def test_domain_repository_creates_template(db_session: Session):
     # Then
     result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
     assert result.id == template_entity.id
+    timestamp = result.timestamp
+    assert timestamp.tzinfo is not None
+    assert timestamp.tzinfo == timezone.utc
 
 
 def test_domain_repository_updates_template(
-    db_session: Session, persistent_template_entity_factory: Callable
+    db_session: Session,
 ):
     # Given
-    template_entity = persistent_template_entity_factory(
-        value=fakers.fake_template_value()
-    )
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
+    template_entity = _map_template_db_to_template_entity(
+        model_factories.TemplateFactory.create()
+    )
+
     new_template_value = fakers.fake_template_value()
 
     # When
@@ -59,13 +68,13 @@ def test_domain_repository_updates_template(
 
 
 def test_domain_repository_deletes_template(
-    db_session: Session, persistent_template_entity_factory: Callable
+    db_session: Session,
 ):
     # Given
-    template_entity = persistent_template_entity_factory(
-        value=fakers.fake_template_value()
-    )
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
+    template_entity = _map_template_db_to_template_entity(
+        model_factories.TemplateFactory.create()
+    )
 
     # When
     repository.delete(template_entity.id)
@@ -77,29 +86,34 @@ def test_domain_repository_deletes_template(
 
 
 def test_domain_repository_can_retrieve_template(
-    db_session: Session, persistent_template_entity_factory: Callable
+    db_session: Session,
 ):
     # Given
-    template_entity = persistent_template_entity_factory()
     repository = SqlAlchemyTemplatesDomainRepository(db_session)
+    template_entity = _map_template_db_to_template_entity(
+        model_factories.TemplateFactory.create()
+    )
 
     # When
     result = repository.get(template_entity.id)
-
     # Then
     assert isinstance(result, TemplateEntity)
     assert result == template_entity
+    assert result.timestamp.tzinfo == tz.gettz(TIME_ZONE)
 
 
 def test_query_repository_can_retrieve_template(
-    db_session_factory: Callable, persistent_template_entity_factory: Callable
+    db_session_factory: Callable,
 ):
     # Given
-    template_entity = persistent_template_entity_factory()
-    repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
+    template_entity = _map_template_db_to_template_entity(
+        model_factories.TemplateFactory.create()
+    )
+
+    query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
 
     # When
-    result = repository.get(template_entity.id)
+    result = query_repository.get(template_entity.id)
 
     # Then
     assert isinstance(result, TemplateEntity)
@@ -118,17 +132,20 @@ def test_query_repository_raises_exception_when_template_does_not_exist(
 
 
 def test_query_repository_lists_templates(
-    db_session_factory: Callable, persistent_template_entity_factory: Callable
+    db_session_factory: Callable,
 ):
     # Given
     number_of_templates = 3
-    template_entities = [
-        persistent_template_entity_factory() for _ in range(number_of_templates)
+    template_entites = [
+        _map_template_db_to_template_entity(template)
+        for template in model_factories.TemplateFactory.create_batch(
+            number_of_templates
+        )
     ]
-    repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
+    query_repository = SqlAlchemyTemplatesQueryRepository(db_session_factory)
 
     # When
-    results, total_number_of_results = repository.list(
+    results, total_number_of_results = query_repository.list(
         filters=TemplatesFilters(),
         ordering=[],
         pagination=None,
@@ -137,5 +154,5 @@ def test_query_repository_lists_templates(
     # Then
     assert isinstance(results, list)
     assert all(isinstance(result, TemplateEntity) for result in results)
-    assert set(results) == set(template_entities)
+    assert set(results) == set(template_entites)
     assert total_number_of_results == number_of_templates
