@@ -237,9 +237,10 @@ def test_list_templates_endpoint_ordering_value(
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    for i, val in enumerate(templates):
+    for template, val in enumerate(templates):
         assert (
-            TemplateId.from_hex(results[i]["id"]) == templates[len(templates) - 1 - i]
+            TemplateId(results[template]["id"])
+            == templates[len(templates) - 1 - template]
         )
 
     # When

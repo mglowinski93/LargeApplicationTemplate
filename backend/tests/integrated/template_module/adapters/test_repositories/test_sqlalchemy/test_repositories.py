@@ -39,7 +39,6 @@ def test_domain_repository_creates_template(db_session: Session):
     result = db_session.query(TemplateDb).filter_by(id=template_entity.id).one()
     assert result.id == template_entity.id
     timestamp = result.timestamp
-    # Check if the timestamp is in UTC format
     assert timestamp.tzinfo is not None
     assert timestamp.tzinfo == timezone.utc
 

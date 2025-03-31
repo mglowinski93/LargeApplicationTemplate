@@ -15,7 +15,7 @@ from modules.template_module.domain.entities import Template as TemplateEntity
 
 from . import fakers
 from .common import annotations
-from .model_factories import model_factories
+from .model_factories import get_model_factories
 
 configuration = config["test"]()
 
@@ -26,10 +26,6 @@ def db_engine() -> annotations.YieldFixture[Engine]:
         url=configuration.database_url,
         pool_pre_ping=True,
         connect_args={"options": "-c timezone=utc"},
-        # Each PostreSQL connection has an associated time zone that defaults to
-        # system's time zone, so it has to be manually set to UTC.
-        # More details can be found here:
-        # https://stackoverflow.com/questions/26105730/sqlalchemy-converting-utc-datetime-to-local-time-before-saving.
     )
     yield engine
     engine.dispose()
@@ -79,7 +75,7 @@ def db_session_factory(db_session) -> Callable:
 
 @pytest.fixture(autouse=True)
 def set_session_to_model_factories(db_session):
-    for factory in model_factories:
+    for factory in get_model_factories():
         factory._meta.sqlalchemy_session = db_session
 
 

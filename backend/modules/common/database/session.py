@@ -28,6 +28,12 @@ def initialize_database_sessions(
             pool_size=20,
             max_overflow=100,
             isolation_level="REPEATABLE READ",
+            # Each PostreSQL connection has an associated time zone that defaults to
+            # system's time zone, so it has to be manually set to UTC
+            # in order to support multiple timezones.
+            # More details can be found here:
+            # https://stackoverflow.com/questions/26105730/sqlalchemy-converting-utc-datetime-to-local-time-before-saving.
+            connect_args={"options": "-c timezone=utc"},
         ),
     )()
 

@@ -1,3 +1,7 @@
+import inspect
+import sys
+from typing import List, Type
+
 import factory
 
 from modules.common import time
@@ -34,4 +38,12 @@ class TemplateFactory(AbstractSQLAlchemyModelFactory):
     version = INITIAL_TEMPLATE_VERSION
 
 
-model_factories = [TemplateFactory]
+def get_model_factories() -> List[Type[AbstractSQLAlchemyModelFactory]]:
+    classes = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    subclasses = [
+        cls
+        for _, cls in classes
+        if issubclass(cls, AbstractSQLAlchemyModelFactory)
+        and cls is not AbstractSQLAlchemyModelFactory
+    ]
+    return subclasses
