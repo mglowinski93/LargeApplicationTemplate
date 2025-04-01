@@ -10,7 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../"
 from bootstrap import get_configuration  # noqa: E402
 from modules.common.database import Base  # noqa: E402
 from modules.common.database import initialize_database_sessions  # noqa: E402
-from modules.template_module.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, E501, F401
+from modules.template.adapters.repositories.sqlalchemy.orm import (  # noqa: E402, E501, F401
     Template,
 )
 

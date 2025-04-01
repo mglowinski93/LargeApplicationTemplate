@@ -1,12 +1,12 @@
 from faker import Faker
 
 from modules.common.domain import ports as common_ports
-from modules.template_module.domain import value_objects as template_value_objects
-from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.ports.unit_of_work import (
+from modules.template.domain import value_objects as template_value_objects
+from modules.template.domain.entities import Template as TemplateEntity
+from modules.template.domain.ports.unit_of_work import (
     AbstractTemplatesUnitOfWork,
 )
-from tests.unit.template_module.fakers import TestTemplatesRepository
+from tests.unit.template.fakers import TestTemplatesRepository
 
 fake = Faker()
 

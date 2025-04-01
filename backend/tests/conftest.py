@@ -9,9 +9,9 @@ from config import config
 from modules.common import message_bus as common_message_bus
 from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
-from modules.template_module.domain import commands as template_domain_commands
-from modules.template_module.domain import events as template_domain_events
-from modules.template_module.domain.entities import Template as TemplateEntity
+from modules.template.domain import commands as template_domain_commands
+from modules.template.domain import events as template_domain_events
+from modules.template.domain.entities import Template as TemplateEntity
 
 from . import fakers
 from .common import annotations

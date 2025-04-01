@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Any, Callable, Sequence, Type
 
-from ..template_module.domain.entities import Template
+from ..template.domain.entities import Template
 from .domain.commands import DomainCommand
 from .domain.events import DomainEvent
 
