@@ -13,9 +13,7 @@ from modules.template.adapters.repositories.sqlalchemy import (
 from modules.template.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from modules.template.adapters.repositories.sqlalchemy.orm import (
-    Template as TemplateDb,
-)
+from modules.template.adapters.repositories.sqlalchemy.orm import Template as TemplateDb
 from modules.template.adapters.repositories.sqlalchemy.repositories import (
     _map_template_db_to_template_entity,
 )

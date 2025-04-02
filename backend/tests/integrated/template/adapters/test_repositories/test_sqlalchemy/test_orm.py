@@ -4,9 +4,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from modules.template.adapters.repositories.sqlalchemy.orm import (
-    Template as TemplateDb,
-)
+from modules.template.adapters.repositories.sqlalchemy.orm import Template as TemplateDb
 from modules.template.domain.value_objects import INITIAL_TEMPLATE_VERSION
 
 from ...... import fakers

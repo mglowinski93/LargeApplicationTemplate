@@ -1,4 +1,4 @@
-all: black_check isort_check ruff_check mypy_check bandit_check tests
+all: black_check isort_check impport_linter_check ruff_check mypy_check bandit_check tests
 	echo "All checks passed!"
 
 black_check:
@@ -10,6 +10,11 @@ isort_check:
 	echo "Checking isort..."
 	isort --settings-path .isort.cfg --check-only .
 	echo "Isort passed."
+
+impport_linter_check:
+	echo "Checking import contracts..."
+	lint-imports
+	echo "Import contracts kept."
 
 ruff_check:
 	echo "Checking ruff..."

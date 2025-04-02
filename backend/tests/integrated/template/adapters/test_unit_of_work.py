@@ -2,9 +2,7 @@ from typing import Callable
 
 import pytest
 
-from modules.template.adapters.repositories.sqlalchemy.orm import (
-    Template as TemplateDb,
-)
+from modules.template.adapters.repositories.sqlalchemy.orm import Template as TemplateDb
 from modules.template.adapters.unit_of_work import SqlAlchemyTemplatesUnitOfWork
 from modules.template.domain.entities import Template as TemplateEntity
 
