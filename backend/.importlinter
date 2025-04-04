@@ -3,10 +3,10 @@ root_package = modules
 include_external_packages = True
 
 [importlinter:contract:1]
-name=Template domain module does not import from any other template module
+name=Any domain module does not import from any other module
 type=forbidden
-source_modules=modules.template.domain
+source_modules=modules.*.domain
 forbidden_modules=
-    modules.template.adapters
-    modules.template.entrypoints
-    modules.template.services
+    modules.*.adapters
+    modules.*.entrypoints
+    modules.*.services
