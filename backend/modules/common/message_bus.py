@@ -18,7 +18,7 @@ class MessageBus:
         self.command_handlers = command_handlers
         self.queue: deque[Message] = deque()
 
-    def handle(self, messages: Sequence[Message]):
+    def handle(self, messages: Sequence[Message]) -> None:
         self.queue.extend(messages)
 
         while self.queue:

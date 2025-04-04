@@ -18,7 +18,6 @@ def app() -> YieldFixture[Flask]:
 @pytest.fixture
 def client(app, prepared_database) -> YieldFixture[APIClientData]:
     Base.metadata.create_all(prepared_database)
-
     yield APIClientData(app.test_client())
     Base.metadata.drop_all(prepared_database)
 
