@@ -1,8 +1,8 @@
 from typing import List
 
 from modules.common import time
-from modules.template_module.domain.entities import Template as TemplateEntity
-from modules.template_module.domain.value_objects import (
+from modules.template.domain.entities import Template as TemplateEntity
+from modules.template.domain.value_objects import (
     INITIAL_TEMPLATE_VERSION,
 )
 

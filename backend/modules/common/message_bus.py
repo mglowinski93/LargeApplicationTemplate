@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Any, Callable, Sequence, Type
 
-from ..template_module.domain.entities import Template
+from ..template.domain.entities import Template
 from .domain.commands import DomainCommand
 from .domain.events import DomainEvent
 
@@ -18,7 +18,7 @@ class MessageBus:
         self.command_handlers = command_handlers
         self.queue: deque[Message] = deque()
 
-    def handle(self, messages: Sequence[Message]):
+    def handle(self, messages: Sequence[Message]) -> None:
         self.queue.extend(messages)
 
         while self.queue:

@@ -16,8 +16,8 @@ from modules.common.adapters.notifications import DummyEmailNotificator
 from modules.common.adapters.task_dispatchers import CeleryTaskDispatcher
 from modules.common.database import initialize_database_sessions
 from modules.common.domain.events import DomainEvent
-from modules.template_module import adapters as template_adapters
-from modules.template_module.services import handlers as template_handlers
+from modules.template import adapters as template_adapters
+from modules.template.services import handlers as template_handlers
 
 
 def get_configuration(environment_name: str | None = None) -> Config:
@@ -156,7 +156,7 @@ def create_app(environment_name: str | None = None) -> Flask:
     # START OF BLUEPRINT REGISTRATION
     main_api_blueprint = Blueprint("api", __name__)
 
-    from modules.template_module.entrypoints.web import (  # noqa: E402
+    from modules.template.entrypoints.web import (  # noqa: E402
         api_blueprint as template_api_blueprint,
     )
 

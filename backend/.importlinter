@@ -1,0 +1,12 @@
+[importlinter]
+root_package = modules
+include_external_packages = True
+
+[importlinter:contract:1]
+name=Any domain module does not import from any other module
+type=forbidden
+source_modules=modules.*.domain
+forbidden_modules=
+    modules.*.adapters
+    modules.*.entrypoints
+    modules.*.services

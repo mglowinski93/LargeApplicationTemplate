@@ -7,13 +7,13 @@ import factory
 
 from modules.common import time
 from modules.common.database.orm import Base
-from modules.template_module.adapters.repositories.sqlalchemy.consts import (
+from modules.template.adapters.repositories.sqlalchemy.consts import (
     VALUE_NAME_IN_DATABASE,
 )
-from modules.template_module.adapters.repositories.sqlalchemy.orm import (
+from modules.template.adapters.repositories.sqlalchemy.orm import (
     Template as SqlAlchemyTemplateDb,
 )
-from modules.template_module.domain.value_objects import (
+from modules.template.domain.value_objects import (
     INITIAL_TEMPLATE_VERSION,
 )
 
