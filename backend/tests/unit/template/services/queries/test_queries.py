@@ -4,6 +4,10 @@ import pytest
 
 from modules.template.domain.ports.exceptions import TemplateDoesNotExist
 from modules.template.services import get_template, list_templates
+from modules.template.services.queries.dtos import (
+    DetailedOutputTemplate,
+    OutputTemplate,
+)
 from modules.template.services.queries.mappers import (
     map_template_entity_to_output_detailed_dto,
     map_template_entity_to_output_dto,
@@ -22,13 +26,16 @@ def test_get_template_returns_output_dto_when_template_exists(
     )
 
     # When
-    output_template_dto = get_template(
+    detailed_output_template_dto = get_template(
         templates_query_repository=query_repository,
         template_id=template.id,
     )
 
     # Then
-    assert output_template_dto == map_template_entity_to_output_detailed_dto(template)
+    assert isinstance(detailed_output_template_dto, DetailedOutputTemplate)
+    assert detailed_output_template_dto == map_template_entity_to_output_detailed_dto(
+        template
+    )
 
 
 def test_get_template_raises_exception_when_requested_template_doesnt_exist(
@@ -63,6 +70,7 @@ def test_list_templates_lists_all_templates(
     assert results == [
         map_template_entity_to_output_dto(template) for template in templates
     ]
+    assert all(isinstance(result, OutputTemplate) for result in results)
 
 
 def test_list_templates_returns_empty_list_when_no_templates_exist(
