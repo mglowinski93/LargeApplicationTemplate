@@ -16,9 +16,7 @@ def fake_template_id() -> template_value_objects.TemplateId:
 
 
 def fake_template_value() -> template_value_objects.TemplateValue:
-    return template_value_objects.TemplateValue(
-        value=fake.pystr(min_chars=1, max_chars=100)
-    )
+    return template_value_objects.TemplateValue(value=fake.random_int(min=1, max=1000))
 
 
 class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):

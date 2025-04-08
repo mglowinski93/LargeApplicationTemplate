@@ -38,12 +38,7 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
         self.session = session
 
     def create(self, template: TemplateEntity) -> None:
-        template_instance = (
-            self.session.query(TemplateDb).filter_by(id=template.id).one_or_none()
-        )
-        if template_instance is None:
-            self.session.add(_map_template_entity_to_template_db(template))
-            return
+        self.session.add(_map_template_entity_to_template_db(template))
 
     def update(self, template: TemplateEntity) -> None:
         try:
@@ -233,9 +228,9 @@ def _map_template_value_dto_to_dict(template_value: TemplateValue) -> dict:
     return {
         VALUE_NAME_IN_DATABASE: template_value.value
         if template_value.value is not None
-        else None,
+        else 0,
     }
 
 
 def _map_template_data_dict_to_dto(template_dict: dict) -> TemplateValue:
-    return TemplateValue(value=template_dict.get(VALUE_NAME_IN_DATABASE))
+    return TemplateValue(value=template_dict.get(VALUE_NAME_IN_DATABASE, 0))

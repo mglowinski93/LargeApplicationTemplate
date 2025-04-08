@@ -25,7 +25,7 @@ def test_set_template_value_raises_exception_when_invalid_value():
     timestamp_before_setting_value = template.timestamp
 
     with pytest.raises(InvalidTemplateValue):
-        template.set_value(TemplateValue(value=""))
+        template.set_value(TemplateValue(value=0))
 
     assert timestamp_before_setting_value == template.timestamp
 
@@ -49,7 +49,7 @@ def test_set_template_method_raises_exception_when_invalid_value():
     timestamp_before_setting_value = template.timestamp
 
     with pytest.raises(InvalidTemplateValue):
-        set_template_value(template=template, value=TemplateValue(value=""))
+        set_template_value(template=template, value=TemplateValue(value=0))
 
     assert timestamp_before_setting_value == template.timestamp
 

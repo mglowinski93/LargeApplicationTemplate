@@ -23,7 +23,7 @@ from modules.template.services import (
 from ..... import entity_factories, fakers
 
 
-def test_create_template_creates_template_with_none_value(
+def test_create_template_creates_template_with_default_value(
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
@@ -39,7 +39,7 @@ def test_create_template_creates_template_with_none_value(
 
     # Then
     template = unit_of_work.templates.get(output_template_dto.id)
-    assert template.value.value is None
+    assert template.value.value == 0
     assert template.version == INITIAL_TEMPLATE_VERSION
 
 
@@ -109,7 +109,7 @@ def test_set_template_value_raises_exception_when_invalid_value(
 ):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
-    value = TemplateValue(value="")
+    value = TemplateValue(value=0)
     timestamp_before_setting_value = template_entity.timestamp
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]

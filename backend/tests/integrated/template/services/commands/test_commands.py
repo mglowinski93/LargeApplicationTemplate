@@ -18,19 +18,20 @@ def test_concurrent_template_updates_are_handled(
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
-
-    # Then
-    thread1 = TestThread(
-        target=set_template_value,
-        kwargs={
-            "templates_unit_of_work": unit_of_work,
-            "command": SetTemplateValue(
-                template_id=template_entity.id, value=fakers.fake_template_value()
-            ),
-            "message_bus": message_bus,
-        },
-    )
-    thread2 = TestThread(
+    threads = [
+        TestThread(
+            target=set_template_value,
+            kwargs={
+                "templates_unit_of_work": unit_of_work,
+                "command": SetTemplateValue(
+                    template_id=template_entity.id, value=fakers.fake_template_value()
+                ),
+                "message_bus": message_bus,
+            },
+        )
+        for _ in range(100)
+    ]
+    last_thread = TestThread(
         target=set_template_value,
         kwargs={
             "templates_unit_of_work": unit_of_work,
@@ -40,12 +41,15 @@ def test_concurrent_template_updates_are_handled(
             "message_bus": message_bus,
         },
     )
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+    threads.append(last_thread)
+
+    # When
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    retrieved_template = unit_of_work.templates.get(template_entity.id)
 
     # Then
-    retrieved_template = unit_of_work.templates.get(template_entity.id)
-    assert retrieved_template.version == 3
+    assert retrieved_template.version == 102
     assert retrieved_template.value == final_template_value

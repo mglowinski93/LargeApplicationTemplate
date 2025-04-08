@@ -207,7 +207,7 @@ def test_list_templates_endpoint_ordering_value(
     # Given
     api_client = client.client
     templates = []
-    values = ["a", "b"]
+    values = [21, 37]
     for template_value in values:
         template_id = get_template_id(client)
         api_client.patch(

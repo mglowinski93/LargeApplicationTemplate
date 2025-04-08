@@ -11,4 +11,4 @@ class TemplateId(common_ids.Uuid):
 
 @dataclass(frozen=True)
 class TemplateValue:
-    value: str | None
+    value: int

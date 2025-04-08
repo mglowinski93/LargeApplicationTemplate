@@ -28,7 +28,7 @@ class Template:
 
     def __init__(self, id: TemplateId, timestamp: datetime, version: int):
         self.id = id
-        self._value: TemplateValue = TemplateValue(value=None)
+        self._value: TemplateValue = TemplateValue(value=0)
         self.timestamp = timestamp
         self.version = version
         self.messages: list[DomainEvent] = []
@@ -42,12 +42,12 @@ class Template:
         return TemplateId.new()
 
     def set_value(self, value: TemplateValue):
-        if isinstance(value.value, str) and len(value.value):
+        if value.value > 0:
             self._value = value
             self.version += 1
             return
 
-        raise InvalidTemplateValue(f"Invalid value: '{value.value}'")
+        raise InvalidTemplateValue(f"Invalid value: '{value.value}', must be above 0.")
 
     def __repr__(self):
         return f"Template {self.id}"
