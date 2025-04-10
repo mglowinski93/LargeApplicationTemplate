@@ -13,6 +13,7 @@ from modules.common.pagination import Pagination
 from modules.common.time import (
     convert_timestamp_to_local_timestamp,
     convert_timestamp_to_utc_timestamp,
+    get_current_timestamp,
 )
 
 from .....template.services.queries.ports.repositories import (
@@ -43,7 +44,10 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
     def update(self, template: TemplateEntity) -> None:
         try:
             template_instance = (
-                self.session.query(TemplateDb).filter_by(id=template.id).scalar()
+                self.session.query(TemplateDb)
+                .filter_by(id=template.id)
+                .with_for_update()
+                .scalar()
             )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(
@@ -55,6 +59,10 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
         ).__dict__.items():
             if key != "_sa_instance_state":
                 setattr(template_instance, key, value)
+
+        # Update the version and timestamp of the template instance after lock aquisition
+        template_instance.version += 1
+        template_instance.timestamp = get_current_timestamp()
 
     def delete(self, template_id: TemplateId):
         try:

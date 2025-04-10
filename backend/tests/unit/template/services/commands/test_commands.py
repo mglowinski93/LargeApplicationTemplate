@@ -83,8 +83,6 @@ def test_set_template_value_sets_value_when_valid_value(
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
     value = fakers.fake_template_value()
-    timestamp_before_setting_value = template_entity.timestamp
-    version_before_setting_value = template_entity.version
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
@@ -99,8 +97,6 @@ def test_set_template_value_sets_value_when_valid_value(
     # Then
     assert template_entity.value == value
     assert unit_of_work.templates.get(template_entity.id).value == value
-    assert timestamp_before_setting_value < template_entity.timestamp
-    assert version_before_setting_value + 1 == template_entity.version
 
 
 def test_set_template_value_raises_exception_when_invalid_value(

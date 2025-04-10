@@ -1,0 +1,24 @@
+
+Endpoint to subtract template value.
+---
+consumes:
+  - application/json
+parameters:
+  - name: template_id
+    in: path
+    type: string
+    format: uuid
+    required: true
+    description: "Valid template ID"
+  - name: subtraction_value
+    in: body
+    type: integer
+    required: true
+    description: "Subtraction value"
+responses:
+  200:
+    description: "Template value subtracted."
+  404:
+    description: "No stored template with specified ID found."
+  422:
+    description: "Invalid input data."

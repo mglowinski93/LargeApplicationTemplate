@@ -49,6 +49,7 @@ def test_domain_repository_updates_template(
     template_entity = _map_template_db_to_template_entity(
         model_factories.TemplateFactory.create()
     )
+    timestamp_before_setting_value = template_entity.timestamp.astimezone(tz.UTC)
 
     new_template_value = fakers.fake_template_value()
 
@@ -63,6 +64,8 @@ def test_domain_repository_updates_template(
     )  # Exactly one result must be present in a database. Otherwise, error is raised.
     db_session.refresh(result)
     assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
+    assert result.version == template_entity.version + 1
+    assert timestamp_before_setting_value < result.timestamp
 
 
 def test_domain_repository_deletes_template(

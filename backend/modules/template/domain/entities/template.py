@@ -3,22 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 
 from modules.common.domain.events import DomainEvent
-from modules.common.time import get_current_timestamp
 
 from ...domain.value_objects import TemplateId, TemplateValue
 from ..exceptions import InvalidTemplateValue
-
-
-def set_template_value(template: Template, value: TemplateValue):
-    """
-    This is an optional method only needed when
-    there is a logic related to a particular action
-    that can't be placed in an entity,
-    due to it's not related to business logic, or it's too complicated.
-    """
-
-    template.set_value(value)
-    template.timestamp = get_current_timestamp()
 
 
 class Template:
@@ -44,10 +31,19 @@ class Template:
     def set_value(self, value: TemplateValue):
         if value.value > 0:
             self._value = value
-            self.version += 1
             return
 
         raise InvalidTemplateValue(f"Invalid value: '{value.value}', must be above 0.")
+
+    def subtract_value(self, value: TemplateValue) -> TemplateValue:
+        final_value = self._value.value - value.value
+        if final_value <= 0:
+            raise InvalidTemplateValue(
+                f"Invalid value: '{value.value}', must be above 0."
+            )
+        else:
+            self._value = TemplateValue(value=final_value)
+            return TemplateValue(value=final_value)
 
     def __repr__(self):
         return f"Template {self.id}"

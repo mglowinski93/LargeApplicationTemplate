@@ -98,11 +98,13 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
             template_domain_events.TemplateCreated: [],
             template_domain_events.TemplateDeleted: [],
             template_domain_events.TemplateValueSet: [],
+            template_domain_events.TemplateValueSubtracted: [],
         },
         command_handlers={
             template_domain_commands.CreateTemplate: lambda event: None,
             template_domain_commands.DeleteTemplate: lambda event: None,
             template_domain_commands.SetTemplateValue: lambda event: None,
+            template_domain_commands.SubtractTemplateValue: lambda event: None,
         },
     )
 

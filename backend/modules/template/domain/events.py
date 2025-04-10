@@ -19,5 +19,12 @@ class TemplateValueSet(DomainEvent):
 
 
 @dataclass(frozen=True)
+class TemplateValueSubtracted(DomainEvent):
+    template_id: TemplateId
+    subtracted_value: TemplateValue
+    final_value: TemplateValue
+
+
+@dataclass(frozen=True)
 class TemplateDeleted(DomainEvent):
     template_id: TemplateId

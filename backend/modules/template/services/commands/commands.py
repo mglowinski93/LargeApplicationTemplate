@@ -77,7 +77,7 @@ def set_template_value(
 
     with templates_unit_of_work:
         template = templates_unit_of_work.templates.get(command.template_id)
-        entities.set_template_value(template=template, value=command.value)
+        template.set_value(command.value)
         templates_unit_of_work.templates.update(template)
 
         # In this approach, a service layer is responsible for generating events.
@@ -86,4 +86,27 @@ def set_template_value(
 
     message_bus.handle(
         [domain_events.TemplateValueSet(template_id=template.id, value=command.value)],
+    )
+
+
+def subtract_template_value(
+    templates_unit_of_work: AbstractTemplatesUnitOfWork,
+    message_bus: MessageBus,
+    command: domain_commands.SubtractTemplateValue,
+):
+    with templates_unit_of_work:
+        template: entities.Template = templates_unit_of_work.templates.get(
+            command.template_id
+        )
+        final_value = template.subtract_value(command.subtraction_value)
+        templates_unit_of_work.templates.update(template)
+
+    message_bus.handle(
+        [
+            domain_events.TemplateValueSubtracted(
+                template_id=template.id,
+                subtracted_value=command.subtraction_value,
+                final_value=final_value,
+            )
+        ]
     )

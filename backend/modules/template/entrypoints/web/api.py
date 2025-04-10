@@ -249,6 +249,71 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
 
 
+@api_blueprint.route("/subtract/<template_id>", methods=["PATCH"])
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@inject.params(message_bus="message_bus")
+def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
+    """
+    file: {0}/template_endpoints/subtract_template_value.yml
+    """
+
+    form = template_forms.SubtractTemplateValueForm(
+        formdata=MultiDict(request.get_json(force=True, silent=True)),
+        meta={"csrf": False},
+    )
+    if not form.validate():
+        logger.warning("Request can't be handled, due to invalid input data.")
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: form.errors}),
+            HTTPStatus.BAD_REQUEST,
+        )
+
+    template_subtraction_value = form.subtraction_value.data
+
+    try:
+        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
+            template_id
+        )
+        logger.info("Subtracting value for template '%s'.", template_id)
+        message_bus.handle(
+            [
+                domain_commands.SubtractTemplateValue(
+                    template_id=template_id_uuid,
+                    subtraction_value=value_objects.TemplateValue(
+                        template_subtraction_value
+                    ),
+                )
+            ]
+        )
+        logger.info(
+            "Value '%s' subtracted for template '%s'.",
+            template_subtraction_value,
+            template_id,
+        )
+    except ValueError:
+        return _handle_invalid_template_id(template_id=template_id)
+    except domain_exceptions.InvalidTemplateValue:
+        logger.warning(
+            "Invalid subtraction value '%s' for template '%s'.",
+            template_subtraction_value,
+            template_id,
+        )
+        return make_response(
+            jsonify(
+                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid subtration value."}
+            ),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+    except ports_exceptions.TemplateDoesNotExist:
+        logger.warning("Template '%s' does not exist.", template_id)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
+            HTTPStatus.NOT_FOUND,
+        )
+
+    return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
+
+
 def _handle_invalid_template_id(template_id: str):
     logger.warning("Invalid template ID format: '%s'.", template_id)
     return make_response(

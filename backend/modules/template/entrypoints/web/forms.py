@@ -12,3 +12,7 @@ class TemplatesFiltersForm(Form):
 
 class SetTemplateValueForm(Form):
     value = IntegerField(validators=[validators.DataRequired()])
+
+
+class SubtractTemplateValueForm(Form):
+    subtraction_value = IntegerField(validators=[validators.DataRequired()])
