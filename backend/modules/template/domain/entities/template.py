@@ -41,9 +41,8 @@ class Template:
             raise InvalidTemplateValue(
                 f"Invalid value: '{value.value}', must be above 0."
             )
-        else:
-            self._value = TemplateValue(value=final_value)
-            return TemplateValue(value=final_value)
+        self._value = TemplateValue(value=final_value)
+        return TemplateValue(value=final_value)
 
     def __repr__(self):
         return f"Template {self.id}"

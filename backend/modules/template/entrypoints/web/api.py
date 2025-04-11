@@ -24,8 +24,8 @@ from . import forms as template_forms
 logger = logging.getLogger(__name__)
 
 
-@api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/<template_id>", methods=["GET"])
 @inject.params(query_repository="templates_query_repository")
 def get_template_endpoint(
     template_id: str, query_repository: SqlAlchemyTemplatesQueryRepository
@@ -59,8 +59,8 @@ def get_template_endpoint(
     return make_response(jsonify(template.serialize()), HTTPStatus.OK)
 
 
-@api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/", methods=["GET"])
 @inject.params(query_repository="templates_query_repository")
 def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository):
     """
@@ -145,8 +145,8 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
     )
 
 
-@api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/", methods=["POST"])
 @inject.params(message_bus="message_bus", unit_of_work="templates_unit_of_work")
 def create_template_endpoint(message_bus: MessageBus, unit_of_work):
     """
@@ -194,8 +194,8 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     return make_response("", HTTPStatus.NO_CONTENT)
 
 
-@api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/<template_id>", methods=["PATCH"])
 @inject.params(message_bus="message_bus")
 def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """
@@ -249,8 +249,8 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
 
 
-@api_blueprint.route("/subtract/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/subtract/<template_id>", methods=["PATCH"])
 @inject.params(message_bus="message_bus")
 def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """

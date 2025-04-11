@@ -60,7 +60,6 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
             if key != "_sa_instance_state":
                 setattr(template_instance, key, value)
 
-        # Update the version and timestamp of the template after lock aquisition
         template_instance.version += 1
         template_instance.timestamp = get_current_timestamp()
 

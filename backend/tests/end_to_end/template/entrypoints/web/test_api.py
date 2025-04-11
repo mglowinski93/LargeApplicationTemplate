@@ -208,7 +208,7 @@ def test_list_templates_endpoint_ordering_value(
     # Given
     api_client = client.client
     templates = []
-    values = [21, 37]
+    values = [fake_template_value().value, fake_template_value().value]
     for template_value in values:
         template_id = get_template_id(client)
         api_client.patch(
@@ -559,7 +559,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_n
     # Given
     api_client = client.client
     template_id = get_template_id(client)
-    template_value = 10
+    template_value = fake_template_value().value
     subtraction_value = template_value - 1
 
     # When
@@ -608,7 +608,7 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
     # Given
     api_client = client.client
     template_id = fake_template_id()
-    subtraction_value = 1
+    subtraction_value = fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -634,7 +634,7 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
     # Given
     api_client = client.client
     template_id = "invalid-format-template-id"
-    subtraction_value = 1
+    subtraction_value = fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -661,7 +661,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
     # Given
     api_client = client.client
     template_id = get_template_id(client)
-    template_value = 10
+    template_value = fake_template_value().value
 
     response = api_client.patch(
         get_url(
@@ -699,7 +699,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
     # Given
     api_client = client.client
     template_id = get_template_id(client)
-    template_value = 10
+    template_value = fake_template_value().value
 
     response = api_client.patch(
         get_url(
