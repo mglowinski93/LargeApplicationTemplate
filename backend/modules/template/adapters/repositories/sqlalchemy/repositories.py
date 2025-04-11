@@ -13,7 +13,6 @@ from modules.common.pagination import Pagination
 from modules.common.time import (
     convert_timestamp_to_local_timestamp,
     convert_timestamp_to_utc_timestamp,
-    get_current_timestamp,
 )
 
 from .....template.services.queries.ports.repositories import (
@@ -61,7 +60,6 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
                 setattr(template_instance, key, value)
 
         template_instance.version += 1
-        template_instance.timestamp = get_current_timestamp()
 
     def delete(self, template_id: TemplateId):
         try:

@@ -207,7 +207,7 @@ def test_list_templates_endpoint_ordering_value(
 ):
     # Given
     api_client = client.client
-    templates = []
+    template_ids = []
     values = [fake_template_value().value, fake_template_value().value]
     for template_value in values:
         template_id = get_template_id(client)
@@ -220,7 +220,7 @@ def test_list_templates_endpoint_ordering_value(
             ),
             json={"value": template_value},
         )
-        templates.append(template_id)
+        template_ids.append(template_id)
 
     assert DummyEmailNotificator.total_emails_sent == values.__len__()
 
@@ -238,10 +238,10 @@ def test_list_templates_endpoint_ordering_value(
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    for template, val in enumerate(templates):
+    for template, val in enumerate(template_ids):
         assert (
             TemplateId(results[template]["id"])
-            == templates[len(templates) - 1 - template]
+            == template_ids[len(template_ids) - 1 - template]
         )
 
     # When
@@ -259,8 +259,8 @@ def test_list_templates_endpoint_ordering_value(
     json_response = response.json
     assert json_response is not None
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert TemplateId.from_hex(results[0]["id"]) == templates[0]
-    assert TemplateId.from_hex(results[1]["id"]) == templates[1]
+    assert TemplateId.from_hex(results[0]["id"]) == template_ids[0]
+    assert TemplateId.from_hex(results[1]["id"]) == template_ids[1]
 
 
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
