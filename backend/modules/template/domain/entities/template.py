@@ -36,13 +36,14 @@ class Template:
         raise InvalidTemplateValue(f"Invalid value: '{value.value}', must be above 0.")
 
     def subtract_value(self, value: TemplateValue) -> TemplateValue:
-        final_value = self._value.value - value.value
-        if final_value <= 0:
+        result = self._value.value - value.value
+
+        if result <= 0:
             raise InvalidTemplateValue(
                 f"Invalid value: '{value.value}', must be above 0."
             )
-        self._value = TemplateValue(value=final_value)
-        return TemplateValue(value=final_value)
+        self._value = TemplateValue(value=result)
+        return TemplateValue(value=result)
 
     def __repr__(self):
         return f"Template {self.id}"

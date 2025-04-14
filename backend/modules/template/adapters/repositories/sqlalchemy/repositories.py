@@ -238,4 +238,4 @@ def _map_template_value_dto_to_dict(template_value: TemplateValue) -> dict:
 
 
 def _map_template_data_dict_to_dto(template_dict: dict) -> TemplateValue:
-    return TemplateValue(value=template_dict.get(VALUE_NAME_IN_DATABASE, 0))
+    return TemplateValue(value=template_dict[VALUE_NAME_IN_DATABASE])

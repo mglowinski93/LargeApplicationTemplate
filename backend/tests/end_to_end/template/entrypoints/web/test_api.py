@@ -22,6 +22,24 @@ TEMPLATE_ROUTES = {
 }
 
 
+def create_template(client: APIClientData) -> TemplateId:
+    # Given
+    api_client = client.client
+    # When
+    response = api_client.post(
+        get_url(
+            app=api_client.application,
+            routes=TEMPLATE_ROUTES,
+            url_type="create-template",
+        )
+    )
+    # Then
+    assert response.status_code == HTTPStatus.CREATED
+    json_response = response.json
+    assert json_response is not None and "id" in json_response
+    return TemplateId(json_response["id"])
+
+
 def timestamp_has_timezone_information(json_response) -> bool:
     timestamp = parse_datetime(json_response["timestamp"])
     return (
@@ -184,33 +202,23 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
     )
 
 
-def get_template_id(client: APIClientData) -> TemplateId:
-    # Given
-    api_client = client.client
-    # When
-    response = api_client.post(
-        get_url(
-            app=api_client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="create-template",
-        )
-    )
-    # Then
-    assert response.status_code == HTTPStatus.CREATED
-    json_response = response.json
-    assert json_response is not None and "id" in json_response
-    return TemplateId(json_response["id"])
-
-
 def test_list_templates_endpoint_ordering_value(
     client: APIClientData,
 ):
+    def get_sorted_template_ids(templates: dict, reverse: bool = False):
+        return [
+            template_id
+            for template_id, _ in sorted(
+                templates.items(), key=lambda item: item[1], reverse=reverse
+            )
+        ]
+
     # Given
     api_client = client.client
-    template_ids = []
+    templates: dict = {}
     values = [fake_template_value().value, fake_template_value().value]
     for template_value in values:
-        template_id = get_template_id(client)
+        template_id = create_template(client)
         api_client.patch(
             get_url(
                 app=api_client.application,
@@ -220,9 +228,9 @@ def test_list_templates_endpoint_ordering_value(
             ),
             json={"value": template_value},
         )
-        template_ids.append(template_id)
+        templates[template_id] = template_value
 
-    assert DummyEmailNotificator.total_emails_sent == values.__len__()
+    assert DummyEmailNotificator.total_emails_sent == len(values)
 
     # When
     response = api_client.get(
@@ -233,16 +241,17 @@ def test_list_templates_endpoint_ordering_value(
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-value"},
     )
+
     # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
+    sorted_template_ids_desc = get_sorted_template_ids(templates, reverse=True)
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    for template, val in enumerate(template_ids):
-        assert (
-            TemplateId(results[template]["id"])
-            == template_ids[len(template_ids) - 1 - template]
-        )
+    assert all(
+        TemplateId(results[template]["id"]) == sorted_template_ids_desc[template]
+        for template in range(len(sorted_template_ids_desc))
+    )
 
     # When
     response = api_client.get(
@@ -258,9 +267,12 @@ def test_list_templates_endpoint_ordering_value(
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
     assert json_response is not None
+    sorted_template_ids_asc = get_sorted_template_ids(templates, reverse=False)
     results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert TemplateId.from_hex(results[0]["id"]) == template_ids[0]
-    assert TemplateId.from_hex(results[1]["id"]) == template_ids[1]
+    assert all(
+        TemplateId(results[template]["id"]) == sorted_template_ids_asc[template]
+        for template in range(len(sorted_template_ids_asc))
+    )
 
 
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
@@ -273,7 +285,7 @@ def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
             url_type="create-template",
         )
     )
-    template_id = get_template_id(client)
+    template_id = create_template(client)
 
     # When
     response = api_client.get(
@@ -298,7 +310,7 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
 
     # When
     response = api_client.get(
@@ -396,7 +408,7 @@ def test_delete_template_endpoint_deletes_template(
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
 
     # When
     response = api_client.delete(
@@ -442,7 +454,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
     template_value = fake_template_value().value
 
     # When
@@ -532,7 +544,7 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
 
     # When
     response = api_client.patch(
@@ -558,7 +570,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_n
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
     template_value = fake_template_value().value
     subtraction_value = template_value - 1
 
@@ -660,7 +672,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
     template_value = fake_template_value().value
 
     response = api_client.patch(
@@ -698,7 +710,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
 ):
     # Given
     api_client = client.client
-    template_id = get_template_id(client)
+    template_id = create_template(client)
     template_value = fake_template_value().value
 
     response = api_client.patch(

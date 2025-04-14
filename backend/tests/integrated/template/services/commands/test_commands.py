@@ -9,6 +9,7 @@ from modules.template.domain.value_objects import TemplateValue
 from modules.template.services import subtract_template_value
 
 from ..... import entity_factories
+from .....fakers import fake_int
 from ....utils import TestThread
 
 
@@ -19,11 +20,11 @@ def test_concurrent_template_subtractions_are_handled(
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
     template_value = 100
-    subtraction_value = 50
     template_entity.set_value(TemplateValue(value=template_value))
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
+    first_subtraction_value = fake_int(template_value)
 
     first_thread = TestThread(
         target=subtract_template_value,
@@ -31,7 +32,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                subtraction_value=TemplateValue(value=subtraction_value),
+                subtraction_value=TemplateValue(value=first_subtraction_value),
             ),
             "message_bus": message_bus,
         },
@@ -42,7 +43,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                subtraction_value=TemplateValue(value=50),
+                subtraction_value=TemplateValue(value=fake_int(template_value)),
             ),
             "message_bus": message_bus,
         },
@@ -57,4 +58,4 @@ def test_concurrent_template_subtractions_are_handled(
 
     # Then
     retrieved_template = unit_of_work.templates.get(template_entity.id)
-    assert retrieved_template.value.value == template_value - subtraction_value
+    assert retrieved_template.value.value == template_value - first_subtraction_value
