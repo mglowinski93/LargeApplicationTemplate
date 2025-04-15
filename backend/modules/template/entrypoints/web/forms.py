@@ -4,7 +4,6 @@ strip_filter = lambda x: x.strip() if x else None  # noqa: E731
 
 
 class TemplatesFiltersForm(Form):
-    value = IntegerField()
     query = StringField(filters=[strip_filter])
     timestamp_from = DateTimeField()
     timestamp_to = DateTimeField()

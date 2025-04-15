@@ -24,7 +24,9 @@ def test_concurrent_template_subtractions_are_handled(
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
-    first_subtraction_value = fake_int(template_value)
+    first_subtraction_value = fake_int(
+        min_range=template_value - 2, max_range=template_value - 1
+    )
 
     first_thread = TestThread(
         target=subtract_template_value,
@@ -43,7 +45,11 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                value=TemplateValue(value=fake_int(template_value)),
+                value=TemplateValue(
+                    value=fake_int(
+                        min_range=template_value - 2, max_range=template_value - 1
+                    )
+                ),
             ),
             "message_bus": message_bus,
         },

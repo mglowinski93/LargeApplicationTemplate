@@ -139,11 +139,6 @@ def _get_templates(
 
 
 def _filter(query: Query, filters: ports_dtos.TemplatesFilters):
-    if filters.value is not None:
-        query = query.filter(
-            text("value_data->>'value' = :val").params(val=filters.value)
-        )
-
     if filters.query is not None:
         query = query.filter(
             or_(

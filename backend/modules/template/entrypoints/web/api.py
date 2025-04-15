@@ -99,7 +99,6 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
         )
 
     filters = ports_dtos.TemplatesFilters(
-        value=form.value.data,
         query=form.query.data,
         timestamp_from=form.timestamp_from.data,
         timestamp_to=form.timestamp_to.data,
@@ -250,7 +249,7 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
 
 
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
-@api_blueprint.route("/subtract/<template_id>", methods=["PATCH"])
+@api_blueprint.route("/<template_id>/subtract", methods=["POST"])
 @inject.params(message_bus="message_bus")
 def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """

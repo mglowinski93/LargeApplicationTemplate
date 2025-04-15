@@ -75,9 +75,6 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         templates: set[TemplateEntity],
         filters: TemplatesFilters,
     ) -> set[TemplateEntity]:
-        if filters.value is not None:
-            templates = {t for t in templates if t.value == filters.value}
-
         if filters.query is not None:
             templates = {
                 template

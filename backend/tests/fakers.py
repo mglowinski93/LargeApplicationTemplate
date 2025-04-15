@@ -19,8 +19,8 @@ def fake_template_value() -> template_value_objects.TemplateValue:
     return template_value_objects.TemplateValue(value=fake.random_int(min=2, max=1000))
 
 
-def fake_int(max_range: int) -> int:
-    return fake.random_int(min=max_range - 2, max=max_range - 1)
+def fake_int(min_range: int | None = None, max_range: int | None = None) -> int:
+    return fake.random_int(min=min_range, max=max_range)
 
 
 def fake_negative_int() -> int:

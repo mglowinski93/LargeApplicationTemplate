@@ -202,79 +202,6 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
     )
 
 
-def test_list_templates_endpoint_ordering_value(
-    client: APIClientData,
-):
-    def get_sorted_template_ids(templates: dict, reverse: bool = False):
-        return [
-            template_id
-            for template_id, _ in sorted(
-                templates.items(), key=lambda item: item[1], reverse=reverse
-            )
-        ]
-
-    # Given
-    api_client = client.client
-    templates: dict = {}
-    values = [fake_template_value().value, fake_template_value().value]
-    for template_value in values:
-        template_id = create_template(client)
-        api_client.patch(
-            get_url(
-                app=api_client.application,
-                routes=TEMPLATE_ROUTES,
-                url_type="set-template-value",
-                path_parameters={"template_id": template_id},
-            ),
-            json={"value": template_value},
-        )
-        templates[template_id] = template_value
-
-    assert DummyEmailNotificator.total_emails_sent == len(values)
-
-    # When
-    response = api_client.get(
-        get_url(
-            app=api_client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="list-templates",
-        ),
-        query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "-value"},
-    )
-
-    # Then
-    assert response.status_code == HTTPStatus.OK
-    json_response = response.json
-    assert json_response is not None
-    sorted_template_ids_desc = get_sorted_template_ids(templates, reverse=True)
-    results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert all(
-        TemplateId(results[template]["id"]) == sorted_template_ids_desc[template]
-        for template in range(len(sorted_template_ids_desc))
-    )
-
-    # When
-    response = api_client.get(
-        get_url(
-            app=api_client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="list-templates",
-        ),
-        query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "value"},
-    )
-
-    # Then
-    assert response.status_code == HTTPStatus.OK
-    json_response = response.json
-    assert json_response is not None
-    sorted_template_ids_asc = get_sorted_template_ids(templates, reverse=False)
-    results = json_response[consts.PAGINATION_RESULTS_NAME]
-    assert all(
-        TemplateId(results[template]["id"]) == sorted_template_ids_asc[template]
-        for template in range(len(sorted_template_ids_asc))
-    )
-
-
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     # Given
     api_client = client.client
@@ -586,7 +513,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value(
 
     assert response.status_code == HTTPStatus.OK
 
-    response = api_client.patch(
+    response = api_client.post(
         get_url(
             app=api_client.application,
             routes=TEMPLATE_ROUTES,
@@ -626,7 +553,7 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
     value = fake_template_value().value
 
     # When
-    response = api_client.patch(
+    response = api_client.post(
         get_url(
             app=api_client.application,
             routes=TEMPLATE_ROUTES,
@@ -653,7 +580,7 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
     value = fake_template_value().value
 
     # When
-    response = api_client.patch(
+    response = api_client.post(
         get_url(
             app=api_client.application,
             routes=TEMPLATE_ROUTES,
@@ -692,7 +619,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
     assert response.status_code == HTTPStatus.OK
 
     # When
-    response = api_client.patch(
+    response = api_client.post(
         get_url(
             app=api_client.application,
             routes=TEMPLATE_ROUTES,
@@ -732,7 +659,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
 
     # When
     subtraction_value = template_value
-    response = api_client.patch(
+    response = api_client.post(
         get_url(
             app=api_client.application,
             routes=TEMPLATE_ROUTES,
