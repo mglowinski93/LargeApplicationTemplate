@@ -54,7 +54,7 @@ def db_session(
 ) -> annotations.YieldFixture[Session]:
     with prepared_database.connect() as db_connection:
         transaction = db_connection.begin()
-        session = sessionmaker(autocommit=False, autoflush=True, bind=db_connection)()
+        session = sessionmaker(autocommit=False, autoflush=False, bind=db_connection)()
 
         yield session
 
