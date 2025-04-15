@@ -278,13 +278,6 @@ def test_list_templates_endpoint_ordering_value(
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     # Given
     api_client = client.client
-    api_client.post(
-        get_url(
-            app=api_client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="create-template",
-        )
-    )
     template_id = create_template(client)
 
     # When
@@ -470,6 +463,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     response = api_client.get(
         get_url(
             app=api_client.application,
@@ -478,12 +472,14 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
             path_parameters={"template_id": template_id},
         )
     )
+
     assert response.status_code == HTTPStatus.OK
-    assert DummyEmailNotificator.total_emails_sent == 1
     json_response = response.json
     assert json_response is not None
     assert json_response["value"] == template_value
     assert timestamp_has_timezone_information(json_response)
+
+    assert DummyEmailNotificator.total_emails_sent == 1
 
 
 def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(
@@ -506,10 +502,11 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_
     )
 
     # Then
-    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json
+
+    assert DummyEmailNotificator.total_emails_sent == 0
 
 
 def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_format(
@@ -532,11 +529,12 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
     )
 
     # Then
-    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.BAD_REQUEST
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
+
+    assert DummyEmailNotificator.total_emails_sent == 0
 
 
 def test_set_template_value_endpoint_returns_400_when_missing_parameters(
@@ -558,14 +556,15 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
     )
 
     # Then
-    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.BAD_REQUEST
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
 
+    assert DummyEmailNotificator.total_emails_sent == 0
 
-def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_no_data_when_specified_template_exists(  # noqa: E501
+
+def test_subtract_template_value_endpoint_subtracts_template_value(
     client: APIClientData,
 ):
     # Given
@@ -584,6 +583,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_n
         ),
         json={"value": template_value},
     )
+
     assert response.status_code == HTTPStatus.OK
 
     response = api_client.patch(
@@ -593,8 +593,9 @@ def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_n
             url_type="subtract-template-value",
             path_parameters={"template_id": template_id},
         ),
-        json={"subtraction_value": subtraction_value},
+        json={"value": subtraction_value},
     )
+
     assert response.status_code == HTTPStatus.OK
 
     # Then
@@ -606,12 +607,14 @@ def test_subtract_template_value_endpoint_subtracts_template_value_and_returns_n
             path_parameters={"template_id": template_id},
         )
     )
+
     assert response.status_code == HTTPStatus.OK
-    assert DummyEmailNotificator.total_emails_sent == 1
     json_response = response.json
     assert json_response is not None
     assert json_response["value"] == template_value - subtraction_value
     assert timestamp_has_timezone_information(json_response)
+
+    assert DummyEmailNotificator.total_emails_sent == 1
 
 
 def test_subtract_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(  # noqa: E501
@@ -620,7 +623,7 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
     # Given
     api_client = client.client
     template_id = fake_template_id()
-    subtraction_value = fake_template_value().value
+    value = fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -630,14 +633,15 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
             url_type="subtract-template-value",
             path_parameters={"template_id": template_id},
         ),
-        json={"subtraction_value": subtraction_value},
+        json={"value": value},
     )
 
     # Then
-    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json
+
+    assert DummyEmailNotificator.total_emails_sent == 0
 
 
 def test_subtract_template_value_endpoint_returns_400_when_template_id_has_invalid_format(  # noqa: E501
@@ -646,7 +650,7 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
     # Given
     api_client = client.client
     template_id = "invalid-format-template-id"
-    subtraction_value = fake_template_value().value
+    value = fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -656,15 +660,16 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
             url_type="subtract-template-value",
             path_parameters={"template_id": template_id},
         ),
-        json={"subtraction_value": subtraction_value},
+        json={"value": value},
     )
 
     # Then
-    assert DummyEmailNotificator.total_emails_sent == 0
     assert response.status_code == HTTPStatus.BAD_REQUEST
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
+
+    assert DummyEmailNotificator.total_emails_sent == 0
 
 
 def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
@@ -699,10 +704,11 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert DummyEmailNotificator.total_emails_sent == 1
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
+
+    assert DummyEmailNotificator.total_emails_sent == 1
 
 
 def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_or_equal_template_value(  # noqa: E501
@@ -733,7 +739,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
             url_type="subtract-template-value",
             path_parameters={"template_id": template_id},
         ),
-        json={"subtraction_value": subtraction_value},
+        json={"value": subtraction_value},
     )
 
     # Then

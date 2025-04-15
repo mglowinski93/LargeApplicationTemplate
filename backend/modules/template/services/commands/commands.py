@@ -98,14 +98,14 @@ def subtract_template_value(
         template: entities.Template = templates_unit_of_work.templates.get(
             command.template_id
         )
-        final_value = template.subtract_value(command.subtraction_value)
+        final_value = template.subtract_value(command.value)
         templates_unit_of_work.templates.update(template)
 
     message_bus.handle(
         [
             domain_events.TemplateValueSubtracted(
                 template_id=template.id,
-                subtracted_value=command.subtraction_value,
+                subtracted_value=command.value,
                 final_value=final_value,
             )
         ]

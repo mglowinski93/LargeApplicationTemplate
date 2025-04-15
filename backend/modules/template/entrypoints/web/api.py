@@ -268,7 +268,7 @@ def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
             HTTPStatus.BAD_REQUEST,
         )
 
-    template_subtraction_value = form.subtraction_value.data
+    value = form.value.data
 
     try:
         template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
@@ -279,15 +279,13 @@ def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
             [
                 domain_commands.SubtractTemplateValue(
                     template_id=template_id_uuid,
-                    subtraction_value=value_objects.TemplateValue(
-                        template_subtraction_value
-                    ),
+                    value=value_objects.TemplateValue(value),
                 )
             ]
         )
         logger.info(
             "Value '%s' subtracted for template '%s'.",
-            template_subtraction_value,
+            value,
             template_id,
         )
     except ValueError:
@@ -295,7 +293,7 @@ def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
     except domain_exceptions.InvalidTemplateValue:
         logger.warning(
             "Invalid subtraction value '%s' for template '%s'.",
-            template_subtraction_value,
+            value,
             template_id,
         )
         return make_response(

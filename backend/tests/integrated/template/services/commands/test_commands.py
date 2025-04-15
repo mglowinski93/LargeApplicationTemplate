@@ -32,7 +32,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                subtraction_value=TemplateValue(value=first_subtraction_value),
+                value=TemplateValue(value=first_subtraction_value),
             ),
             "message_bus": message_bus,
         },
@@ -43,7 +43,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                subtraction_value=TemplateValue(value=fake_int(template_value)),
+                value=TemplateValue(value=fake_int(template_value)),
             ),
             "message_bus": message_bus,
         },

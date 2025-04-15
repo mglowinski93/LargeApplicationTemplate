@@ -15,4 +15,4 @@ class SetTemplateValueForm(Form):
 
 
 class SubtractTemplateValueForm(Form):
-    subtraction_value = IntegerField(validators=[validators.DataRequired()])
+    value = IntegerField(validators=[validators.DataRequired()])

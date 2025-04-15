@@ -23,6 +23,10 @@ def fake_int(max_range: int) -> int:
     return fake.random_int(min=max_range - 2, max=max_range - 1)
 
 
+def fake_negative_int() -> int:
+    return fake.random_int(min=-1000, max=-1)
+
+
 class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):
     @staticmethod
     def dispatch(func, *args, **kwargs):

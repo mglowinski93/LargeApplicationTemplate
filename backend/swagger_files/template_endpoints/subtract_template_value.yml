@@ -10,7 +10,7 @@ parameters:
     format: uuid
     required: true
     description: "Valid template ID"
-  - name: subtraction_value
+  - name: value
     in: body
     type: integer
     required: true

@@ -25,7 +25,7 @@ def test_set_template_value_raises_exception_when_invalid_value():
 
     # Then
     with pytest.raises(InvalidTemplateValue):
-        template.set_value(TemplateValue(value=0))
+        template.set_value(TemplateValue(value=fakers.fake_negative_int()))
 
 
 def test_subtract_template_value_subtracts_value_when_valid():

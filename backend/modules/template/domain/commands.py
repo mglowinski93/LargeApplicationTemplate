@@ -14,7 +14,7 @@ class SetTemplateValue(DomainCommand):
 @dataclass(frozen=True)
 class SubtractTemplateValue(DomainCommand):
     template_id: TemplateId
-    subtraction_value: TemplateValue
+    value: TemplateValue
 
 
 @dataclass(frozen=True)
