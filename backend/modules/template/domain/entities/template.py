@@ -13,7 +13,7 @@ class Template:
     Allocate here business logic and high-level rules that are related to this entity.
     """
 
-    def __init__(self, id: TemplateId, timestamp: datetime, version: int):
+    def __init__(self, id: TemplateId, timestamp: datetime, version: int) -> None:
         self.id = id
         self._value: TemplateValue = TemplateValue(value=0)
         self.timestamp = timestamp
@@ -28,12 +28,14 @@ class Template:
     def generate_id() -> TemplateId:
         return TemplateId.new()
 
-    def set_value(self, value: TemplateValue):
-        if value.value > 0:
-            self._value = value
-            return
+    def set_value(self, value: TemplateValue) -> None:
+        if value.value <= 0:
+            raise InvalidTemplateValue(
+                f"Invalid value: '{value.value}', must be above 0."
+            )
 
-        raise InvalidTemplateValue(f"Invalid value: '{value.value}', must be above 0.")
+        self._value = value
+        self.version += 1
 
     def subtract_value(self, value: TemplateValue) -> TemplateValue:
         result = self._value.value - value.value
@@ -44,6 +46,7 @@ class Template:
             )
 
         self._value = TemplateValue(value=result)
+        self.version += 1
         return TemplateValue(value=result)
 
     def __repr__(self):

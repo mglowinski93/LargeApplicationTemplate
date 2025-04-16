@@ -63,7 +63,6 @@ def test_domain_repository_updates_template(
     )  # Exactly one result must be present in a database. Otherwise, error is raised.
     db_session.refresh(result)
     assert result.value_data[VALUE_NAME_IN_DATABASE] == new_template_value.value
-    assert result.version == template_entity.version + 1
 
 
 def test_domain_repository_deletes_template(

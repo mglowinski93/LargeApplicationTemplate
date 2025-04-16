@@ -19,12 +19,14 @@ def fake_template_value() -> template_value_objects.TemplateValue:
     return template_value_objects.TemplateValue(value=fake.random_int(min=2, max=1000))
 
 
-def fake_int(min_range: int | None = None, max_range: int | None = None) -> int:
-    return fake.random_int(min=min_range, max=max_range)
+def fake_integer(min_value: int | None = None, max_value: int | None = None) -> int:
+    data = {}
+    if min_value is not None:
+        data["min"] = min_value
+    if max_value is not None:
+        data["max"] = max_value
 
-
-def fake_negative_int() -> int:
-    return fake.random_int(min=-1000, max=-1)
+    return fake.random_int(**data)
 
 
 class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):
@@ -34,7 +36,7 @@ class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):
 
 
 class TestTemplateUnitOfWork(AbstractTemplatesUnitOfWork):
-    def __init__(self, templates: list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]) -> None:
         self.templates = TestTemplatesRepository(templates=templates)
         self.committed = False
 

@@ -64,7 +64,7 @@ def test_delete_template_deletes_template(
     assert template_entity not in unit_of_work.templates._templates
 
 
-def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
+def test_delete_template_raises_exception_when_requested_template_does_not_exist(
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
@@ -76,7 +76,7 @@ def test_delete_template_raises_exception_when_requested_template_doesnt_exist(
         )
 
 
-def test_set_template_value_sets_value_when_valid_value(
+def test_set_template_value_sets_value(
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
@@ -123,7 +123,7 @@ def test_set_template_value_raises_exception_when_invalid_value(
     assert timestamp_before_setting_value == template_entity.timestamp
 
 
-def test_set_template_value_raises_exception_when_requested_template_doesnt_exist(
+def test_set_template_value_raises_exception_when_requested_template_does_not_exist(
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):

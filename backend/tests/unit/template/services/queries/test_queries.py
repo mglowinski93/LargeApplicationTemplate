@@ -38,7 +38,7 @@ def test_get_template_returns_output_dto_when_template_exists(
     )
 
 
-def test_get_template_raises_exception_when_requested_template_doesnt_exist(
+def test_get_template_raises_exception_when_requested_template_does_not_exist(
     fake_template_query_repository_factory: Callable,
 ):
     # Given

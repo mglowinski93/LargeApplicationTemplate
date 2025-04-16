@@ -15,7 +15,7 @@ from modules.template.services.queries.ports import (
 
 
 class TestTemplatesRepository(AbstractTemplatesDomainRepository):
-    def __init__(self, templates: list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]) -> None:
         self._templates = set(templates)
 
     def create(self, template: TemplateEntity):
@@ -43,7 +43,7 @@ class TestTemplatesRepository(AbstractTemplatesDomainRepository):
 
 
 class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
-    def __init__(self, templates: list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]) -> None:
         self._templates = set(templates)
 
     def get(self, template_id: TemplateId) -> TemplateEntity:
@@ -75,6 +75,11 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         templates: set[TemplateEntity],
         filters: TemplatesFilters,
     ) -> set[TemplateEntity]:
+        if filters.value is not None:
+            templates = {
+                template for template in templates if template.value == filters.value
+            }
+
         if filters.query is not None:
             templates = {
                 template

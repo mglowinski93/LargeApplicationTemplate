@@ -22,22 +22,16 @@ TEMPLATE_ROUTES = {
 }
 
 
-def create_template(client: APIClientData) -> TemplateId:
-    # Given
-    api_client = client.client
-    # When
-    response = api_client.post(
-        get_url(
-            app=api_client.application,
-            routes=TEMPLATE_ROUTES,
-            url_type="create-template",
-        )
+def create_template_via_api(client: APIClientData) -> TemplateId:
+    return TemplateId(
+        client.client.post(  # type: ignore[index]
+            get_url(
+                app=client.client.application,
+                routes=TEMPLATE_ROUTES,
+                url_type="create-template",
+            )
+        ).json["id"]
     )
-    # Then
-    assert response.status_code == HTTPStatus.CREATED
-    json_response = response.json
-    assert json_response is not None and "id" in json_response
-    return TemplateId(json_response["id"])
 
 
 def timestamp_has_timezone_information(json_response) -> bool:
@@ -64,8 +58,10 @@ def test_list_templates_endpoint_returns_empty_list_when_no_template_exists(
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
+
     results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert isinstance(results, list)
     assert not results
@@ -98,8 +94,10 @@ def test_list_templates_endpoint_returns_templates_data_when_templates_exist(
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
+
     results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert isinstance(results, list)
     assert json_response[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
@@ -135,8 +133,10 @@ def test_list_templates_endpoint_pagination(client: APIClientData):
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
+
     results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert len(results) == pagination_limit
     assert json_response[consts.PAGINATION_TOTAL_COUNT_NAME] == number_of_templates
@@ -176,8 +176,10 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
+
     results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert parse_datetime(results[0]["timestamp"]) > parse_datetime(
         results[1]["timestamp"]
@@ -192,6 +194,7 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
         ),
         query_string={consts.ORDERING_QUERY_PARAMETER_NAME: "timestamp"},
     )
+
     # Then
     assert response.status_code == HTTPStatus.OK
     json_response = response.json
@@ -205,7 +208,7 @@ def test_list_templates_endpoint_ordering_timestamp(client: APIClientData):
 def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
 
     # When
     response = api_client.get(
@@ -219,8 +222,10 @@ def test_list_templates_endpoint_filtering_by_query(client: APIClientData):
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
+
     results = json_response[consts.PAGINATION_RESULTS_NAME]
     assert all(TemplateId.from_hex(item["id"]) == template_id for item in results)
 
@@ -230,7 +235,7 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
 
     # When
     response = api_client.get(
@@ -244,13 +249,14 @@ def test_get_template_endpoint_returns_template_data_when_specified_template_exi
 
     # Then
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
     assert TemplateId.from_hex(json_response["id"]) == template_id
     assert timestamp_has_timezone_information(json_response)
 
 
-def test_get_template_endpoint_returns_404_when_specified_template_doesnt_exist(
+def test_get_template_endpoint_returns_404_when_specified_template_does_not_exist(
     client: APIClientData,
 ):
     # Given
@@ -328,7 +334,7 @@ def test_delete_template_endpoint_deletes_template(
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
 
     # When
     response = api_client.delete(
@@ -345,7 +351,7 @@ def test_delete_template_endpoint_deletes_template(
     assert response.json is None
 
 
-def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exist(
+def test_delete_template_endpoint_returns_404_when_specified_template_does_not_exist(
     client: APIClientData,
 ):
     # Given
@@ -364,6 +370,7 @@ def test_delete_template_endpoint_returns_404_when_specified_template_doesnt_exi
 
     # Then
     assert response.status_code == HTTPStatus.NOT_FOUND
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
@@ -374,7 +381,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
     template_value = fake_template_value().value
 
     # When
@@ -401,6 +408,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     )
 
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
     assert json_response["value"] == template_value
@@ -409,7 +417,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     assert DummyEmailNotificator.total_emails_sent == 1
 
 
-def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(
+def test_set_template_value_endpoint_returns_404_when_specified_template_does_not_exists(  # noqa: E501
     client: APIClientData,
 ):
     # Given
@@ -432,8 +440,7 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_doesnt_
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json
-
-    assert DummyEmailNotificator.total_emails_sent == 0
+    assert not DummyEmailNotificator.total_emails_sent
 
 
 def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_format(
@@ -457,11 +464,12 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
 
-    assert DummyEmailNotificator.total_emails_sent == 0
+    assert not DummyEmailNotificator.total_emails_sent
 
 
 def test_set_template_value_endpoint_returns_400_when_missing_parameters(
@@ -469,7 +477,7 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
 
     # When
     response = api_client.patch(
@@ -484,11 +492,12 @@ def test_set_template_value_endpoint_returns_400_when_missing_parameters(
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
 
-    assert DummyEmailNotificator.total_emails_sent == 0
+    assert not DummyEmailNotificator.total_emails_sent
 
 
 def test_subtract_template_value_endpoint_subtracts_template_value(
@@ -496,7 +505,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value(
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
     template_value = fake_template_value().value
     subtraction_value = template_value - 1
 
@@ -536,6 +545,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value(
     )
 
     assert response.status_code == HTTPStatus.OK
+
     json_response = response.json
     assert json_response is not None
     assert json_response["value"] == template_value - subtraction_value
@@ -544,7 +554,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value(
     assert DummyEmailNotificator.total_emails_sent == 1
 
 
-def test_subtract_template_value_endpoint_returns_404_when_specified_template_doesnt_exists(  # noqa: E501
+def test_subtract_template_value_endpoint_returns_404_when_specified_template_does_not_exists(  # noqa: E501
     client: APIClientData,
 ):
     # Given
@@ -567,8 +577,7 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
     assert response.status_code == HTTPStatus.NOT_FOUND
     assert response.json is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in response.json
-
-    assert DummyEmailNotificator.total_emails_sent == 0
+    assert not DummyEmailNotificator.total_emails_sent
 
 
 def test_subtract_template_value_endpoint_returns_400_when_template_id_has_invalid_format(  # noqa: E501
@@ -592,11 +601,12 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
 
-    assert DummyEmailNotificator.total_emails_sent == 0
+    assert not DummyEmailNotificator.total_emails_sent
 
 
 def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
@@ -604,7 +614,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
     template_value = fake_template_value().value
 
     response = api_client.patch(
@@ -631,6 +641,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
 
     # Then
     assert response.status_code == HTTPStatus.BAD_REQUEST
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
@@ -643,7 +654,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
 ):
     # Given
     api_client = client.client
-    template_id = create_template(client)
+    template_id = create_template_via_api(client)
     template_value = fake_template_value().value
 
     response = api_client.patch(
@@ -671,7 +682,9 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
 
     # Then
     assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
-    assert DummyEmailNotificator.total_emails_sent == 1
+
     json_response = response.json
     assert json_response is not None
     assert consts.ERROR_RESPONSE_KEY_DETAILS_NAME in json_response
+
+    assert DummyEmailNotificator.total_emails_sent == 1

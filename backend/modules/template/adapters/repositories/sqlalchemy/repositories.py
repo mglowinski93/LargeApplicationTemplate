@@ -34,7 +34,7 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
     See description of parent class to get more details.
     """
 
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
 
     def create(self, template: TemplateEntity) -> None:
@@ -58,8 +58,6 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
         ).__dict__.items():
             if key != "_sa_instance_state":
                 setattr(template_instance, key, value)
-
-        template_instance.version += 1
 
     def delete(self, template_id: TemplateId):
         try:
@@ -86,7 +84,7 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
 
 
 class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
-    def __init__(self, session_factory: Callable = get_session):
+    def __init__(self, session_factory: Callable = get_session) -> None:
         self.session_factory = session_factory
 
     def get(self, template_id: TemplateId) -> TemplateEntity:
@@ -139,6 +137,11 @@ def _get_templates(
 
 
 def _filter(query: Query, filters: ports_dtos.TemplatesFilters):
+    if filters.value is not None:
+        query = query.filter(
+            text("value_data->>'value' = :val").params(val=filters.value)
+        )
+
     if filters.query is not None:
         query = query.filter(
             or_(

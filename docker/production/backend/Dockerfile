@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 LABEL org.opencontainers.image.authors="mglowinski93@gmail.com"
 
 ENV PYTHONUNBUFFERED 1

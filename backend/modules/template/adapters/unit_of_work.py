@@ -9,7 +9,7 @@ from ..domain.ports.unit_of_work import AbstractTemplatesUnitOfWork
 
 
 class SqlAlchemyTemplatesUnitOfWork(AbstractTemplatesUnitOfWork):
-    def __init__(self, session_factory: Callable = get_session):
+    def __init__(self, session_factory: Callable = get_session) -> None:
         self.session_factory: Callable = session_factory
         self._session: Session | None = None
 
