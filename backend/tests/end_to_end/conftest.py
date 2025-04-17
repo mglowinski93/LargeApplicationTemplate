@@ -3,20 +3,21 @@ import pytest
 from flask import Flask
 
 from bootstrap import close_app_cleanup, create_app
+from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
 
-from ..common.annotations import YieldFixture
+from ..common import annotations
 from ..dtos import APIClientData
 
 
 @pytest.fixture(scope="module")
-def app() -> YieldFixture[Flask]:
+def app() -> annotations.YieldFixture[Flask]:
     yield create_app(environment_name="test")
     close_app_cleanup()
 
 
 @pytest.fixture
-def client(app, prepared_database) -> YieldFixture[APIClientData]:
+def client(app, prepared_database) -> annotations.YieldFixture[APIClientData]:
     Base.metadata.create_all(prepared_database)
     yield APIClientData(app.test_client())
     Base.metadata.drop_all(prepared_database)
@@ -26,7 +27,7 @@ def client(app, prepared_database) -> YieldFixture[APIClientData]:
 # More details can be found here:
 # https://docs.celeryq.dev/en/stable/userguide/testing.html#celery-worker-embed-live-worker.
 @pytest.fixture(scope="session", autouse=True)
-def task_dispatcher() -> YieldFixture:
+def task_dispatcher() -> annotations.YieldFixture:
     """
     Mocks a Celery worker to run tasks synchronously.
 
@@ -40,3 +41,10 @@ def task_dispatcher() -> YieldFixture:
     celery.app.defaults.DEFAULTS[key] = True
     yield
     celery.app.defaults.DEFAULTS[key] = pre_eager
+
+
+@pytest.fixture(autouse=True)
+def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
+    DummyEmailNotificator.total_emails_sent = 0
+    yield
+    DummyEmailNotificator.total_emails_sent = 0

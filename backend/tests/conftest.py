@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from config import config
 from modules.common import message_bus as common_message_bus
-from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
 from modules.template.domain import commands as template_domain_commands
 from modules.template.domain import events as template_domain_events
@@ -104,13 +103,6 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
             template_domain_commands.SubtractTemplateValue: lambda event: None,
         },
     )
-
-
-@pytest.fixture(autouse=True)
-def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
-    DummyEmailNotificator.total_emails_sent = 0
-    yield
-    DummyEmailNotificator.total_emails_sent = 0
 
 
 @pytest.fixture
