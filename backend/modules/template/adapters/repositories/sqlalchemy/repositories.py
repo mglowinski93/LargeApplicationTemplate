@@ -102,7 +102,7 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         self,
         filters: ports_dtos.TemplatesFilters,
         ordering: list[Ordering | None],
-        pagination: Pagination | None = None,
+        pagination: Pagination | None,
     ) -> tuple[list[TemplateEntity], int]:
         with self.session_factory() as session:
             templates, query = _get_templates(
@@ -118,7 +118,7 @@ def _get_templates(
     session: Session,
     filters: ports_dtos.TemplatesFilters,
     ordering: list[Ordering | None],
-    pagination: Pagination | None = None,
+    pagination: Pagination | None,
 ) -> tuple:
     query = _filter(query=session.query(TemplateDb), filters=filters)
 

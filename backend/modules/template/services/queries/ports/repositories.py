@@ -24,7 +24,7 @@ class AbstractTemplatesQueryRepository(ABC):
         self,
         filters: TemplatesFilters,
         ordering: list[Ordering | None],
-        pagination: Pagination | None = None,
+        pagination: Pagination | None,
     ) -> tuple[list[Template], int]:
         """
         :param filters: Filters to apply.

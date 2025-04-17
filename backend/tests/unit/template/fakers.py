@@ -60,7 +60,7 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         self,
         filters: TemplatesFilters,
         ordering: list[Ordering | None],
-        pagination: Pagination | None = None,
+        pagination: Pagination | None,
     ) -> tuple[list[TemplateEntity], int]:
         templates = self._filter(templates=self._templates, filters=filters)
         templates = self._order(templates=templates, ordering=ordering)

@@ -1,7 +1,7 @@
 import inspect
 import sys
 from functools import partial
-from typing import Any, List, Type
+from typing import Any, Type
 
 import factory
 
@@ -82,7 +82,7 @@ class TemplateFactory(GenerateDataMixin, AbstractSQLAlchemyModelFactory):
     version = INITIAL_TEMPLATE_VERSION
 
 
-def get_model_factories() -> List[Type[AbstractSQLAlchemyModelFactory]]:
+def get_model_factories() -> list[Type[AbstractSQLAlchemyModelFactory]]:
     classes = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     return [
         cls

@@ -1,5 +1,3 @@
-from typing import List
-
 from modules.common import time
 from modules.template.domain.entities import Template as TemplateEntity
 from modules.template.domain.value_objects import (
@@ -11,7 +9,7 @@ from . import fakers
 
 class BatchMixin:
     @classmethod
-    def create_batch(cls, size: int, **kwargs) -> List:
+    def create_batch(cls, size: int, **kwargs) -> list:
         if not isinstance(size, int) or size < 1:
             raise ValueError("Size must be a positive integer")
 
