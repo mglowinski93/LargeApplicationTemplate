@@ -128,7 +128,7 @@ def test_subtract_template_value_subtracts_value(
 ):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
-    template_entity.set_value(fakers.fake_template_value())
+    template_entity._value = fakers.fake_template_value()
     initial_value = template_entity.value
     subtract_value = fakers.fake_template_value(max_value=initial_value.value)
     unit_of_work = fake_template_unit_of_work_factory(

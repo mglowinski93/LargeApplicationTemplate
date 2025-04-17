@@ -17,7 +17,7 @@ from modules.template.domain.value_objects import (
     INITIAL_TEMPLATE_VERSION,
 )
 
-from .fakers import fake_template_id, fake_template_value
+from . import fakers
 
 
 class GenerateDataMixin:
@@ -74,9 +74,9 @@ class TemplateFactory(GenerateDataMixin, AbstractSQLAlchemyModelFactory):
     class Meta:
         model = SqlAlchemyTemplateDb
 
-    id = factory.LazyFunction(fake_template_id)
+    id = factory.LazyFunction(fakers.fake_template_id)
     value_data = factory.LazyFunction(
-        lambda: {VALUE_NAME_IN_DATABASE: fake_template_value().value}
+        lambda: {VALUE_NAME_IN_DATABASE: fakers.fake_template_value().value}
     )
     timestamp = factory.LazyFunction(time.get_current_timestamp)
     version = INITIAL_TEMPLATE_VERSION

@@ -8,8 +8,7 @@ from modules.template.domain.exceptions import InvalidTemplateValue
 from modules.template.domain.value_objects import TemplateValue
 from modules.template.services import subtract_template_value
 
-from ..... import entity_factories
-from .....fakers import fake_template_value
+from ..... import entity_factories, fakers
 from ....utils import TestThread
 
 
@@ -19,13 +18,13 @@ def test_concurrent_template_subtractions_are_handled(
 ):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
-    template_entity.set_value(fake_template_value(min_value=3))
+    template_entity.set_value(fakers.fake_template_value(min_value=3))
     initial_value = template_entity.value
     initial_version = template_entity.version
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
-    subtraction_value = fake_template_value(
+    subtraction_value = fakers.fake_template_value(
         min_value=template_entity.value.value - 2,
         max_value=template_entity.value.value - 1,
     )

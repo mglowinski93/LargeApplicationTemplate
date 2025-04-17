@@ -40,7 +40,7 @@ def test_subtract_template_value_subtracts_value():
     # Given
     template = entity_factories.TemplateEntityFactory.create()
     initial_value = fakers.fake_template_value()
-    template.set_value(initial_value)
+    template._value = initial_value
     subtraction_value = TemplateValue(value=initial_value.value - 1)
     version_before_subtract = template.version
     timestamp_before_subtract = template.timestamp
@@ -58,7 +58,7 @@ def test_subtract_template_value_raises_exception_when_invalid():
     # Given
     template = entity_factories.TemplateEntityFactory.create()
     initial_value = fakers.fake_template_value()
-    template.set_value(initial_value)
+    template._value = initial_value
     initial_version = template.version
     subtraction_value = TemplateValue(value=initial_value.value)
 

@@ -8,8 +8,8 @@ from modules.common import consts
 from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.template.domain.value_objects import TemplateId
 
+from ..... import fakers
 from .....dtos import APIClientData
-from .....fakers import fake_template_id, fake_template_value
 from ....utils import get_url
 
 TEMPLATE_ROUTES = {
@@ -47,6 +47,7 @@ def test_list_templates_endpoint_returns_empty_list_when_no_template_exists(
 ):
     # Given
     api_client = client.client
+
     # When
     response = api_client.get(
         get_url(
@@ -261,7 +262,7 @@ def test_get_template_endpoint_returns_404_when_specified_template_does_not_exis
 ):
     # Given
     api_client = client.client
-    template_id = fake_template_id()
+    template_id = fakers.fake_template_id()
 
     # When
     response = api_client.get(
@@ -356,7 +357,7 @@ def test_delete_template_endpoint_returns_404_when_specified_template_does_not_e
 ):
     # Given
     api_client = client.client
-    template_id = fake_template_id()
+    template_id = fakers.fake_template_id()
 
     # When
     response = api_client.delete(
@@ -382,7 +383,7 @@ def test_set_template_value_endpoint_sets_template_value_and_returns_no_data_whe
     # Given
     api_client = client.client
     template_id = create_template_via_api(client)
-    template_value = fake_template_value().value
+    template_value = fakers.fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -422,8 +423,8 @@ def test_set_template_value_endpoint_returns_404_when_specified_template_does_no
 ):
     # Given
     api_client = client.client
-    template_id = fake_template_id()
-    template_value = fake_template_value().value
+    template_id = fakers.fake_template_id()
+    template_value = fakers.fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -449,7 +450,7 @@ def test_set_template_value_endpoint_returns_400_when_template_id_has_invalid_fo
     # Given
     api_client = client.client
     template_id = "invalid-format-template-id"
-    template_value = fake_template_value().value
+    template_value = fakers.fake_template_value().value
 
     # When
     response = api_client.patch(
@@ -506,7 +507,7 @@ def test_subtract_template_value_endpoint_subtracts_template_value(
     # Given
     api_client = client.client
     template_id = create_template_via_api(client)
-    template_value = fake_template_value().value
+    template_value = fakers.fake_template_value().value
     subtraction_value = template_value - 1
 
     # When
@@ -559,8 +560,8 @@ def test_subtract_template_value_endpoint_returns_404_when_specified_template_do
 ):
     # Given
     api_client = client.client
-    template_id = fake_template_id()
-    value = fake_template_value().value
+    template_id = fakers.fake_template_id()
+    value = fakers.fake_template_value().value
 
     # When
     response = api_client.post(
@@ -586,7 +587,7 @@ def test_subtract_template_value_endpoint_returns_400_when_template_id_has_inval
     # Given
     api_client = client.client
     template_id = "invalid-format-template-id"
-    value = fake_template_value().value
+    value = fakers.fake_template_value().value
 
     # When
     response = api_client.post(
@@ -615,7 +616,7 @@ def test_subtract_template_value_endpoint_returns_400_when_missing_parameters(
     # Given
     api_client = client.client
     template_id = create_template_via_api(client)
-    template_value = fake_template_value().value
+    template_value = fakers.fake_template_value().value
 
     response = api_client.patch(
         get_url(
@@ -655,7 +656,7 @@ def test_subtract_value_endpoint_returns_422_when_subtraction_value_is_greater_o
     # Given
     api_client = client.client
     template_id = create_template_via_api(client)
-    template_value = fake_template_value().value
+    template_value = fakers.fake_template_value().value
 
     response = api_client.patch(
         get_url(
