@@ -1,16 +1,13 @@
-from typing import Optional
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from sqlalchemy import (
-    create_engine,
-)
-from sqlalchemy.orm import sessionmaker, Session
+SESSION: Session | None = None
 
 
-session: Optional[Session] = None
-
-
-def initialize_database(database_url: str):
-    global session
+def initialize_database_sessions(
+    database_url: str,
+):
+    global SESSION
 
     # It's important to keep data consistent between transactions and
     # avoid race conditions.
@@ -22,7 +19,7 @@ def initialize_database(database_url: str):
     # A few solutions for handling data consistency are described here:
     # https://www.cosmicpython.com/book/chapter_07_aggregate.html.
 
-    session = sessionmaker(
+    SESSION = sessionmaker(
         autocommit=False,
         autoflush=False,
         bind=create_engine(
@@ -31,12 +28,18 @@ def initialize_database(database_url: str):
             pool_size=20,
             max_overflow=100,
             isolation_level="REPEATABLE READ",
+            # Each PostreSQL connection has an associated time zone that defaults to
+            # system's time zone, so it has to be manually set to UTC
+            # in order to support multiple timezones.
+            # More details can be found here:
+            # https://stackoverflow.com/questions/26105730/sqlalchemy-converting-utc-datetime-to-local-time-before-saving.
+            connect_args={"options": "-c timezone=utc"},
         ),
     )()
 
 
 def get_session() -> Session:
-    if session is None:
+    if SESSION is None:
         raise RuntimeError("Database session not initialized.")
 
-    return session
+    return SESSION

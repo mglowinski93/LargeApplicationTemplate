@@ -12,7 +12,7 @@ parameters:
     description: "Valid template ID"
   - name: value
     in: body
-    type: string
+    type: integer
     required: true
     description: "Template value"
 responses:

@@ -1,0 +1,1 @@
+SQL_INJECTION_STRING = "SQL ' injection; DROP SCHEMA public CASCADE;"

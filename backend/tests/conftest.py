@@ -1,30 +1,37 @@
-import inject
+from typing import Callable
+
 import pytest
 from pytest_postgresql.janitor import DatabaseJanitor
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Engine, create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
-from modules.common.database import Base
-from modules.template_module.domain.entities import Template as TemplateEntity
 from config import config
-from .factories import TemplateEntityFactory, FakeTaskDispatcher
+from modules.common import message_bus as common_message_bus
+from modules.common.database import Base
+from modules.template.domain import commands as template_domain_commands
+from modules.template.domain import events as template_domain_events
+from modules.template.domain.entities import Template as TemplateEntity
 
+from . import fakers
+from .common import annotations
+from .model_factories import get_model_factories
 
 configuration = config["test"]()
 
 
 @pytest.fixture(scope="session")
-def db_engine():
+def db_engine() -> annotations.YieldFixture[Engine]:
     engine = create_engine(
         url=configuration.database_url,
         pool_pre_ping=True,
+        connect_args={"options": "-c timezone=utc"},
     )
     yield engine
     engine.dispose()
 
 
 @pytest.fixture(scope="module")
-def prepared_database(db_engine):
+def prepared_database(db_engine) -> annotations.YieldFixture[Engine]:
     with DatabaseJanitor(
         user=configuration.DATABASE_USER,
         password=configuration.DATABASE_PASSWORD,
@@ -41,9 +48,9 @@ def prepared_database(db_engine):
 
 
 @pytest.fixture
-def raw_db_session(  # < - This is the fixture to be used in tests.
+def db_session(
     prepared_database,
-):
+) -> annotations.YieldFixture[Session]:
     with prepared_database.connect() as db_connection:
         transaction = db_connection.begin()
         session = sessionmaker(autocommit=False, autoflush=False, bind=db_connection)()
@@ -58,20 +65,53 @@ def raw_db_session(  # < - This is the fixture to be used in tests.
 
 
 @pytest.fixture
-def template_entity() -> TemplateEntity:
-    return TemplateEntityFactory.create()  # type: ignore
+def db_session_factory(db_session) -> Callable:
+    def db_session_():
+        return db_session
+
+    return db_session_
+
+
+@pytest.fixture(autouse=True)
+def set_session_to_model_factories(db_session):
+    """
+    Sets test databases session to all model factories.
+    """
+
+    for factory in get_model_factories():
+        factory._meta.sqlalchemy_session = db_session
 
 
 @pytest.fixture
-def fake_main_task_dispatcher_inject():
-    fake_task_dispatcher_instance = FakeTaskDispatcher()
+def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
+    yield fakers.TestTaskDispatcher()
 
-    inject.clear_and_configure(
-        lambda binder: binder.bind(
-            "main_task_dispatcher", fake_task_dispatcher_instance
-        )
+
+@pytest.fixture
+def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
+    yield common_message_bus.MessageBus(
+        event_handlers={
+            template_domain_events.TemplateCreated: [],
+            template_domain_events.TemplateDeleted: [],
+            template_domain_events.TemplateValueSet: [],
+            template_domain_events.TemplateValueSubtracted: [],
+        },
+        command_handlers={
+            template_domain_commands.CreateTemplate: lambda event: None,
+            template_domain_commands.DeleteTemplate: lambda event: None,
+            template_domain_commands.SetTemplateValue: lambda event: None,
+            template_domain_commands.SubtractTemplateValue: lambda event: None,
+        },
     )
 
-    yield fake_task_dispatcher_instance
 
-    inject.clear()
+@pytest.fixture
+def fake_template_unit_of_work_factory() -> Callable:
+    def fake_unit_of_work(
+        initial_templates: list[TemplateEntity] | None = None,
+    ) -> fakers.TestTemplateUnitOfWork:
+        return fakers.TestTemplateUnitOfWork(
+            templates=initial_templates if initial_templates else []
+        )
+
+    return fake_unit_of_work

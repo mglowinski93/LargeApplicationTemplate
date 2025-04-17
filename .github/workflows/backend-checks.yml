@@ -9,6 +9,7 @@ jobs:
 
     env:
       ENVIRONMENT: "development"
+      TZ: "Europe/Warsaw"
       POSTGRES_DB_HOST: "localhost"
       POSTGRES_DB_PORT: 5432
       POSTGRES_DB_NAME: "large_application_template"
@@ -55,19 +56,27 @@ jobs:
 
 
       - name: Run black
-        run: make black_check
+        run: make black-check
+        working-directory: backend
+
+      - name: Run isort
+        run: make isort-check
+        working-directory: backend
+      
+      - name: Run import-linter
+        run: make import-linter-check
         working-directory: backend
 
       - name: Lint code
-        run: make ruff_check
+        run: make ruff-check
         working-directory: backend
 
       - name: Run mypy
-        run: make mypy_check
+        run: make mypy-check
         working-directory: backend
 
       - name: Run bandit
-        run: make bandit_check
+        run: make bandit-check
         working-directory: backend
 
       - name: Run tests

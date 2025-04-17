@@ -3,7 +3,6 @@ from flask import jsonify
 from bootstrap import create_app
 from modules.common import consts, docstrings
 
-
 app = create_app()
 
 
