@@ -12,14 +12,13 @@ class OutputTemplate:
     def serialize(self):
         return {
             "id": self.id,
-            "value": None,
             "timestamp": self.timestamp,
         }
 
 
 @dataclass
 class DetailedOutputTemplate(OutputTemplate):
-    value: TemplateValue | None
+    value: TemplateValue
 
     def serialize(self):
         return {

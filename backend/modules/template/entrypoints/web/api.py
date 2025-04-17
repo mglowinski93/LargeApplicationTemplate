@@ -37,16 +37,14 @@ def get_template_endpoint(
     logger.info("Getting data for template '%s'.", template_id)
 
     try:
-        _template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
     except ValueError:
         return _handle_invalid_template_id(template_id)
 
     try:
         template = services.get_template(
             templates_query_repository=query_repository,
-            template_id=_template_id_uuid,
+            template_id=_template_id,
         )
         logger.info("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
@@ -104,7 +102,7 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
         timestamp_to=form.timestamp_to.data,
     )
 
-    ordering: list[common_dtos.Ordering | None] | None = (
+    ordering: list[common_dtos.Ordering] | None = (
         common_forms.OrderingForm(
             data=request.args,
             meta={"csrf": False},
@@ -176,10 +174,8 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     logger.info("Deleting template '%s'.", template_id)
 
     try:
-        _template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
-        message_bus.handle([domain_commands.DeleteTemplate(_template_id_uuid)])
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
+        message_bus.handle([domain_commands.DeleteTemplate(_template_id)])
         logger.info("Template '%s' found.", template_id)
     except ValueError:
         return _handle_invalid_template_id(template_id=template_id)
@@ -215,14 +211,12 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     template_value = form.value.data
 
     try:
-        _template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
             [
                 domain_commands.SetTemplateValue(
-                    template_id=_template_id_uuid,
+                    template_id=_template_id,
                     value=value_objects.TemplateValue(template_value),
                 )
             ]
@@ -270,14 +264,12 @@ def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
     value = form.value.data
 
     try:
-        _template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
         logger.info("Subtracting value for template '%s'.", template_id)
         message_bus.handle(
             [
                 domain_commands.SubtractTemplateValue(
-                    template_id=_template_id_uuid,
+                    template_id=_template_id,
                     value=value_objects.TemplateValue(value),
                 )
             ]

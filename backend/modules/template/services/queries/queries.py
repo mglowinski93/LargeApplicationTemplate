@@ -23,7 +23,7 @@ def get_template(
 def list_templates(
     templates_query_repository: AbstractTemplatesQueryRepository,
     filters: TemplatesFilters | None = None,
-    ordering: list[Ordering | None] | None = None,
+    ordering: list[Ordering] | None = None,
     pagination: Pagination | None = None,
 ) -> tuple[list[OutputTemplate], int]:
     if filters is None:

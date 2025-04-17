@@ -101,7 +101,7 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def list(
         self,
         filters: ports_dtos.TemplatesFilters,
-        ordering: list[Ordering | None],
+        ordering: list[Ordering],
         pagination: Pagination | None,
     ) -> tuple[list[TemplateEntity], int]:
         with self.session_factory() as session:
@@ -117,7 +117,7 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
 def _get_templates(
     session: Session,
     filters: ports_dtos.TemplatesFilters,
-    ordering: list[Ordering | None],
+    ordering: list[Ordering],
     pagination: Pagination | None,
 ) -> tuple:
     query = _filter(query=session.query(TemplateDb), filters=filters)
@@ -173,9 +173,7 @@ def _filter_timestamp(
     return query
 
 
-def _order(query: Query, order: Ordering | None):
-    if order is None:
-        return query
+def _order(query: Query, order: Ordering):
     if order.order == OrderingEnum.ASCENDING:
         return _asc_order(query, order.field)
 
