@@ -46,9 +46,9 @@ jobs:
           build-args: |
             POSTGRES_DB_HOST=db
             POSTGRES_DB_PORT=5432
-            POSTGRES_DB_NAME=management_application_template
-            POSTGRES_DB_USER=management_application_template_user
-            POSTGRES_DB_PASSWORD=management_application_template_password
+            POSTGRES_DB_NAME=large_application_template
+            POSTGRES_DB_USER=large_application_template_user
+            POSTGRES_DB_PASSWORD=large_application_template_password
             TZ=UTC
             BROKER_URL=memory://
 
