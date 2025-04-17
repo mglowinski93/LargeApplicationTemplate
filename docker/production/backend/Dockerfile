@@ -10,6 +10,7 @@ ARG POSTGRES_DB_NAME
 ARG POSTGRES_DB_USER
 ARG POSTGRES_DB_PASSWORD
 ARG TZ
+ARG BROKER_URL
 
 ARG USER=TemplateUser
 ARG GROUP=TemplateGroup
@@ -24,6 +25,7 @@ ENV POSTGRES_DB_NAME=${POSTGRES_DB_NAME}
 ENV POSTGRES_DB_USER=${POSTGRES_DB_USER}
 ENV POSTGRES_DB_PASSWORD=${POSTGRES_DB_PASSWORD}
 ENV TZ=${TZ}
+ENV BROKER_URL=${BROKER_URL}
 
 # Fix error: debconf: delaying package configuration, since apt-utils is not installed
 # More details: https://github.com/phusion/baseimage-docker/issues/319
