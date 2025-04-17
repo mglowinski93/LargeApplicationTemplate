@@ -75,6 +75,10 @@ def db_session_factory(db_session) -> Callable:
 
 @pytest.fixture(autouse=True)
 def set_session_to_model_factories(db_session):
+    """
+    Sets test databases session to all model factories.
+    """
+
     for factory in get_model_factories():
         factory._meta.sqlalchemy_session = db_session
 
@@ -82,13 +86,6 @@ def set_session_to_model_factories(db_session):
 @pytest.fixture
 def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
     yield fakers.TestTaskDispatcher()
-
-
-@pytest.fixture(autouse=True)
-def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
-    DummyEmailNotificator.total_emails_sent = 0
-    yield
-    DummyEmailNotificator.total_emails_sent = 0
 
 
 @pytest.fixture
@@ -109,10 +106,17 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
     )
 
 
+@pytest.fixture(autouse=True)
+def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
+    DummyEmailNotificator.total_emails_sent = 0
+    yield
+    DummyEmailNotificator.total_emails_sent = 0
+
+
 @pytest.fixture
 def fake_template_unit_of_work_factory() -> Callable:
     def fake_unit_of_work(
-        initial_templates: list[TemplateEntity] = [],
+        initial_templates: list[TemplateEntity] | None = None,
     ) -> fakers.TestTemplateUnitOfWork:
         return fakers.TestTemplateUnitOfWork(
             templates=initial_templates if initial_templates else []

@@ -41,9 +41,7 @@ class Template:
         result = self._value.value - value.value
 
         if result <= 0:
-            raise InvalidTemplateValue(
-                f"Invalid value: '{value.value}', must be above 0."
-            )
+            raise InvalidTemplateValue(f"Invalid value: '{result}', must be above 0.")
 
         self._value = TemplateValue(value=result)
         self.version += 1

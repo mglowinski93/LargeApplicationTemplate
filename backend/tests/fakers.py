@@ -15,10 +15,6 @@ def fake_template_id() -> template_value_objects.TemplateId:
     return template_value_objects.TemplateId.new()
 
 
-def fake_template_value() -> template_value_objects.TemplateValue:
-    return template_value_objects.TemplateValue(value=fake.random_int(min=2, max=1000))
-
-
 def fake_integer(min_value: int | None = None, max_value: int | None = None) -> int:
     data = {}
     if min_value is not None:
@@ -27,6 +23,14 @@ def fake_integer(min_value: int | None = None, max_value: int | None = None) -> 
         data["max"] = max_value
 
     return fake.random_int(**data)
+
+
+def fake_template_value(
+    min_value: int | None = None, max_value: int | None = None
+) -> template_value_objects.TemplateValue:
+    return template_value_objects.TemplateValue(
+        value=fake_integer(min_value=min_value, max_value=max_value)
+    )
 
 
 class TestTaskDispatcher(common_ports.AbstractTaskDispatcher):
