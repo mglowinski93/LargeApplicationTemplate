@@ -9,7 +9,7 @@ from modules.template.domain.value_objects import TemplateValue
 from modules.template.services import subtract_template_value
 
 from ..... import entity_factories
-from .....fakers import fake_integer
+from .....fakers import fake_template_value
 from ....utils import TestThread
 
 
@@ -19,13 +19,15 @@ def test_concurrent_template_subtractions_are_handled(
 ):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
-    template_value = 100
-    template_entity.set_value(TemplateValue(value=template_value))
+    template_entity.set_value(fake_template_value(min_value=3))
+    initial_value = template_entity.value
+    initial_version = template_entity.version
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
-    subtraction_value = fake_integer(
-        min_value=template_value - 2, max_value=template_value - 1
+    subtraction_value = fake_template_value(
+        min_value=template_entity.value.value - 2,
+        max_value=template_entity.value.value - 1,
     )
 
     thread_1 = TestThread(
@@ -34,7 +36,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                value=TemplateValue(value=subtraction_value),
+                value=subtraction_value,
             ),
             "message_bus": message_bus,
         },
@@ -45,11 +47,7 @@ def test_concurrent_template_subtractions_are_handled(
             "templates_unit_of_work": unit_of_work,
             "command": SubtractTemplateValue(
                 template_id=template_entity.id,
-                value=TemplateValue(
-                    value=fake_integer(
-                        min_value=template_value - 2, max_value=template_value - 1
-                    )
-                ),
+                value=subtraction_value,
             ),
             "message_bus": message_bus,
         },
@@ -63,5 +61,13 @@ def test_concurrent_template_subtractions_are_handled(
         thread_2.join()
 
     # Then
+    assert template_entity.value == TemplateValue(
+        initial_value.value - subtraction_value.value
+    )
+    assert template_entity.version == initial_version + 1
+
     retrieved_template = unit_of_work.templates.get(template_entity.id)
-    assert retrieved_template.value.value == template_value - subtraction_value
+    assert retrieved_template.value == TemplateValue(
+        initial_value.value - subtraction_value.value
+    )
+    assert retrieved_template.version == initial_version + 1
