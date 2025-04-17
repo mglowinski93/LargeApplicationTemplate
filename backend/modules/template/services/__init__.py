@@ -1,4 +1,9 @@
-from .commands import create_template, delete_template, set_template_value
+from .commands import (
+    create_template,
+    delete_template,
+    set_template_value,
+    subtract_template_value,
+)
 from .queries import get_template, list_templates
 
 __all__ = [
@@ -7,4 +12,5 @@ __all__ = [
     "get_template",
     "list_templates",
     "set_template_value",
+    "subtract_template_value",
 ]

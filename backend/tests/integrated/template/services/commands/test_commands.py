@@ -1,51 +1,72 @@
 from typing import Callable
 
+import pytest
+
 from modules.common.message_bus import MessageBus
-from modules.template.domain.commands import SetTemplateValue
-from modules.template.services import set_template_value
+from modules.template.domain.commands import SubtractTemplateValue
+from modules.template.domain.exceptions import InvalidTemplateValue
+from modules.template.domain.value_objects import TemplateValue
+from modules.template.services import subtract_template_value
 
 from ..... import entity_factories, fakers
 from ....utils import TestThread
 
 
-def test_concurrent_template_updates_are_handled(
+def test_concurrent_template_subtractions_are_handled(
     fake_template_unit_of_work_factory: Callable,
     message_bus: MessageBus,
 ):
     # Given
     template_entity = entity_factories.TemplateEntityFactory.create()
-    final_template_value = fakers.fake_template_value()
+    template_entity.set_value(fakers.fake_template_value(min_value=3))
+    initial_value = template_entity.value
+    initial_version = template_entity.version
     unit_of_work = fake_template_unit_of_work_factory(
         initial_templates=[template_entity]
     )
+    subtraction_value = fakers.fake_template_value(
+        min_value=template_entity.value.value - 2,
+        max_value=template_entity.value.value - 1,
+    )
 
-    # Then
-    thread1 = TestThread(
-        target=set_template_value,
+    thread_1 = TestThread(
+        target=subtract_template_value,
         kwargs={
             "templates_unit_of_work": unit_of_work,
-            "command": SetTemplateValue(
-                template_id=template_entity.id, value=fakers.fake_template_value()
+            "command": SubtractTemplateValue(
+                template_id=template_entity.id,
+                value=subtraction_value,
             ),
             "message_bus": message_bus,
         },
     )
-    thread2 = TestThread(
-        target=set_template_value,
+    thread_2 = TestThread(
+        target=subtract_template_value,
         kwargs={
             "templates_unit_of_work": unit_of_work,
-            "command": SetTemplateValue(
-                template_id=template_entity.id, value=final_template_value
+            "command": SubtractTemplateValue(
+                template_id=template_entity.id,
+                value=subtraction_value,
             ),
             "message_bus": message_bus,
         },
     )
-    thread1.start()
-    thread2.start()
-    thread1.join()
-    thread2.join()
+
+    # When
+    thread_1.start()
+    thread_2.start()
+    with pytest.raises(InvalidTemplateValue):
+        thread_1.join()
+        thread_2.join()
 
     # Then
+    assert template_entity.value == TemplateValue(
+        initial_value.value - subtraction_value.value
+    )
+    assert template_entity.version == initial_version + 1
+
     retrieved_template = unit_of_work.templates.get(template_entity.id)
-    assert retrieved_template.version == 3
-    assert retrieved_template.value == final_template_value
+    assert retrieved_template.value == TemplateValue(
+        initial_value.value - subtraction_value.value
+    )
+    assert retrieved_template.version == initial_version + 1

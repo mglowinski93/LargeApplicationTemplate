@@ -34,21 +34,19 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
     See description of parent class to get more details.
     """
 
-    def __init__(self, session):
+    def __init__(self, session) -> None:
         self.session = session
 
     def create(self, template: TemplateEntity) -> None:
-        template_instance = (
-            self.session.query(TemplateDb).filter_by(id=template.id).one_or_none()
-        )
-        if template_instance is None:
-            self.session.add(_map_template_entity_to_template_db(template))
-            return
+        self.session.add(_map_template_entity_to_template_db(template))
 
     def update(self, template: TemplateEntity) -> None:
         try:
             template_instance = (
-                self.session.query(TemplateDb).filter_by(id=template.id).scalar()
+                self.session.query(TemplateDb)
+                .filter_by(id=template.id)
+                .with_for_update()
+                .scalar()
             )
         except NoResultFound as err:
             raise exceptions.TemplateDoesNotExist(
@@ -86,7 +84,7 @@ class SqlAlchemyTemplatesDomainRepository(AbstractTemplatesDomainRepository):
 
 
 class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
-    def __init__(self, session_factory: Callable = get_session):
+    def __init__(self, session_factory: Callable = get_session) -> None:
         self.session_factory = session_factory
 
     def get(self, template_id: TemplateId) -> TemplateEntity:
@@ -103,8 +101,8 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def list(
         self,
         filters: ports_dtos.TemplatesFilters,
-        ordering: list[Ordering | None],
-        pagination: Pagination | None = None,
+        ordering: list[Ordering],
+        pagination: Pagination | None,
     ) -> tuple[list[TemplateEntity], int]:
         with self.session_factory() as session:
             templates, query = _get_templates(
@@ -119,8 +117,8 @@ class SqlAlchemyTemplatesQueryRepository(AbstractTemplatesQueryRepository):
 def _get_templates(
     session: Session,
     filters: ports_dtos.TemplatesFilters,
-    ordering: list[Ordering | None],
-    pagination: Pagination | None = None,
+    ordering: list[Ordering],
+    pagination: Pagination | None,
 ) -> tuple:
     query = _filter(query=session.query(TemplateDb), filters=filters)
 
@@ -175,9 +173,7 @@ def _filter_timestamp(
     return query
 
 
-def _order(query: Query, order: Ordering | None):
-    if order is None:
-        return query
+def _order(query: Query, order: Ordering):
     if order.order == OrderingEnum.ASCENDING:
         return _asc_order(query, order.field)
 
@@ -233,9 +229,9 @@ def _map_template_value_dto_to_dict(template_value: TemplateValue) -> dict:
     return {
         VALUE_NAME_IN_DATABASE: template_value.value
         if template_value.value is not None
-        else None,
+        else 0,
     }
 
 
 def _map_template_data_dict_to_dto(template_dict: dict) -> TemplateValue:
-    return TemplateValue(value=template_dict.get(VALUE_NAME_IN_DATABASE))
+    return TemplateValue(value=template_dict[VALUE_NAME_IN_DATABASE])

@@ -23,7 +23,7 @@ def get_template(
 def list_templates(
     templates_query_repository: AbstractTemplatesQueryRepository,
     filters: TemplatesFilters | None = None,
-    ordering: list[Ordering | None] | None = None,
+    ordering: list[Ordering] | None = None,
     pagination: Pagination | None = None,
 ) -> tuple[list[OutputTemplate], int]:
     if filters is None:
@@ -32,11 +32,11 @@ def list_templates(
     if ordering is None:
         ordering = [Ordering(field="timestamp", order=OrderingEnum.DESCENDING)]
 
-    templates, all_templates_count = templates_query_repository.list(
+    templates, count = templates_query_repository.list(
         filters=filters,
         ordering=ordering,
         pagination=pagination,
     )
     return [
         map_template_entity_to_output_dto(template) for template in templates
-    ], all_templates_count
+    ], count

@@ -1,7 +1,7 @@
 import inspect
 import sys
 from functools import partial
-from typing import Any, List, Type
+from typing import Any, Type
 
 import factory
 
@@ -17,7 +17,7 @@ from modules.template.domain.value_objects import (
     INITIAL_TEMPLATE_VERSION,
 )
 
-from .fakers import fake_template_id, fake_template_value
+from . import fakers
 
 
 class GenerateDataMixin:
@@ -74,15 +74,15 @@ class TemplateFactory(GenerateDataMixin, AbstractSQLAlchemyModelFactory):
     class Meta:
         model = SqlAlchemyTemplateDb
 
-    id = factory.LazyFunction(fake_template_id)
+    id = factory.LazyFunction(fakers.fake_template_id)
     value_data = factory.LazyFunction(
-        lambda: {VALUE_NAME_IN_DATABASE: fake_template_value().value}
+        lambda: {VALUE_NAME_IN_DATABASE: fakers.fake_template_value().value}
     )
     timestamp = factory.LazyFunction(time.get_current_timestamp)
     version = INITIAL_TEMPLATE_VERSION
 
 
-def get_model_factories() -> List[Type[AbstractSQLAlchemyModelFactory]]:
+def get_model_factories() -> list[Type[AbstractSQLAlchemyModelFactory]]:
     classes = inspect.getmembers(sys.modules[__name__], inspect.isclass)
     return [
         cls

@@ -3,22 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 
 from modules.common.domain.events import DomainEvent
-from modules.common.time import get_current_timestamp
 
 from ...domain.value_objects import TemplateId, TemplateValue
 from ..exceptions import InvalidTemplateValue
-
-
-def set_template_value(template: Template, value: TemplateValue):
-    """
-    This is an optional method only needed when
-    there is a logic related to a particular action
-    that can't be placed in an entity,
-    due to it's not related to business logic, or it's too complicated.
-    """
-
-    template.set_value(value)
-    template.timestamp = get_current_timestamp()
 
 
 class Template:
@@ -26,9 +13,9 @@ class Template:
     Allocate here business logic and high-level rules that are related to this entity.
     """
 
-    def __init__(self, id: TemplateId, timestamp: datetime, version: int):
+    def __init__(self, id: TemplateId, timestamp: datetime, version: int) -> None:
         self.id = id
-        self._value: TemplateValue = TemplateValue(value=None)
+        self._value: TemplateValue = TemplateValue(value=0)
         self.timestamp = timestamp
         self.version = version
         self.messages: list[DomainEvent] = []
@@ -41,13 +28,24 @@ class Template:
     def generate_id() -> TemplateId:
         return TemplateId.new()
 
-    def set_value(self, value: TemplateValue):
-        if isinstance(value.value, str) and len(value.value):
-            self._value = value
-            self.version += 1
-            return
+    def set_value(self, value: TemplateValue) -> None:
+        if value.value <= 0:
+            raise InvalidTemplateValue(
+                f"Invalid value: '{value.value}', must be above 0."
+            )
 
-        raise InvalidTemplateValue(f"Invalid value: '{value.value}'")
+        self._value = value
+        self.version += 1
+
+    def subtract_value(self, value: TemplateValue) -> TemplateValue:
+        result = self._value.value - value.value
+
+        if result <= 0:
+            raise InvalidTemplateValue(f"Invalid value: '{result}', must be above 0.")
+
+        self._value = TemplateValue(value=result)
+        self.version += 1
+        return TemplateValue(value=result)
 
     def __repr__(self):
         return f"Template {self.id}"

@@ -1,5 +1,5 @@
 
-Endpoint to set template value.
+Endpoint to subtract template value.
 ---
 consumes:
   - application/json
@@ -14,10 +14,10 @@ parameters:
     in: body
     type: integer
     required: true
-    description: "Template value"
+    description: "Subtraction value"
 responses:
   200:
-    description: "Template value set."
+    description: "Template value subtracted."
   404:
     description: "No stored template with specified ID found."
   422:

@@ -1,0 +1,79 @@
+name: Run production image checks
+
+defaults:
+  run:
+    shell: bash
+    working-directory: "./"
+
+on:
+  pull_request:
+
+env:
+  TEST_TAG: "large-application-template:test"
+  CONTAINER_NAME: "large-application-template-backend-production"
+
+jobs:
+  test-production-docker-image:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: "postgres:15"
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: "large_application_template"
+          POSTGRES_USER: "large_application_template_user"
+          POSTGRES_PASSWORD: "large_application_template_password"
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          load: true
+          tags: ${{ env.TEST_TAG }}
+
+          context: ./
+          file: docker/production/backend/Dockerfile
+          build-args: |
+            POSTGRES_DB_HOST=db
+            POSTGRES_DB_PORT=5432
+            POSTGRES_DB_NAME=large_application_template
+            POSTGRES_DB_USER=large_application_template_user
+            POSTGRES_DB_PASSWORD=large_application_template_password
+            TZ=UTC
+            BROKER_URL=memory://
+
+      - name: Start docker container
+        run: docker run --detach --name ${{ env.CONTAINER_NAME }} --network ${{ job.container.network }} --publish 8000:8000 ${{ env.TEST_TAG }} /scripts/run-production.sh
+
+      - name: Run application checks
+        run: |
+          RETRIES=60
+          until curl -s http://localhost:8000/health-check; do
+            echo "Waiting for application..."
+            sleep 1
+            RETRIES=$((RETRIES - 1))
+            if [ $RETRIES -le 0 ]; then
+              echo "Application not available."
+              docker logs ${{ env.CONTAINER_NAME }}
+              exit 1
+            fi
+          done
+          echo "Application started."
+
+      - name: Remove docker container
+        if: always()
+        run: docker rm --force ${{ env.CONTAINER_NAME }}
+
+      - name: Remove docker image
+        if: always()
+        run: docker rmi ${{ env.TEST_TAG }}

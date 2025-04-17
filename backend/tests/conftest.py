@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from config import config
 from modules.common import message_bus as common_message_bus
-from modules.common.adapters.notifications.notificators import DummyEmailNotificator
 from modules.common.database import Base
 from modules.template.domain import commands as template_domain_commands
 from modules.template.domain import events as template_domain_events
@@ -75,6 +74,10 @@ def db_session_factory(db_session) -> Callable:
 
 @pytest.fixture(autouse=True)
 def set_session_to_model_factories(db_session):
+    """
+    Sets test databases session to all model factories.
+    """
+
     for factory in get_model_factories():
         factory._meta.sqlalchemy_session = db_session
 
@@ -84,13 +87,6 @@ def task_dispatcher() -> annotations.YieldFixture[fakers.TestTaskDispatcher]:
     yield fakers.TestTaskDispatcher()
 
 
-@pytest.fixture(autouse=True)
-def reset_dummy_email_notificator() -> annotations.YieldFixture[None]:
-    DummyEmailNotificator.total_emails_sent = 0
-    yield
-    DummyEmailNotificator.total_emails_sent = 0
-
-
 @pytest.fixture
 def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
     yield common_message_bus.MessageBus(
@@ -98,11 +94,13 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
             template_domain_events.TemplateCreated: [],
             template_domain_events.TemplateDeleted: [],
             template_domain_events.TemplateValueSet: [],
+            template_domain_events.TemplateValueSubtracted: [],
         },
         command_handlers={
             template_domain_commands.CreateTemplate: lambda event: None,
             template_domain_commands.DeleteTemplate: lambda event: None,
             template_domain_commands.SetTemplateValue: lambda event: None,
+            template_domain_commands.SubtractTemplateValue: lambda event: None,
         },
     )
 
@@ -110,7 +108,7 @@ def message_bus() -> annotations.YieldFixture[common_message_bus.MessageBus]:
 @pytest.fixture
 def fake_template_unit_of_work_factory() -> Callable:
     def fake_unit_of_work(
-        initial_templates: list[TemplateEntity] = [],
+        initial_templates: list[TemplateEntity] | None = None,
     ) -> fakers.TestTemplateUnitOfWork:
         return fakers.TestTemplateUnitOfWork(
             templates=initial_templates if initial_templates else []

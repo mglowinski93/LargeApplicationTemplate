@@ -28,7 +28,7 @@ parameters:
                Field with "-" indicates descending order.
   required: false
   type: string
-  enum: [ "timestamp", "-timestamp", "value", "-value"]
+  enum: [ "timestamp", "-timestamp"]
   default: "-timestamp"
 - name: limit
   in: query

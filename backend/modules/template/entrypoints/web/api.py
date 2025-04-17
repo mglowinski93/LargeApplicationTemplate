@@ -24,8 +24,8 @@ from . import forms as template_forms
 logger = logging.getLogger(__name__)
 
 
-@api_blueprint.route("/<template_id>", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/<template_id>", methods=["GET"])
 @inject.params(query_repository="templates_query_repository")
 def get_template_endpoint(
     template_id: str, query_repository: SqlAlchemyTemplatesQueryRepository
@@ -37,16 +37,14 @@ def get_template_endpoint(
     logger.info("Getting data for template '%s'.", template_id)
 
     try:
-        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
     except ValueError:
         return _handle_invalid_template_id(template_id)
 
     try:
         template = services.get_template(
             templates_query_repository=query_repository,
-            template_id=template_id_uuid,
+            template_id=_template_id,
         )
         logger.info("Template '%s' found.", template_id)
     except ports_exceptions.TemplateDoesNotExist:
@@ -59,8 +57,8 @@ def get_template_endpoint(
     return make_response(jsonify(template.serialize()), HTTPStatus.OK)
 
 
-@api_blueprint.route("/", methods=["GET"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/", methods=["GET"])
 @inject.params(query_repository="templates_query_repository")
 def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository):
     """
@@ -99,13 +97,12 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
         )
 
     filters = ports_dtos.TemplatesFilters(
-        value=form.value.data,
         query=form.query.data,
         timestamp_from=form.timestamp_from.data,
         timestamp_to=form.timestamp_to.data,
     )
 
-    ordering: list[common_dtos.Ordering | None] | None = (
+    ordering: list[common_dtos.Ordering] | None = (
         common_forms.OrderingForm(
             data=request.args,
             meta={"csrf": False},
@@ -145,8 +142,8 @@ def list_templates_endpoint(query_repository: SqlAlchemyTemplatesQueryRepository
     )
 
 
-@api_blueprint.route("/", methods=["POST"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/", methods=["POST"])
 @inject.params(message_bus="message_bus", unit_of_work="templates_unit_of_work")
 def create_template_endpoint(message_bus: MessageBus, unit_of_work):
     """
@@ -177,10 +174,8 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     logger.info("Deleting template '%s'.", template_id)
 
     try:
-        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
-        message_bus.handle([domain_commands.DeleteTemplate(template_id_uuid)])
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
+        message_bus.handle([domain_commands.DeleteTemplate(_template_id)])
         logger.info("Template '%s' found.", template_id)
     except ValueError:
         return _handle_invalid_template_id(template_id=template_id)
@@ -194,8 +189,8 @@ def delete_template_endpoint(message_bus: MessageBus, template_id: str):
     return make_response("", HTTPStatus.NO_CONTENT)
 
 
-@api_blueprint.route("/<template_id>", methods=["PATCH"])
 @docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/<template_id>", methods=["PATCH"])
 @inject.params(message_bus="message_bus")
 def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     """
@@ -216,14 +211,12 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
     template_value = form.value.data
 
     try:
-        template_id_uuid: value_objects.TemplateId = value_objects.TemplateId(
-            template_id
-        )
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
         logger.info("Setting value for template '%s'.", template_id)
         message_bus.handle(
             [
                 domain_commands.SetTemplateValue(
-                    template_id=template_id_uuid,
+                    template_id=_template_id,
                     value=value_objects.TemplateValue(template_value),
                 )
             ]
@@ -237,6 +230,67 @@ def set_template_value_endpoint(message_bus: MessageBus, template_id: str):
         )
         return make_response(
             jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid value."}),
+            HTTPStatus.UNPROCESSABLE_ENTITY,
+        )
+    except ports_exceptions.TemplateDoesNotExist:
+        logger.warning("Template '%s' does not exist.", template_id)
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Template not found."}),
+            HTTPStatus.NOT_FOUND,
+        )
+
+    return make_response(jsonify({"message": "Template value set."}), HTTPStatus.OK)
+
+
+@docstrings.inject_parameter_info_doc_strings(consts.SWAGGER_FILES)
+@api_blueprint.route("/<template_id>/subtract", methods=["POST"])
+@inject.params(message_bus="message_bus")
+def subtract_template_value_endpoint(message_bus: MessageBus, template_id: str):
+    """
+    file: {0}/template_endpoints/subtract_template_value.yml
+    """
+
+    form = template_forms.SubtractTemplateValueForm(
+        formdata=MultiDict(request.get_json(force=True, silent=True)),
+        meta={"csrf": False},
+    )
+    if not form.validate():
+        logger.warning("Request can't be handled, due to invalid input data.")
+        return make_response(
+            jsonify({consts.ERROR_RESPONSE_KEY_DETAILS_NAME: form.errors}),
+            HTTPStatus.BAD_REQUEST,
+        )
+
+    value = form.value.data
+
+    try:
+        _template_id: value_objects.TemplateId = value_objects.TemplateId(template_id)
+        logger.info("Subtracting value for template '%s'.", template_id)
+        message_bus.handle(
+            [
+                domain_commands.SubtractTemplateValue(
+                    template_id=_template_id,
+                    value=value_objects.TemplateValue(value),
+                )
+            ]
+        )
+        logger.info(
+            "Value '%s' subtracted for template '%s'.",
+            value,
+            template_id,
+        )
+    except ValueError:
+        return _handle_invalid_template_id(template_id=template_id)
+    except domain_exceptions.InvalidTemplateValue:
+        logger.warning(
+            "Invalid subtraction value '%s' for template '%s'.",
+            value,
+            template_id,
+        )
+        return make_response(
+            jsonify(
+                {consts.ERROR_RESPONSE_KEY_DETAILS_NAME: "Invalid subtration value."}
+            ),
             HTTPStatus.UNPROCESSABLE_ENTITY,
         )
     except ports_exceptions.TemplateDoesNotExist:

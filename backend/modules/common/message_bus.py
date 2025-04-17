@@ -13,7 +13,7 @@ class MessageBus:
         self,
         event_handlers: dict[Type[DomainEvent], list[Callable]],
         command_handlers: dict[Type[DomainCommand], Callable],
-    ):
+    ) -> None:
         self.event_handlers = event_handlers
         self.command_handlers = command_handlers
         self.queue: deque[Message] = deque()

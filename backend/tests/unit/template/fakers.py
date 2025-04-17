@@ -15,7 +15,7 @@ from modules.template.services.queries.ports import (
 
 
 class TestTemplatesRepository(AbstractTemplatesDomainRepository):
-    def __init__(self, templates: list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]) -> None:
         self._templates = set(templates)
 
     def create(self, template: TemplateEntity):
@@ -43,7 +43,7 @@ class TestTemplatesRepository(AbstractTemplatesDomainRepository):
 
 
 class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
-    def __init__(self, templates: list[TemplateEntity]):
+    def __init__(self, templates: list[TemplateEntity]) -> None:
         self._templates = set(templates)
 
     def get(self, template_id: TemplateId) -> TemplateEntity:
@@ -59,8 +59,8 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
     def list(
         self,
         filters: TemplatesFilters,
-        ordering: list[Ordering | None],
-        pagination: Pagination | None = None,
+        ordering: list[Ordering],
+        pagination: Pagination | None,
     ) -> tuple[list[TemplateEntity], int]:
         templates = self._filter(templates=self._templates, filters=filters)
         templates = self._order(templates=templates, ordering=ordering)
@@ -76,7 +76,9 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
         filters: TemplatesFilters,
     ) -> set[TemplateEntity]:
         if filters.value is not None:
-            templates = {t for t in templates if t.value == filters.value}
+            templates = {
+                template for template in templates if template.value == filters.value
+            }
 
         if filters.query is not None:
             templates = {
@@ -103,11 +105,9 @@ class TestTemplatesQueryRepository(AbstractTemplatesQueryRepository):
 
     @staticmethod
     def _order(
-        templates: set[TemplateEntity], ordering: List[Ordering | None]
+        templates: set[TemplateEntity], ordering: List[Ordering]
     ) -> set[TemplateEntity]:
         for order in ordering:
-            if order is None:
-                continue
             if order.field == "timestamp":
                 sorted(
                     templates,

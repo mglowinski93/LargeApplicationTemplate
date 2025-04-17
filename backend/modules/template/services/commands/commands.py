@@ -16,6 +16,17 @@ from ..queries.mappers import map_template_entity_to_output_dto
 # adapts the following approach:
 # https://www.cosmicpython.com/book/part2.html.
 
+# Allocate here invokes of business logic related to particular action,
+# transaction management, and data transformations.
+# In other words,
+# allocate here bridge logic between the presentation and data access layers,
+# or any other
+# that doesn't belong neither to the domain layer nor to the infrastructure layer.
+
+# In this approach, a service layer is responsible for generating events.
+# More details can be found here:
+# https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
+
 
 def create_template(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
@@ -53,7 +64,7 @@ def delete_template(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
     command: domain_commands.DeleteTemplate,
-):
+) -> None:
     with templates_unit_of_work:
         templates_unit_of_work.templates.delete(command.template_id)
 
@@ -64,26 +75,35 @@ def set_template_value(
     templates_unit_of_work: AbstractTemplatesUnitOfWork,
     message_bus: MessageBus,
     command: domain_commands.SetTemplateValue,
-):
-    """
-    Allocate here invokes of business logic related to particular action,
-    transaction management, and data transformations.
-
-    In other words,
-    allocate here bridge logic between the presentation and data access layers,
-    or any other
-    that doesn't belong neither to the domain layer nor to the infrastructure layer.
-    """
-
+) -> None:
     with templates_unit_of_work:
         template = templates_unit_of_work.templates.get(command.template_id)
-        entities.set_template_value(template=template, value=command.value)
+        template.set_value(command.value)
         templates_unit_of_work.templates.update(template)
-
-        # In this approach, a service layer is responsible for generating events.
-        # More details can be found here:
-        # https://www.cosmicpython.com/book/chapter_08_events_and_message_bus.html.
 
     message_bus.handle(
         [domain_events.TemplateValueSet(template_id=template.id, value=command.value)],
+    )
+
+
+def subtract_template_value(
+    templates_unit_of_work: AbstractTemplatesUnitOfWork,
+    message_bus: MessageBus,
+    command: domain_commands.SubtractTemplateValue,
+) -> None:
+    with templates_unit_of_work:
+        template: entities.Template = templates_unit_of_work.templates.get(
+            command.template_id
+        )
+        final_value = template.subtract_value(command.value)
+        templates_unit_of_work.templates.update(template)
+
+    message_bus.handle(
+        [
+            domain_events.TemplateValueSubtracted(
+                template_id=template.id,
+                subtracted_value=command.value,
+                final_value=final_value,
+            )
+        ]
     )
